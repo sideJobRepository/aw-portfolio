@@ -67,30 +67,16 @@ jobs:
           script_stop: true
           port: 22
           script: |
-            docker stop bgmagit-server || true
-            docker rm bgmagit-server || true
-            docker pull peachcoolpis/bgmagit-server:latest
-            docker run -d --name bgmagit-server \
-             --network bgm-network \
-            -e DB_URL=${{ secrets.DB_URL }}  \
-            -e DB_PORT=${{ secrets.DB_PORT }}  \
-            -e DB_USERNAME=${{ secrets.DB_USERNAME }}  \
-            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
-            -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
-            -e AWS_REGION=${{ secrets.AWS_REGION }} \
-            -e AWS_BUCKET=${{ secrets.AWS_BUCKET }} \
-            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            -e CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} \
-            -e BIZTALK_ID=${{ secrets.BIZTALK_ID }} \
-            -e BIZTALK_PASSWORD=${{ secrets.BIZTALK_PASSWORD }} \
-            -e SENDER_KEY=${{ secrets.SENDER_KEY }} \
-            -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
-            -e SPRING_PROFILES_ACTIVE=real \
-            -v $(pwd)/logs:/app/logs \
-            -p 127.0.0.1:8080:8080 \
-            peachcoolpis/bgmagit-server:latest
-            docker image prune -f
+            rm -rf /home/cham/cham-server/target
+            mkdir -p /home/cham/cham-server/target
+            mv /home/cham/cham-server/tobe/project.jar /home/cham/cham-server/target
+            cd /home/cham/cham-server/target
+            sudo fuser -k -n tcp 8080 || true
+            nohup java \
+            -Dspring.profiles.active=real \
+            -Duser.timezone=Asia/Seoul \
+            -jar project.jar > /dev/null 2>&1 &
+            rm -rf /home/cham/cham-server/tobe
 
   build-frontend:
     needs: detect-changes
@@ -141,9 +127,14 @@ jobs:
           script: |
             rm -rf /home/ubuntu/nextjs-server/current
             mkdir -p /home/ubuntu/nextjs-server/current
+      
             mv /home/ubuntu/nextjs-server/tobe/project.tar.gz \
-               /home/ubuntu/nextjs-server/current/project.tar.gz
+            /home/ubuntu/nextjs-server/current/project.tar.gz
+      
             cd /home/ubuntu/nextjs-server/current
             tar -xvf project.tar.gz
+      
+            npm install --production
+      
             pm2 delete next-server || true
             pm2 start npm --name "next-server" -- start
