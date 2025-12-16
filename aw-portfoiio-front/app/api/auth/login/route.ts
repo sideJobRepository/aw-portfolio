@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json();
+         const { email, password } = await request.json();
 
         if (!email || !password) {
             return NextResponse.json({ error: '이메일과 비밀번호를 입력해주세요.' }, { status: 400 });
