@@ -1,0 +1,91 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String
+  role      String   // 'SUPER_ADMIN' or 'ADMIN'
+  createdAt DateTime @default(now())
+  createdBy String?
+}
+
+model Member {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  companyName String    @unique // 상호명 (고유값)
+  password    String    // 4자리 비밀번호 (해시됨)
+  lastLoginAt DateTime? // 마지막 로그인 시간 (선택적)
+  createdAt   DateTime  @default(now()) // 최초 가입 시간
+  updatedAt   DateTime  @updatedAt
+  ipAddress   String?   // 최초 가입 IP
+  loginCount  Int       @default(1) // 로그인 횟수
+}
+
+model Category {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  name       String      @unique // Category name
+  slug       String      @unique // URL slug
+  order      Int         @default(0) // Display order
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  portfolios Portfolio[]
+}
+
+model Portfolio {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  title       String           // Portfolio title
+  description String?          // Portfolio description
+  slug        String           @unique // URL slug for portfolio
+  thumbnail   String?          // Thumbnail image URL
+  categoryId  String?          @db.ObjectId // Foreign key to Category
+  domain      String?
+  category    Category?        @relation(fields: [categoryId], references: [id])
+  isActive    Boolean          @default(true)
+  order       Int              @default(0) // Display order
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  questions   Question[]
+  submissions FormSubmission[]
+}
+
+model Question {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  portfolioId String    @db.ObjectId // Foreign key to Portfolio
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  step        Int       // Step number (1, 2, 3, 4, 5+)
+  title       String    // Question title
+  description String?   // Optional description
+  thumbnail   String?   // Thumbnail image URL for this question
+  questionType String   @default("text") // text, textarea, file, checkbox, repeatable
+  options     String?   // JSON string for checkbox options, repeatable field configs
+  minLength   Int       @default(10) // Minimum character requirement
+  maxLength   Int?      // Maximum character requirement
+  requireMinLength Boolean @default(false) // Whether to enforce minLength validation
+  order       Int       // Order within the step
+  isRequired  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model FormSubmission {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  portfolioId String     @db.ObjectId // Foreign key to Portfolio
+  portfolio   Portfolio  @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  companyName String     // 상호명 (제출자)
+  password    String     // 4자리 비밀번호 (해시됨)
+  responses   String     // JSON string of responses
+  isDraft     Boolean    @default(false) // 임시저장 여부
+  completedAt DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  ipAddress   String?
+}
+
