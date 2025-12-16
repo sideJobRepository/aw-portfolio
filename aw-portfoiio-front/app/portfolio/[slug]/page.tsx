@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import DynamicFormField from '@/aw-portfoiio-front/components/DynamicFormField';
+import DynamicFormField from '@/components/DynamicFormField';
 
 interface Question {
     id: string;

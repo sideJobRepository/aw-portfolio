@@ -1,4 +1,4 @@
-import MultiStepForm from '@/aw-portfoiio-front/components/MultiStepForm';
+import MultiStepForm from '@/components/MultiStepForm';
 
 export default function FormPage() {
     return <MultiStepForm />;
