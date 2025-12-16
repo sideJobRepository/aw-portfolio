@@ -4,6 +4,8 @@ import { verifyToken } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
 // GET all submissions (Admin only)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
     try {
         const token = request.headers.get('authorization')?.replace('Bearer ', '');
