@@ -42,35 +42,28 @@ jobs:
 
       - name: gradle 권한 부여 및 빌드
         run: |
-          cd bgm-agit-api
+          cd aw-portfoiio-api
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
-      - name: 도커 빌드
-        run: docker build -t peachcoolpis/bgmagit-server .
-
-      - name: 도커 허브 로그인
-        uses: docker/login-action@v3
-        with:
-          username: ${{secrets.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
-
-      - name: 도커 허브 푸쉬
-        run: docker push peachcoolpis/bgmagit-server
+      - name: 빌드된 파일 이름 변경하기
+        run: |
+         cd aw-portfoiio-api
+         mv ./build/libs/*SNAPSHOT.jar ./project.jar
 
       - name: ssh 접속
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           port: 22
           script: |
-            rm -rf /home/cham/cham-server/target
-            mkdir -p /home/cham/cham-server/target
-            mv /home/cham/cham-server/tobe/project.jar /home/cham/cham-server/target
-            cd /home/cham/cham-server/target
+            rm -rf /home/ubuntu/cham-server/target
+            mkdir -p /home/ubuntu/cham-server/target
+            mv /home/ubuntu/cham-server/tobe/project.jar /home/cham/cham-server/target
+            cd /home/ubuntu/cham-server/target
             sudo fuser -k -n tcp 8080 || true
             nohup java \
             -Dspring.profiles.active=real \

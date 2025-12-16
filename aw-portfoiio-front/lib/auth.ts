@@ -4,7 +4,7 @@ import { sign, verify } from 'jsonwebtoken';
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'your-secret-key';
 
 export async function hashPassword(password: string): Promise<string> {
-    return await hash(password, 12);
+     return await hash(password, 12);
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
