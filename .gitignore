@@ -46,4 +46,6 @@ prisma/*.db-journal
 # duplicate folder
 /port1
 
+# 외주 작업 gitignore 세팅
 .idea
+/aw-portfoiio-api/aw-portfoiio-api.iml
