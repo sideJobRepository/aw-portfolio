@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 
 interface FieldOption {
     label: string;
-     hasInput?: boolean;
+    hasInput?: boolean;
 }
 
 interface RepeatableField {
