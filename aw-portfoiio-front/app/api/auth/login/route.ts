@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
          const { email, password } = await request.json();
 
         if (!email || !password) {
-            return NextResponse.json({ error: '이메일과 비밀번호를 입력해주세요.' }, { status: 400 });
+             return NextResponse.json({ error: '이메일과 비밀번호를 입력해주세요.' }, { status: 400 });
         }
 
         const user = await prisma.user.findUnique({
