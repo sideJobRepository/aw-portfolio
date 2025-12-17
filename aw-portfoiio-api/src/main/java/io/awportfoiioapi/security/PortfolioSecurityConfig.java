@@ -65,8 +65,8 @@ public class PortfolioSecurityConfig {
                         e.authenticationEntryPoint(portfolioAuthenticationEntryPoint).
                     accessDeniedHandler(portfolioAccessDeniedHandler))
                 .with(new PortfolioSecurityDsl<>(), securityDsl -> securityDsl
-                        .successHandler(portfolioAuthenticationSuccessHandler)
-                        .failureHandler(portfolioAuthenticationFailureHandler)
+                        .portfolioSuccessHandler(portfolioAuthenticationSuccessHandler)
+                        .portfolioFailureHandler(portfolioAuthenticationFailureHandler)
                 );
         return http.build();
     }
