@@ -33,9 +33,10 @@ public class PortfolioSecurityConfig {
     
     private final String[] resource = {"/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*"};
     
-//    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-//    private final AuthenticationFailureHandler bgmAuthenticationFailureHandler;
+    private final AuthenticationSuccessHandler portfolioAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler portfolioAuthenticationFailureHandler;
     private final AuthenticationEntryPoint portfolioAuthenticationEntryPoint;
+    private final AuthenticationProvider portfolioAuthenticationProvider;
     private final AuthorizationManager<RequestAuthorizationContext> portfolioAuthorizationManager;
     private final AccessDeniedHandler portfolioAccessDeniedHandler;
     
@@ -43,31 +44,30 @@ public class PortfolioSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
-//        AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-//        managerBuilder.authenticationProvider(socialAuthenticationProvider);
-//        AuthenticationManager authenticationManager = managerBuilder.build();
-//        http.authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(resource).permitAll()
-//                .anyRequest().access(portfolioAuthorizationManager))
-//                .authenticationManager(authenticationManager)
-//                .formLogin(AbstractHttpConfigurer::disable)
-//                .httpBasic(AbstractHttpConfigurer::disable)
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .oauth2ResourceServer(oauth -> oauth
-//                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-//                        .authenticationEntryPoint(portfolioAuthenticationEntryPoint)
-//                        .accessDeniedHandler(bgmAgitAccessDeniedHandler)
-//                )
-//                .exceptionHandling(e ->
-//                        e.authenticationEntryPoint(bgmagitAuthenticationEntryPoint).
-//                    accessDeniedHandler(portfolioAccessDeniedHandler))
-//                .with(new BgmAgitSecurityDsl<>(), bgmAgitSecurityDsl -> bgmAgitSecurityDsl
-//                        .bgmAgitSuccessHandler(bgmAuthenticationSuccessHandler)
-//                        .bgmAgitFailureHandler(bgmAuthenticationFailureHandler)
-//                );
-//        return http.build();
+        AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        managerBuilder.authenticationProvider(portfolioAuthenticationProvider);
+        AuthenticationManager authenticationManager = managerBuilder.build();
+        http.authorizeHttpRequests(auth -> auth
+                        .requestMatchers(resource).permitAll()
+                .anyRequest().access(portfolioAuthorizationManager))
+                .authenticationManager(authenticationManager)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2ResourceServer(oauth -> oauth
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(portfolioAuthenticationEntryPoint)
+                        .accessDeniedHandler(portfolioAccessDeniedHandler)
+                )
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint(portfolioAuthenticationEntryPoint).
+                    accessDeniedHandler(portfolioAccessDeniedHandler))
+                .with(new PortfolioSecurityDsl<>(), securityDsl -> securityDsl
+                        .successHandler(portfolioAuthenticationSuccessHandler)
+                        .failureHandler(portfolioAuthenticationFailureHandler)
+                );
         return http.build();
     }
     
