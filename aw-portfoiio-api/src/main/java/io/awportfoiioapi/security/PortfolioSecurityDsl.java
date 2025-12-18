@@ -20,7 +20,8 @@ public class PortfolioSecurityDsl<H extends HttpSecurityBuilder<H>> extends Abst
     private AuthenticationFailureHandler failureHandler;
     
     private static final RequestMatcher LOGIN_MATCHER = new OrRequestMatcher(
-            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/login")
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/user-login"),
+            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/admin-login")
     );
     
     
@@ -60,15 +61,7 @@ public class PortfolioSecurityDsl<H extends HttpSecurityBuilder<H>> extends Abst
         this.failureHandler = authenticationFailureHandler;
         return this;
     }
-    /**
-     * 세션을 사용하지않음
-     * @param loginProcessingUrl creates the {@link RequestMatcher} based upon the
-     * loginProcessingUrl
-     * @return
-     */
-//    public BgmAgitSecurityDsl<H> setSecurityContextRepository(SecurityContextRepository securityContextRepository) {
-//        return super.securityContextRepository(securityContextRepository);
-//    }
+    
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
         return LOGIN_MATCHER;

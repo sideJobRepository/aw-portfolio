@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component(value = "portfolioAuthenticationProvider")
@@ -21,13 +22,28 @@ public class PortfolioAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         
-        PortfolioAuthenticationToken token = (PortfolioAuthenticationToken) authentication;
+        // 어드민
+        // 1. 아이디존재하지는 확인 (없으면 exception)
+        // 2. 비밀번호 맞는지 확인 (없으면 exception)
+        //
+        PortfolioAuthenticationToken loginAuthentication = (PortfolioAuthenticationToken) authentication;
       
-        String loginId = (String) token.getPrincipal();
-        String password = (String) token.getCredentials();
+        String loginId = (String) loginAuthentication.getPrincipal();
+        String password = (String) loginAuthentication.getCredentials();
+        String url = loginAuthentication.getUrl();
         
-
-          MemberContext memberContext = (MemberContext) memberDetailService.loadUserByUsername(loginId,password);
+        if ("/api/admin-login".equals(url)) {
+            MemberContext adminContext = (MemberContext) memberDetailService.loadUserByAdmin(loginId,password);
+            return new PortfolioAuthenticationToken(
+                    adminContext.getMember(),
+                    null,
+                    adminContext.getAuthorities()
+            );
+            
+        }
+        
+        
+        MemberContext memberContext = (MemberContext) memberDetailService.loadUserByUsername(loginId,password);
 
           return new PortfolioAuthenticationToken(
                   memberContext.getMember(),

@@ -22,25 +22,28 @@ public class PortfolioAuthenticationFilter extends AbstractAuthenticationProcess
     
     public PortfolioAuthenticationFilter() {
         super(new OrRequestMatcher(
-                PathPatternRequestMatcher.withDefaults()
-                        .matcher(HttpMethod.POST, "/api/login")
+                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/user-login"),
+                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/admin-login")
         ));
     }
     
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         
-        String uri = request.getRequestURI();
         
+        String url = request.getRequestURI();
+        
+      
         ObjectMapper objectMapper = new ObjectMapper();
         PortfolioAuthenticationRequest loginRequest = objectMapper.readValue(request.getReader(), PortfolioAuthenticationRequest.class);
         
-        if (StringUtils.hasText(loginRequest.getLoginId()) || StringUtils.hasText(loginRequest.getPassword())) {
+        if (!StringUtils.hasText(loginRequest.getLoginId()) || !StringUtils.hasText(loginRequest.getPassword())) {
             throw new AuthenticationServiceException("code 값이 없습니다.");
         }
         PortfolioAuthenticationToken authRequest = new PortfolioAuthenticationToken(
                 loginRequest.getLoginId(),
-                loginRequest.getPassword()
+                loginRequest.getPassword(),
+                url
         );
         
         return this.getAuthenticationManager().authenticate(authRequest);

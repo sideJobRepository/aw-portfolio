@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.net.URI;
 import java.util.Collection;
 
 @Getter
@@ -13,10 +14,13 @@ public class PortfolioAuthenticationToken extends AbstractAuthenticationToken {
     
     private final Object credentials;
     
-    public PortfolioAuthenticationToken(String principal,String credentials) {
+    private String url;
+    
+    public PortfolioAuthenticationToken(String principal,String credentials,String url) {
         super(null);
         this.principal = principal;
         this.credentials = credentials;
+        this.url = url;
         setAuthenticated(false);
     }
     

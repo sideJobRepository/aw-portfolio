@@ -46,6 +46,7 @@ public class PortfolioSecurityConfig {
         
         AuthenticationManagerBuilder managerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         managerBuilder.authenticationProvider(portfolioAuthenticationProvider);
+        managerBuilder.parentAuthenticationManager(null); // 두번호출 방지
         AuthenticationManager authenticationManager = managerBuilder.build();
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(resource).permitAll()

@@ -8,6 +8,7 @@ import io.awportfoiioapi.role.entity.Role;
 import io.awportfoiioapi.security.context.MemberContext;
 import io.awportfoiioapi.security.repository.PortfolioMemberDetailRepositoryImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -35,8 +37,22 @@ public class MemberDetailServiceImpl implements UserDetailsService {
     
     
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         return null;
+    }
+    
+    public UserDetails loadUserByAdmin(String loginId,String password) {
+        Member findAdmin = memberRepository.findByPortfolioAdminId(loginId);
+        if (findAdmin == null) {
+            throw new UsernameNotFoundException("존재하지않는 아이디 이거나 비밀번호가 맞지않습니다.");
+        }
+        if (!passwordEncoder.matches(password, findAdmin.getPassword())) {
+            throw new BadCredentialsException("존재하지않는 아이디 이거나 비밀번호가 맞지않습니다.");
+        }
+        Long id = findAdmin.getId();
+        List<String> roleName = memberDetailRepository.getRoleName(id);
+        List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList(roleName);
+        return new MemberContext(findAdmin, authorityList);
     }
     
     public UserDetails loadUserByUsername(String loginId,String password) {
