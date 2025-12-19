@@ -8,7 +8,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-    return await compare(password, hashedPassword);
+     return await compare(password, hashedPassword);
 }
 
 export function generateToken(userId: string, role: string): string {
