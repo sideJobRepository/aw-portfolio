@@ -23,7 +23,17 @@ export function useRequest() {
             const err = error as AxiosError<any>;
 
             if (options?.ignoreErrorRedirect) {
-                alert(err.response?.data?.message ?? '오류가 발생했습니다.')
+
+                const errData = err.response?.data;
+                
+                //벨리데이터 형식 에러 검증
+                if(errData?.validation.length > 0){
+                    const message = errData.validation.map((v: any) => v.message).join('\n');
+                    alert(message);
+                }else {
+                    alert(err.response?.data?.message ?? '오류가 발생했습니다.')
+                }
+
 
             }
             throw error;

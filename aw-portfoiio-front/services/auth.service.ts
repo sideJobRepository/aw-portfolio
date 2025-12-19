@@ -1,24 +1,18 @@
-// services/auth.service.ts
+import axios from "axios";
 import api from "@/lib/axiosInstance";
 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const AuthService = {
-    login: (email : string, password : string) =>
-        api.post('/auth/login', { email, password }),
+  login: (loginId: string, password: string) =>
+    axios.post(
+      "/api/admin-login",
+      { loginId, password },
+      {
+        baseURL,
+        withCredentials: true,
+      },
+    ),
 
-    me: () =>
-        api.get('/auth/me'),
+  me: () => api.get("/auth/me"),
 };
-
-// 호출단 예시
-// const handleLogin = async () => {
-//     await request(
-//         () => AuthService.login(email, password),
-//         (res) => {
-//             const { token, user } = res.data;
-//             localStorage.setItem('token', token);
-//             localStorage.setItem('user', JSON.stringify(user));
-//             router.push('/admin');
-//         },
-//         { ignoreErrorRedirect: true }
-//     );
-// };
