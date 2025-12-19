@@ -136,16 +136,15 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
+            export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            export NODE_ENV=production   
             rm -rf /home/ubuntu/nextjs-server/current
             mkdir -p /home/ubuntu/nextjs-server/current
             mv /home/ubuntu/nextjs-server/tobe/project.tar.gz \
-            /home/ubuntu/nextjs-server/current/project.tar.gz
+               /home/ubuntu/nextjs-server/current/project.tar.gz
             cd /home/ubuntu/nextjs-server/current
-            tar -xvf project.tar.gz
+            tar -xvf project.tar.gz    
             npm i
             pm2 delete next-server || true
-            DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             npx prisma generate
             npx prisma db push
-            pm2 start npm --name next-server -- start
-            pm2 save
