@@ -150,5 +150,6 @@ jobs:
             npx prisma db push
             DATABASE_URL="$DATABASE_URL" \
             NODE_ENV=production \
+            NEXT_PUBLIC_API_BASE_URL=https://alwaysdomain.store
             pm2 start npm --name next-server -- start
             pm2 save
