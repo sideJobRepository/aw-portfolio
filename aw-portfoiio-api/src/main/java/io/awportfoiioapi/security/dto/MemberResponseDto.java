@@ -16,19 +16,22 @@ public class MemberResponseDto {
     
     private Long id;
     private String name;
-    private List<String> roles;
+    private String email;
+    private String roles;
     
     public static MemberResponseDto create(Member member, List<GrantedAuthority> authorities) {
         MemberResponseDto memberResponseDto = new MemberResponseDto();
         memberResponseDto.setId(member.getId());
-        memberResponseDto.setName(member.getLoginId());
-        List<String> roleList = new ArrayList<>();
+        memberResponseDto.setEmail(member.getLoginId());
+      
         if (authorities != null && !authorities.isEmpty()) {
             for (GrantedAuthority auth : authorities) {
-                roleList.add("ROLE_" + auth.getAuthority());
+                memberResponseDto.setRoles("ROLE_" + auth.getAuthority());
+                if(memberResponseDto.getRoles().equals("SUPER_ADMIN")) {
+                    memberResponseDto.setName("최고 관리자");
+                }
             }
         }
-        memberResponseDto.setRoles(roleList);
         return memberResponseDto;
     }
 }
