@@ -6,7 +6,7 @@ export const AuthService = {
         api.post('/auth/login', { email, password }),
 
     me: () =>
-        api.get('/auth/me'),
+         api.get('/auth/me'),
 };
 
 // 호출단 예시
