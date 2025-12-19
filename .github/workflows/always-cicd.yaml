@@ -111,7 +111,7 @@ jobs:
       - name: 빌드
         run: |
           cd aw-portfoiio-front
-          npm run build
+          NODE_ENV=production DATABASE_URL=${{ secrets.DATABASE_URL }} npm run build
 
       - name: 압축하기
         run: |
@@ -144,5 +144,6 @@ jobs:
             tar -xvf project.tar.gz
             npm i
             pm2 delete next-server || true
+            DATABASE_URL="${{ secrets.DATABASE_URL }}" \
             pm2 start npm --name next-server -- start
             pm2 save
