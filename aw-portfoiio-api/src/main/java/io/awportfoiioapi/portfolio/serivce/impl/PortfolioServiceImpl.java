@@ -17,13 +17,12 @@ import io.awportfoiioapi.portfolio.serivce.PortfolioService;
 import io.awportfoiioapi.utils.S3FileUtils;
 import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.And;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -103,11 +102,114 @@ public class PortfolioServiceImpl implements PortfolioService {
     
     @Override
     public ApiResponse modifyPortfolio(PortfolioPutRequest request) {
-        return null;
+        
+        Long id = request.getId();
+        // 포트폴리오 조회
+        Portfolio portfolio = portfolioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 포트폴리오 입니다."));
+        
+        // order 중복 체크 (자기 자신 제외)
+        Integer newOrder = request.getOrder();
+        Integer currentOrder = portfolio.getOrders();
+        
+        if (!Objects.equals(currentOrder, newOrder)) {
+            boolean exists = portfolioRepository.existsByPortfolioOrder(newOrder, portfolio.getId());
+            
+            if (exists) {
+                throw new CategoryAndPortfolioException(
+                        "이미 존재하는 포트폴리오 순서입니다.",
+                        "order"
+                );
+            }
+        }
+        //일반 필드 업데이트
+        portfolio.update(request);
+        
+        //카테고리 (null 허용)
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository
+                    .findById(request.getCategoryId())
+                    .orElse(null);
+            portfolio.updateCategory(category);
+        } else {
+            portfolio.updateCategory(null);
+        }
+        
+        // 썸네일 수정 여부
+        MultipartFile thumbnail = request.getThumbnail();
+        Boolean removeThumbnail = request.getRemoveThumbnail();
+        
+        // 4-1 썸네일 삭제
+        if (Boolean.TRUE.equals(removeThumbnail)) {
+            deleteThumbnail(portfolio);
+        }
+        // 4-2 썸네일 교체
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            replaceThumbnail(portfolio, thumbnail);
+        }
+        
+        return new ApiResponse(200, true, "포트폴리오가 수정되었습니다.");
     }
     
     @Override
     public ApiResponse deletePortfolio(Long id) {
-        return null;
+        // 포트폴리오 조회
+        Portfolio portfolio = portfolioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 포트폴리오 입니다."));
+        
+        // 연결된 파일 조회
+        CommonFile file = commonFileRepository
+                .findByFileTargetIdAndFileType(
+                        portfolio.getId(),
+                        CommonFileType.PORTFOLIO
+                );
+        
+        // 파일 있으면 삭제
+        if (file != null) {
+            s3FileUtils.deleteFile(file.getFileUrl());
+            commonFileRepository.delete(file);
+        }
+        
+        // 포트폴리오 삭제
+        portfolioRepository.delete(portfolio);
+        
+        return new ApiResponse(200, true, "포트폴리오가 삭제되었습니다.");
+    }
+    
+    private void deleteThumbnail(Portfolio portfolio) {
+        CommonFile oldFile = commonFileRepository
+                .findByPortfolioFile(
+                        portfolio.getId(),
+                        CommonFileType.PORTFOLIO
+                );
+        
+        if (oldFile != null) {
+            s3FileUtils.deleteFile(oldFile.getFileUrl());
+            commonFileRepository.delete(oldFile);
+        }
+        
+        portfolio.updateThumbnail(null);
+    }
+    
+    private void replaceThumbnail(Portfolio portfolio, MultipartFile thumbnail) {
+        // 기존 파일 정리
+        deleteThumbnail(portfolio);
+        
+        // 새 파일 업로드
+        UploadResult uploadResult = s3FileUtils.storeFile(thumbnail, "portfolio");
+        
+        // 엔티티 업데이트
+        portfolio.updateThumbnail(uploadResult.url());
+        
+        // CommonFile 저장
+        CommonFile newFile = CommonFile.builder()
+                .fileTargetId(portfolio.getId())
+                .fileName(uploadResult.originalFilename())
+                .fileUuidName(uploadResult.uuid())
+                .fileUrl(uploadResult.url())
+                .fileType(CommonFileType.PORTFOLIO)
+                .build();
+        
+        commonFileRepository.save(newFile);
     }
 }

@@ -2,6 +2,7 @@ package io.awportfoiioapi.portfolio.entity;
 
 import io.awportfoiioapi.category.entity.Category;
 import io.awportfoiioapi.mapperd.DateSuperClass;
+import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -54,4 +55,20 @@ public class Portfolio extends DateSuperClass {
     @Column(name = "PORTFOLIO_IS_ACTIVE")
     private Boolean isActive;
     
+    public void update(PortfolioPutRequest request) {
+        this.title = request.getTitle();
+        this.description = request.getDescription();
+        this.slug = request.getSlug();
+        this.domain = request.getDomain();
+        this.orders = request.getOrder();
+        this.isActive = request.getIsActive();
+    }
+    
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+    
+    public void updateThumbnail(String url) {
+        this.thumbnail = url;
+    }
 }

@@ -18,4 +18,15 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 .where(portfolio.orders.eq(order))
                 .fetchFirst() != null;
     }
+    
+    @Override
+    public boolean existsByPortfolioOrder(Integer order, Long excludeId) {
+        return queryFactory
+                .selectFrom(portfolio)
+                .where(
+                        portfolio.orders.eq(order),
+                        portfolio.id.ne(excludeId)
+                )
+                .fetchFirst() != null;
+    }
 }

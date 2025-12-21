@@ -1,11 +1,12 @@
 package io.awportfoiioapi.file.repository.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.awportfoiioapi.file.entity.CommonFile;
+import io.awportfoiioapi.file.enums.CommonFileType;
 import io.awportfoiioapi.file.repository.query.CommonFileQueryRepository;
-import io.awportfoiioapi.portfolio.entity.QPortfolio;
 import lombok.RequiredArgsConstructor;
 
-import static io.awportfoiioapi.portfolio.entity.QPortfolio.*;
+import static io.awportfoiioapi.file.entity.QCommonFile.commonFile;
 
 @RequiredArgsConstructor
 public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
@@ -13,10 +14,22 @@ public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
     private final JPAQueryFactory queryFactory;
     
     @Override
-    public boolean existsByOrder(Integer order) {
+    public CommonFile findByPortfolioFile(Long id, CommonFileType commonFileType) {
         return queryFactory
-                .selectFrom(portfolio)
-                .where(portfolio.orders.eq(order))
-                .fetchFirst() != null;
+                .selectFrom(commonFile)
+                .where(commonFile.fileTargetId.eq(id),
+                        commonFile.fileType.eq(commonFileType)
+                ).fetchFirst();
+    }
+    
+    @Override
+    public CommonFile findByFileTargetIdAndFileType(Long fileTargetId, CommonFileType fileType) {
+        return queryFactory
+                .selectFrom(commonFile)
+                .where(
+                        commonFile.fileTargetId.eq(fileTargetId),
+                        commonFile.fileType.eq(fileType)
+                )
+                .fetchFirst();
     }
 }

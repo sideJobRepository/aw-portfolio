@@ -17,5 +17,6 @@ public class PortfolioPutRequest {
     private Integer order;
     private String slug;
     private MultipartFile thumbnail;
+    private Boolean removeThumbnail;
     private Boolean isActive;
 }
