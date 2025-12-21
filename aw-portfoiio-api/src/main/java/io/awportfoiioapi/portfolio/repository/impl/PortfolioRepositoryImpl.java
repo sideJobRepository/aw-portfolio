@@ -81,4 +81,23 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 .groupBy(portfolio.id)
                 .fetch();
     }
+    
+    @Override
+    public PortfolioGetDetailResponse findByPortfolioDetail(Long id) {
+        return queryFactory
+                .select(new QPortfolioGetDetailResponse(
+                        portfolio.id,
+                        portfolio.category.id,
+                        portfolio.title,
+                        portfolio.description,
+                        portfolio.domain,
+                        portfolio.orders,
+                        portfolio.slug,
+                        portfolio.thumbnail,
+                        portfolio.isActive
+                ))
+                .from(portfolio)
+                .where(portfolio.id.eq(id))
+                .fetchFirst();
+    }
 }

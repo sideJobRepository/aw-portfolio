@@ -14,12 +14,12 @@ public class PortfolioGetDetailResponse {
     private String title;
     private String description;
     private String domain;
-    private Long order;
+    private Integer order;
     private String slug;
     private String thumbnail;
     private Boolean isActive;
     @QueryProjection
-    public PortfolioGetDetailResponse(Long id, Long categoryId, String title, String description, String domain, Long order, String slug, String thumbnail, Boolean isActive) {
+    public PortfolioGetDetailResponse(Long id, Long categoryId, String title, String description, String domain, Integer order, String slug, String thumbnail, Boolean isActive) {
         this.id = id;
         this.categoryId = categoryId;
         this.title = title;

@@ -62,7 +62,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     
     @Override
     public PortfolioGetDetailResponse getPortfolioDetail(Long id) {
-        return null;
+        return portfolioRepository.findByPortfolioDetail(id);
     }
     
     @Override

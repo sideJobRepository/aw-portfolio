@@ -6,6 +6,7 @@ import io.awportfoiioapi.file.entity.CommonFile;
 import io.awportfoiioapi.file.enums.CommonFileType;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPostRequest;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
+import io.awportfoiioapi.portfolio.dto.response.PortfolioGetDetailResponse;
 import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import org.junit.jupiter.api.DisplayName;
@@ -188,6 +189,13 @@ class PortfolioServiceImplTest extends RepositoryAndServiceTestSupport {
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<PortfolioResponse> portfolioList = portfolioService.getPortfolioList(pageRequest);
         System.out.println("portfolioList = " + portfolioList);
+    }
+    
+    @DisplayName("포트폴리오 조회(디테일)")
+    @Test
+    void test13(){
+        PortfolioGetDetailResponse portfolioDetail = portfolioService.getPortfolioDetail(6L);
+        System.out.println("portfolioDetail = " + portfolioDetail);
     }
     
     private PortfolioPutRequest.ThumbnailRequest  thumbnailKeep() {
