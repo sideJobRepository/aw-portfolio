@@ -10,6 +10,7 @@ import io.awportfoiioapi.file.repository.CommonFileRepository;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPostRequest;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
 import io.awportfoiioapi.portfolio.dto.response.PortfolioGetDetailResponse;
+import io.awportfoiioapi.portfolio.dto.response.PortfolioQuestionCountResponse;
 import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.PortfolioRepository;
@@ -17,12 +18,16 @@ import io.awportfoiioapi.portfolio.serivce.PortfolioService;
 import io.awportfoiioapi.utils.S3FileUtils;
 import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,8 +40,24 @@ public class PortfolioServiceImpl implements PortfolioService {
     private final S3FileUtils s3FileUtils;
     
     @Override
-    public List<PortfolioResponse> getPortfolioList() {
-        return List.of();
+    public Page<PortfolioResponse> getPortfolioList(Pageable pageable) {
+        Page<PortfolioResponse> portfolioList = portfolioRepository.getPortfolioList(pageable);
+        List<PortfolioQuestionCountResponse> byQuestionCount = portfolioRepository.findByQuestionCount();
+        // count 결과를 Map으로 변환
+        Map<Long, Long> questionCountMap =
+                byQuestionCount.stream().collect(Collectors.toMap(
+                                PortfolioQuestionCountResponse::getPortfolioId,
+                                PortfolioQuestionCountResponse::getCount));
+        portfolioList.forEach(portfolio -> {
+            Long count = questionCountMap.getOrDefault(
+                    portfolio.getId(),
+                    0L
+            );
+            portfolio.getCount().setQuestions(count);
+        });
+        
+        portfolioList.forEach(portfolio -> portfolio.getCount().setSubmissions(0L)); // 이건 나중에 구현해야함
+        return portfolioList;
     }
     
     @Override

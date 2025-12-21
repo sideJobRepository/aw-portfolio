@@ -6,9 +6,12 @@ import io.awportfoiioapi.file.entity.CommonFile;
 import io.awportfoiioapi.file.enums.CommonFileType;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPostRequest;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
+import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -177,6 +180,14 @@ class PortfolioServiceImplTest extends RepositoryAndServiceTestSupport {
         ApiResponse apiResponse = portfolioService.deletePortfolio(6L);
         System.out.println("apiResponse = " + apiResponse);
     
+    }
+    
+    @DisplayName("포트폴리오 조회(전체)")
+    @Test
+    void test12(){
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<PortfolioResponse> portfolioList = portfolioService.getPortfolioList(pageRequest);
+        System.out.println("portfolioList = " + portfolioList);
     }
     
     private PortfolioPutRequest.ThumbnailRequest  thumbnailKeep() {

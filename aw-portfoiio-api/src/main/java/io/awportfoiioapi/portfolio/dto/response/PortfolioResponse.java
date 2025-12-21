@@ -1,5 +1,6 @@
 package io.awportfoiioapi.portfolio.dto.response;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,32 @@ public class PortfolioResponse {
     private String slug;
     private String thumbnail;
     private Boolean isActive;
-    private Long question;
-    private Long submit;
+    private Count count;
+    
+    public Count getCount() {
+        if (this.count == null) {
+            this.count = new Count();
+        }
+        return this.count;
+    }
+    
+    @QueryProjection
+    public PortfolioResponse(Long id, String title, String description, String domain, Integer order, String slug, String thumbnail, Boolean isActive) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.domain = domain;
+        this.order = order;
+        this.slug = slug;
+        this.thumbnail = thumbnail;
+        this.isActive = isActive;
+    }
+    
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Count {
+        private Long questions;
+        private Long submissions;
+    }
 }
