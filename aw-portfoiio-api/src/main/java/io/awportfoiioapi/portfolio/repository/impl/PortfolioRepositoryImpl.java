@@ -45,6 +45,7 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 .select(
                         new QPortfolioResponse(
                                 portfolio.id,
+                                portfolio.category.id,
                                 portfolio.title,
                                 portfolio.description,
                                 portfolio.domain,

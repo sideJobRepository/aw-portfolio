@@ -180,7 +180,6 @@ class PortfolioServiceImplTest extends RepositoryAndServiceTestSupport {
     void test11(){
         ApiResponse apiResponse = portfolioService.deletePortfolio(6L);
         System.out.println("apiResponse = " + apiResponse);
-    
     }
     
     @DisplayName("포트폴리오 조회(전체)")

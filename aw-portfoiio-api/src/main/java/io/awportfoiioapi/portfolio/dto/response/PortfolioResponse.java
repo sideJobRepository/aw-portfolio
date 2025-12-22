@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class PortfolioResponse {
     private Long id;
+    private Long categoryId;
     private String title;
     private String description;
     private String domain;
@@ -27,8 +28,9 @@ public class PortfolioResponse {
     }
     
     @QueryProjection
-    public PortfolioResponse(Long id, String title, String description, String domain, Integer order, String slug, String thumbnail, Boolean isActive) {
+    public PortfolioResponse(Long id, Long categoryId, String title, String description, String domain, Integer order, String slug, String thumbnail, Boolean isActive) {
         this.id = id;
+        this.categoryId = categoryId;
         this.title = title;
         this.description = description;
         this.domain = domain;
