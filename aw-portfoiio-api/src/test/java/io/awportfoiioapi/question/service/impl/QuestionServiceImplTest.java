@@ -190,8 +190,10 @@ class QuestionServiceImplTest extends RepositoryAndServiceTestSupport {
         
         // 알림 수정 요청
         List<QuestionPutRequest.Notifications> notifications = new ArrayList<>();
-        notifications.add(new QuestionPutRequest.Notifications(1L, "안내사항 수정"));
-        notifications.add(new QuestionPutRequest.Notifications(null, "새 안내사항"));
+        notifications.add(new QuestionPutRequest.Notifications(7L, "안내사항 수정23232323"));
+        notifications.add(new QuestionPutRequest.Notifications(9L, "안내사항 저장"));
+        notifications.add(new QuestionPutRequest.Notifications(10L, "안내사항 저장22"));
+        notifications.add(new QuestionPutRequest.Notifications(null, "안내사항 gg"));
         request.setNotifications(notifications);
         
         // when
@@ -204,7 +206,6 @@ class QuestionServiceImplTest extends RepositoryAndServiceTestSupport {
     @DisplayName("질문 조회")
     @Test
     void test7(){
-        
         List<QuestionGetResponse> question = questionService.getQuestion(7L);
         System.out.println("question = " + question);
     }

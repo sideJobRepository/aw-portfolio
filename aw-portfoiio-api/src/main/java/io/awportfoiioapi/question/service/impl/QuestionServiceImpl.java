@@ -191,7 +191,7 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
     
-        // 6. Notification 처리
+        // 6.Notification 처리
         List<Notification> existingNotifications = notificationRepository.findByOptionsId(options.getId());
     
         Map<Long, Notification> notificationMap = existingNotifications.stream()
