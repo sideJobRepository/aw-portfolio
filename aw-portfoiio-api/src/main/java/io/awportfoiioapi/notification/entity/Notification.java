@@ -30,4 +30,9 @@ public class Notification extends DateSuperClass {
     // 안내사항 설명
     @Column(name = "NOTIFICATION_DESCRIPTION")
     private String description;
+    
+    public void changeDescription(String value) {
+        this.description = value;
+    }
+    
 }

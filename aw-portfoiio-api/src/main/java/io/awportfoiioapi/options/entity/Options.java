@@ -28,9 +28,6 @@ public class Options extends DateSuperClass {
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question;
     
-    // 옵션 단계
-    @Column(name = "OPTIONS_STEP")
-    private Integer step;
     
     // 옵션 순서
     @Column(name = "OPTIONS_ORDERS")
@@ -64,5 +61,36 @@ public class Options extends DateSuperClass {
     // 옵션 최소 길이 여부 활성
     @Column(name = "OPTIONS_MIN_LENGTH_IS_ACTIVE")
     private Boolean minLengthIsActive;
+    // 옵션 여부 활성
+    @Column(name = "OPTIONS_IS_ACTIVE")
+    private Boolean optionsIsActive;
+    
+    public void updateBasic(
+            Integer orders,
+            String title,
+            String description,
+            OptionsType type,
+            Integer minLength,
+            Integer maxLength,
+            Boolean minLengthIsActive,
+            Boolean isRequired
+    ) {
+        this.orders = orders;
+        this.title = title;
+        this.description = description;
+        this.type = type;
+        this.minLength = minLength;
+        this.maxLength = maxLength;
+        this.minLengthIsActive = minLengthIsActive;
+        this.optionsIsActive = isRequired;
+    }
+    
+    public void changeThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+    
+    public void changeQuestion(Question question) {
+        this.question = question;
+    }
     
 }

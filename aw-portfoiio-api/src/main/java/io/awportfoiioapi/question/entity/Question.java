@@ -29,5 +29,6 @@ public class Question extends DateSuperClass {
     private Portfolio portfolio;
     
     // 질문 단계
+    @Column(name = "QUESTION_STEP")
     private Integer step;
 }

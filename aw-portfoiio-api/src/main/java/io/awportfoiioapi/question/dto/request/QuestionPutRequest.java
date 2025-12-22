@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class QuestionPutRequest {
+    private Long optionsId;
     private Integer step;
     private Integer order;
     private String title;
@@ -42,7 +43,7 @@ public class QuestionPutRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class ThumbnailRequest{
+    public static class ThumbnailRequest {
         private MultipartFile file;
         private Boolean remove;
     }
