@@ -12,7 +12,10 @@ public enum OptionsType {
     TEXT("단답형"),
     TEXTAREA("장문형"),
     FILE("파일 업로드"),
-    CHECKBOX("체크박스(조건부 입력)");
+    CHECKBOX("체크박스(조건부 입력)"),
+    PARLOR("객실"),
+    SPECIAL("스페셜"),
+    REFUND("환불");
     
     private final String value;
     public static OptionsType fromValue(String value) {
