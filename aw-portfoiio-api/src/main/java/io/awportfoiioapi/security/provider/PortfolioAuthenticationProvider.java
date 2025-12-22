@@ -31,9 +31,11 @@ public class PortfolioAuthenticationProvider implements AuthenticationProvider {
         String loginId = (String) loginAuthentication.getPrincipal();
         String password = (String) loginAuthentication.getCredentials();
         String url = loginAuthentication.getUrl();
+        String ip = loginAuthentication.getIp();
+        
         
         if ("/api/admin-login".equals(url)) {
-            MemberContext adminContext = (MemberContext) memberDetailService.loadUserByAdmin(loginId,password);
+            MemberContext adminContext = (MemberContext) memberDetailService.loadUserByAdmin(loginId,password,ip);
             return new PortfolioAuthenticationToken(
                     adminContext.getMember(),
                     null,
@@ -41,7 +43,7 @@ public class PortfolioAuthenticationProvider implements AuthenticationProvider {
             );
             
         }
-        MemberContext memberContext = (MemberContext) memberDetailService.loadUserByUsername(loginId,password);
+        MemberContext memberContext = (MemberContext) memberDetailService.loadUserByUsername(loginId,password,ip);
           return new PortfolioAuthenticationToken(
                   memberContext.getMember(),
                   null,

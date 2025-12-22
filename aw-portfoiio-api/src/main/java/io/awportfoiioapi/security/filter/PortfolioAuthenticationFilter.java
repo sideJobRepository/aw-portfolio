@@ -35,6 +35,8 @@ public class PortfolioAuthenticationFilter extends AbstractAuthenticationProcess
         
         String url = request.getRequestURI();
         
+        String clientIp = getClientIp(request);
+        
       
         ObjectMapper objectMapper = new ObjectMapper();
         PortfolioAuthenticationRequest loginRequest = objectMapper.readValue(request.getReader(), PortfolioAuthenticationRequest.class);
@@ -58,9 +60,30 @@ public class PortfolioAuthenticationFilter extends AbstractAuthenticationProcess
         PortfolioAuthenticationToken authRequest = new PortfolioAuthenticationToken(
                 loginRequest.getLoginId(),
                 loginRequest.getPassword(),
-                url
+                url,
+                clientIp
         );
         
         return this.getAuthenticationManager().authenticate(authRequest);
+    }
+    
+    public static String getClientIp(HttpServletRequest request) {
+    
+        String[] headerNames = {
+            "X-Forwarded-For",
+            "X-Real-IP",
+            "Proxy-Client-IP",
+            "WL-Proxy-Client-IP"
+        };
+    
+        for (String header : headerNames) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                // X-Forwarded-For는 "client, proxy1, proxy2" 형태
+                return ip.split(",")[0].trim();
+            }
+        }
+    
+        return request.getRemoteAddr();
     }
 }

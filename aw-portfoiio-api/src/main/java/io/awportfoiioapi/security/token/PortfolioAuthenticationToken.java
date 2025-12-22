@@ -16,11 +16,14 @@ public class PortfolioAuthenticationToken extends AbstractAuthenticationToken {
     
     private String url;
     
-    public PortfolioAuthenticationToken(String principal,String credentials,String url) {
+    private String ip;
+    
+    public PortfolioAuthenticationToken(String principal,String credentials,String url,String ip) {
         super(null);
         this.principal = principal;
         this.credentials = credentials;
         this.url = url;
+        this.ip = ip;
         setAuthenticated(false);
     }
     

@@ -25,4 +25,10 @@ public class Member extends DateSuperClass {
     @Column(name = "MEMBER_PASSWORD")
     private String password;
     
+    @Column(name = "MEMBER_IP")
+    private String ip;
+    
+    public void modifyIp(String ip) {
+        this.ip = ip;
+    }
 }
