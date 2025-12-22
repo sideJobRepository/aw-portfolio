@@ -668,6 +668,37 @@ export default function SuperAdminPage() {
     }
   }, [selectedPortfolio]);
 
+  //질문 유형 체크박스 초기 생성
+  useEffect(() => {
+    if (!questionForm.questionType) return;
+
+    // 이미 options가 있으면 return
+    if (questionForm.options) return;
+
+    if (questionForm.questionType === "agreement") {
+      setQuestionForm((prev) => ({
+        ...prev,
+        options: JSON.stringify({
+          agreementItems: [
+            "안내사항 1을 입력하세요.",
+            "안내사항 2를 입력하세요.",
+            "안내사항 3을 입력하세요.",
+          ],
+        }),
+      }));
+    }
+
+    if (questionForm.questionType === "checkbox") {
+      setQuestionForm((prev) => ({
+        ...prev,
+        options: JSON.stringify({
+          multiple: false,
+          checkboxes: [{ label: "선택지 1", hasInput: false }],
+        }),
+      }));
+    }
+  }, [questionForm.questionType]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
