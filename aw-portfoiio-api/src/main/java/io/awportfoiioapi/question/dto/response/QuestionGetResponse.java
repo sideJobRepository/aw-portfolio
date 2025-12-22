@@ -16,7 +16,7 @@ public class QuestionGetResponse {
     private Integer order;
     private String title;
     private String description;
-    private String type;
+    private String questionType;
     private String thumbnail;
     private Integer maxLength;
     private Integer minLength;
@@ -39,7 +39,7 @@ public class QuestionGetResponse {
         this.order = order;
         this.title = title;
         this.description = description;
-        this.type = type;
+        this.questionType = type;
         this.thumbnail = thumbnail;
         this.maxLength = maxLength;
         this.minLength = minLength;
