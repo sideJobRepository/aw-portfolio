@@ -1,9 +1,8 @@
 package io.awportfoiioapi.question.respotiroy.impl;
 
 import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import io.awportfoiioapi.options.entity.QOptions;
+import io.awportfoiioapi.question.dto.response.QQuestionGetResponse;
 import io.awportfoiioapi.question.dto.response.QuestionGetResponse;
 import io.awportfoiioapi.question.entity.Question;
 import io.awportfoiioapi.question.respotiroy.query.QuestionQueryRepository;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.awportfoiioapi.options.entity.QOptions.*;
+import static io.awportfoiioapi.options.entity.QOptions.options;
 import static io.awportfoiioapi.question.entity.QQuestion.question;
 
 @RequiredArgsConstructor
@@ -21,14 +20,6 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
     
     private final JPAQueryFactory queryFactory;
     
-    @Override
-    public Boolean existsStep(Long portfolioId, Integer step) {
-        return queryFactory
-                .selectOne()
-                .from(question)
-                .where(question.portfolio.id.eq(portfolioId), question.step.eq(step))
-                .fetchFirst() != null;
-    }
     
     @Override
     public Boolean existsOrders(Long portfolioId, Integer step, Integer order) {
@@ -62,8 +53,7 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
                         .where(question.portfolio.id.eq(portfolioId))
                         .transform(
                                 GroupBy.groupBy(options.id).as(
-                                        Projections.constructor(
-                                                QuestionGetResponse.class,
+                                        new QQuestionGetResponse(
                                                 options.id,
                                                 question.id,
                                                 question.step,
