@@ -58,6 +58,7 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 .from(portfolio)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(portfolio.orders.asc())
                 .fetch();
         
         JPAQuery<Long> countQuery = queryFactory
