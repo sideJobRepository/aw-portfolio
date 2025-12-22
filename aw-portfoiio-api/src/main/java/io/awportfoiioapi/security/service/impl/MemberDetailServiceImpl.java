@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
@@ -70,7 +69,7 @@ public class MemberDetailServiceImpl implements UserDetailsService {
                     Member saveMember = memberRepository.save(agitMember);
                     
                     Role findbyBgmAgitRole =
-                            memberDetailRepository.findByBgmAgitRoleName("USER");
+                            memberDetailRepository.findByRoleName("USER");
                     
                     MemberRole memberRole = MemberRole.builder()
                             .member(saveMember)

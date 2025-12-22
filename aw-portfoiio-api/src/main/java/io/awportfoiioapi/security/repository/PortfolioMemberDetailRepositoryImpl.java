@@ -18,7 +18,7 @@ public class PortfolioMemberDetailRepositoryImpl {
     
     private final JPAQueryFactory queryFactory;
     
-    public Role findByBgmAgitRoleName(String roleName) {
+    public Role findByRoleName(String roleName) {
         return queryFactory
                 .selectFrom(role)
                 .where(role.roleName.eq(roleName))
