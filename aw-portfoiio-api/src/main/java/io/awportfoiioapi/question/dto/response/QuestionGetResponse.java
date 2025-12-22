@@ -20,8 +20,8 @@ public class QuestionGetResponse {
     private String thumbnail;
     private Integer maxLength;
     private Integer minLength;
-    private Boolean minLengthIsActive;
-    private Boolean optionsIsActive;
+    private Boolean requireMinLength;
+    private Boolean isRequired;
     private List<Notifications> notifications;
     
     public List<Notifications> getNotifications() {
@@ -43,8 +43,8 @@ public class QuestionGetResponse {
         this.thumbnail = thumbnail;
         this.maxLength = maxLength;
         this.minLength = minLength;
-        this.minLengthIsActive = minLengthIsActive;
-        this.optionsIsActive = optionsIsActive;
+        this.requireMinLength = minLengthIsActive;
+        this.isRequired = optionsIsActive;
     }
     
      @Data
