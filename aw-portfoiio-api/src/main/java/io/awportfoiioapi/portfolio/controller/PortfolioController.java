@@ -33,7 +33,7 @@ public class PortfolioController {
     public List<PortfolioResponse> getPortfolios(@RequestParam(required = false) Boolean active,
                                                  @RequestParam(required = false) Long categoryId
                                                  ) {
-        return null;
+        return portfolioService.getPortfolioList(active,categoryId);
     }
     
     @GetMapping("/portfolio/{id}")
