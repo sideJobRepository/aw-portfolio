@@ -283,12 +283,10 @@ class QuestionServiceImplTest extends RepositoryAndServiceTestSupport {
         System.out.println("question = " + question);
     }
     
-    @DisplayName("")
+    @DisplayName("질문 삭제")
     @Test
     void test10() {
-        
         ApiResponse apiResponse = questionService.deleteQuestion(5L);
-        
-        
+        System.out.println("apiResponse = " + apiResponse);
     }
 }
