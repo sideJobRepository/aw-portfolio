@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "@/store/user";
 import { useRequest } from "@/hooks/useRequest";
-import { CategoriesService } from "@/services/categories.service";
 import Pagination from "@/components/Pagination";
 import { tokenStore } from "@/services/tokenStore";
 import axios from "axios";
 import api from "@/lib/axiosInstance";
+import { CategoriesService } from "@/services/categories.service";
+import { PortfolioService } from "@/services/portfolios.service";
+import { Portfolio, PortfolioContent, PortfolioForm } from "@/tpyes/portfolio";
+import { Category, CategoryContent, CategorySelect } from "@/tpyes/category";
 
 interface User {
   id: string;
@@ -17,27 +20,6 @@ interface User {
   name: string;
   role: string;
   createdAt: string;
-}
-
-interface Portfolio {
-  id: string;
-  title: string;
-  description: string;
-  slug: string;
-  thumbnail?: string;
-  domain?: string; // 미리보기용 도메인 URL
-  isActive: boolean;
-  order: number;
-  categoryId?: string;
-  category?: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  _count?: {
-    questions: number;
-    submissions: number;
-  };
 }
 
 interface Question {
@@ -64,31 +46,6 @@ type TabType =
   | "categories"
   | "members";
 
-// 카테고리 세부
-export interface CategoryContent {
-  id: string;
-  name: string;
-  slug: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  count?: {
-    portfolios: number;
-  };
-}
-
-//카테고리 전체
-interface Category {
-  content: CategoryContent[];
-  totalPages: number;
-  totalElements: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
-}
-
 interface Submission {
   id: string;
   portfolioId: string;
@@ -114,13 +71,19 @@ export default function SuperAdminPage() {
   //hooks
   const { request } = useRequest();
 
+  //페이지
+  const [page, setPage] = useState(0);
+
   //카테고리 목록
   const [categories, setCategories] = useState<Category>();
-  const [page, setPage] = useState(0);
+
+  //포토폴리오 목록
+  const [portfolios, setPortfolios] = useState<Portfolio>();
+  //포토폴리오 카테고리 목록
+  const [selectCategory, setSelectCategory] = useState<CategorySelect[]>();
 
   const [users, setUsers] = useState<User[]>([]);
 
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
@@ -139,10 +102,9 @@ export default function SuperAdminPage() {
 
   // Portfolio form
   const [showPortfolioForm, setShowPortfolioForm] = useState(false);
-  const [editingPortfolio, setEditingPortfolio] = useState<Portfolio | null>(
-    null,
-  );
-  const [portfolioForm, setPortfolioForm] = useState({
+  const [editingPortfolio, setEditingPortfolio] =
+    useState<PortfolioContent | null>(null);
+  const [portfolioForm, setPortfolioForm] = useState<PortfolioForm>({
     title: "",
     description: "",
     slug: "",
@@ -151,6 +113,7 @@ export default function SuperAdminPage() {
     order: 0,
     categoryId: "",
     domain: "",
+    thumbnailFile: null,
   });
 
   // Question form
@@ -198,18 +161,23 @@ export default function SuperAdminPage() {
   };
 
   const fetchPortfolios = async () => {
-    try {
-      const response = await fetch("/api/portfolios");
-      const data = await response.json();
-      if (response.ok) {
-        setPortfolios(data.portfolios);
-        if (data.portfolios.length > 0 && !selectedPortfolio) {
-          setSelectedPortfolio(data.portfolios[0].id);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch portfolios:", error);
-    }
+    await request(
+      () => PortfolioService.get({ page: page, size: 5 }),
+      (res) => {
+        console.log("포토폴리오 목록 조회", res);
+        setPortfolios(res.data);
+        //카테고리 select 목록
+        request(
+          () => PortfolioService.getCategorySelect(),
+          (res) => {
+            console.log("카테고리 셀렉트 목록 조회", res);
+            setSelectCategory(res.data);
+          },
+          { ignoreErrorRedirect: true },
+        );
+      },
+      { ignoreErrorRedirect: true },
+    );
   };
 
   const fetchQuestionsByPortfolio = async (portfolioId: string) => {
@@ -385,50 +353,71 @@ export default function SuperAdminPage() {
 
   const handleCreateOrUpdatePortfolio = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
     try {
-      const url = "/api/portfolios";
-      const method = editingPortfolio ? "PUT" : "POST";
-      const body = editingPortfolio
-        ? { ...portfolioForm, id: editingPortfolio.id }
-        : portfolioForm;
+      const method = editingPortfolio
+        ? PortfolioService.put
+        : PortfolioService.post;
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
+      const formData = new FormData();
 
-      if (response.ok) {
-        alert(
-          editingPortfolio
-            ? "포트폴리오가 수정되었습니다."
-            : "포트폴리오가 생성되었습니다.",
-        );
-        setShowPortfolioForm(false);
-        setEditingPortfolio(null);
-        setPortfolioForm({
-          title: "",
-          description: "",
-          slug: "",
-          thumbnail: "",
-          isActive: true,
-          order: 0,
-          categoryId: "",
-          domain: "",
-        });
-        await fetchPortfolios();
-      } else {
-        const data = await response.json();
-        alert(data.error || "포트폴리오 저장에 실패했습니다.");
+      formData.append("title", portfolioForm.title);
+      formData.append("description", portfolioForm.description);
+      formData.append("slug", portfolioForm.slug);
+      formData.append("domain", portfolioForm.domain);
+      formData.append("order", String(portfolioForm.order));
+      formData.append("isActive", String(portfolioForm.isActive));
+      if (portfolioForm.categoryId) {
+        formData.append("categoryId", portfolioForm.categoryId);
       }
+      if (editingPortfolio) {
+        formData.append("id", editingPortfolio.id);
+
+        //썸네일 조건
+        if (portfolioForm.thumbnailFile) {
+          // 썸네일 새파일이 있으면 교체
+          formData.append("thumbnail.remove", "true");
+          formData.append("thumbnail.file", portfolioForm.thumbnailFile);
+        } else if (!portfolioForm.thumbnail) {
+          // 썸네일 URL 없다면 삭제
+          formData.append("thumbnail.remove", "true");
+        } else {
+          // 유지
+          formData.append("thumbnail.remove", "false");
+        }
+      } else {
+        //신규 추가
+        if (portfolioForm.thumbnailFile) {
+          formData.append("thumbnail", portfolioForm.thumbnailFile);
+        }
+      }
+
+      await request(
+        () => method(formData),
+        (res) => {
+          alert(
+            editingPortfolio
+              ? "포트폴리오가 수정되었습니다."
+              : "포트폴리오가 생성되었습니다.",
+          );
+          setShowPortfolioForm(false);
+          setEditingPortfolio(null);
+          setPortfolioForm({
+            title: "",
+            description: "",
+            slug: "",
+            thumbnail: "",
+            isActive: true,
+            order: 0,
+            categoryId: "",
+            domain: "",
+            thumbnailFile: null,
+          });
+          fetchPortfolios();
+        },
+        { ignoreErrorRedirect: true },
+      );
     } catch (error) {
       console.error("Save portfolio error:", error);
-      alert("포트폴리오 저장 중 오류가 발생했습니다.");
     }
   };
 
@@ -440,30 +429,21 @@ export default function SuperAdminPage() {
     )
       return;
 
-    const token = localStorage.getItem("token");
-
     try {
-      const response = await fetch(`/api/portfolios?id=${portfolioId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await request(
+        () => PortfolioService.delete(portfolioId),
+        (res) => {
+          alert("포트폴리오가 삭제되었습니다.");
+          fetchPortfolios();
         },
-      });
-
-      if (response.ok) {
-        alert("포트폴리오가 삭제되었습니다.");
-        await fetchPortfolios();
-      } else {
-        const data = await response.json();
-        alert(data.error || "포트폴리오 삭제에 실패했습니다.");
-      }
+        { ignoreErrorRedirect: true },
+      );
     } catch (error) {
       console.error("Delete portfolio error:", error);
-      alert("포트폴리오 삭제 중 오류가 발생했습니다.");
     }
   };
 
-  const handleEditPortfolio = (portfolio: Portfolio) => {
+  const handleEditPortfolio = (portfolio: PortfolioContent) => {
     setEditingPortfolio(portfolio);
     setPortfolioForm({
       title: portfolio.title,
@@ -474,6 +454,7 @@ export default function SuperAdminPage() {
       order: portfolio.order,
       categoryId: portfolio.categoryId || "",
       domain: portfolio.domain || "",
+      thumbnailFile: null,
     });
     setShowPortfolioForm(true);
   };
@@ -608,8 +589,8 @@ export default function SuperAdminPage() {
         return;
       }
 
-      console.log("currentUser", currentUser);
-      await fetchPortfolios;
+      console.log("접속 유저", currentUser);
+      await fetchPortfolios();
       setLoading(false);
     }
   };
@@ -703,7 +684,6 @@ export default function SuperAdminPage() {
             <button
               onClick={() => {
                 setActiveTab("portfolios");
-                fetchCategories();
               }}
               className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === "portfolios" ? "border-black text-black" : "border-transparent text-gray-500 hover:text-black"}`}
             >
@@ -765,9 +745,10 @@ export default function SuperAdminPage() {
                     slug: "",
                     thumbnail: "",
                     isActive: true,
-                    order: portfolios.length,
+                    order: portfolios?.content?.length ?? 0,
                     categoryId: "",
                     domain: "",
+                    thumbnailFile: null,
                   });
                   setShowPortfolioForm(true);
                 }}
@@ -778,7 +759,7 @@ export default function SuperAdminPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {portfolios.map((portfolio) => (
+              {portfolios?.content?.map((portfolio) => (
                 <div
                   key={portfolio.id}
                   className="bg-white border-2 border-black rounded-lg overflow-hidden"
@@ -845,6 +826,13 @@ export default function SuperAdminPage() {
                 </div>
               ))}
             </div>
+            <div className="my-6">
+              <Pagination
+                current={page}
+                totalPages={portfolios?.totalPages ?? 0}
+                onChange={handlePageClick}
+              />
+            </div>
           </div>
         )}
 
@@ -859,7 +847,7 @@ export default function SuperAdminPage() {
                   onChange={(e) => setSelectedPortfolio(e.target.value)}
                   className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                 >
-                  {portfolios.map((portfolio) => (
+                  {portfolios?.content?.map((portfolio) => (
                     <option key={portfolio.id} value={portfolio.id}>
                       {portfolio.title}
                     </option>
@@ -1104,7 +1092,7 @@ export default function SuperAdminPage() {
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                 >
                   <option value="">카테고리 선택 (선택사항)</option>
-                  {categories?.content.map((category) => (
+                  {selectCategory?.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -1157,49 +1145,10 @@ export default function SuperAdminPage() {
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      // 로딩 표시
-                      const originalText =
-                        e.target.nextElementSibling?.textContent;
-                      if (e.target.nextElementSibling) {
-                        e.target.nextElementSibling.textContent =
-                          "업로드 중...";
-                      }
-
-                      const formData = new FormData();
-                      formData.append("file", file);
-                      const token = localStorage.getItem("token");
-                      try {
-                        const response = await fetch("/api/upload", {
-                          method: "POST",
-                          headers: {
-                            Authorization: `Bearer ${token}`,
-                          },
-                          body: formData,
-                        });
-
-                        const data = await response.json();
-                        console.log("Upload response:", data);
-
-                        if (response.ok && data.url) {
-                          setPortfolioForm({
-                            ...portfolioForm,
-                            thumbnail: data.url,
-                          });
-                          alert(
-                            "✅ 이미지 업로드 성공!\n저장 버튼을 눌러주세요.",
-                          );
-                        } else {
-                          console.error("Upload failed:", data);
-                          alert(
-                            `❌ 이미지 업로드 실패: ${data.error || data.details || "알 수 없는 오류"}\n\n${data.details ? `상세: ${data.details}` : ""}`,
-                          );
-                        }
-                      } catch (error) {
-                        console.error("Upload error:", error);
-                        alert(
-                          "❌ 이미지 업로드 중 오류가 발생했습니다.\n콘솔을 확인하세요.",
-                        );
-                      }
+                      setPortfolioForm((prev) => ({
+                        ...prev,
+                        thumbnailFile: file,
+                      }));
                     }
                   }}
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-black file:text-white file:cursor-pointer hover:file:bg-gray-800"
