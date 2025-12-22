@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CommonFileType {
     PORTFOLIO("포트폴리오"),
-    QUESTION("질문"),
     OPTIONS("옵션");
     
     private final String value;

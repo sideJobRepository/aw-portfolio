@@ -166,7 +166,7 @@ class QuestionServiceImplTest extends RepositoryAndServiceTestSupport {
     @Test
     void test6() throws IOException {
         
-
+        
         QuestionPutRequest request = new QuestionPutRequest();
         request.setOptionsId(7L);
         request.setStep(1);
@@ -198,21 +198,97 @@ class QuestionServiceImplTest extends RepositoryAndServiceTestSupport {
         System.out.println(response);
     }
     
+    @DisplayName("질문수정(파일업로드)")
+    @Test
+    void test7() throws IOException {
+        File file1 = new File("src/test/java/io/awportfoiioapi/image/이건 모자가 아니잖아.jpg");
+        FileInputStream fis1 = new FileInputStream(file1);
+        
+        MockMultipartFile multipartFile1 = new MockMultipartFile(
+                "portfolio", file1.getName(), "image/jpeg", fis1
+        );
+        QuestionPutRequest request = new QuestionPutRequest();
+        request.setOptionsId(5L);
+        request.setStep(1);
+        request.setOrder(3);
+        request.setTitle("수정된 질문 제목");
+        request.setDescription("수정된 질문 설명");
+        request.setType("LONG_ANSWER");
+        request.setMinLength(20);
+        request.setMaxLength(300);
+        request.setRequireMinLength(Boolean.TRUE);
+        request.setIsRequired(Boolean.FALSE);
+        // 썸네일 요청 (삭제만 테스트하고 싶으면 이거)
+        QuestionPutRequest.ThumbnailRequest thumbnailRequest = new QuestionPutRequest.ThumbnailRequest(multipartFile1, true);
+        request.setThumbnail(thumbnailRequest);
+        
+        // 알림 수정 요청
+        List<QuestionPutRequest.Notifications> notifications = new ArrayList<>();
+        notifications.add(new QuestionPutRequest.Notifications(7L, "안내사항 수정23232323"));
+        notifications.add(new QuestionPutRequest.Notifications(9L, "안내사항 저장"));
+        notifications.add(new QuestionPutRequest.Notifications(10L, "안내사항 저장22"));
+        notifications.add(new QuestionPutRequest.Notifications(null, "안내사항 gg"));
+        request.setNotifications(notifications);
+        
+        // when
+        ApiResponse response = questionService.modifyQuestion(request);
+        
+        // then
+        System.out.println(response);
+        
+    }
+    
+    @DisplayName("질문수정(파일대체)")
+    @Test
+    void test8() throws IOException {
+        File file1 = new File("src/test/java/io/awportfoiioapi/image/참새작.png");
+        FileInputStream fis1 = new FileInputStream(file1);
+        
+        MockMultipartFile multipartFile1 = new MockMultipartFile(
+                "portfolio", file1.getName(), "png", fis1
+        );
+        QuestionPutRequest request = new QuestionPutRequest();
+        request.setOptionsId(5L);
+        request.setStep(1);
+        request.setOrder(3);
+        request.setTitle("수정된 질문 제목");
+        request.setDescription("수정된 질문 설명");
+        request.setType("LONG_ANSWER");
+        request.setMinLength(20);
+        request.setMaxLength(300);
+        request.setRequireMinLength(Boolean.TRUE);
+        request.setIsRequired(Boolean.FALSE);
+        // 썸네일 요청 (삭제만 테스트하고 싶으면 이거)
+        QuestionPutRequest.ThumbnailRequest thumbnailRequest = new QuestionPutRequest.ThumbnailRequest(multipartFile1, true);
+        request.setThumbnail(thumbnailRequest);
+        
+        // 알림 수정 요청
+        List<QuestionPutRequest.Notifications> notifications = new ArrayList<>();
+        notifications.add(new QuestionPutRequest.Notifications(7L, "안내사항 수정23232323"));
+        notifications.add(new QuestionPutRequest.Notifications(9L, "안내사항 저장"));
+        request.setNotifications(notifications);
+        
+        // when
+        ApiResponse response = questionService.modifyQuestion(request);
+        
+        // then
+        System.out.println(response);
+        
+    }
+    
     @DisplayName("질문 조회")
     @Test
-    void test7(){
+    void test9() {
         List<QuestionGetResponse> question = questionService.getQuestion(7L);
         System.out.println("question = " + question);
     }
     
     @DisplayName("")
     @Test
-    void test8(){
-        //given
+    void test10() {
         
-        //when
+        ApiResponse apiResponse = questionService.deleteQuestion(5L);
         
-        //then
-    
+        
     }
 }

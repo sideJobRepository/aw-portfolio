@@ -38,14 +38,12 @@ public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
     @Override
     public Long deleteByTargetIdAndType(Long id, CommonFileType commonFileType) {
         em.flush();
-        long execute = queryFactory
+        return queryFactory
                 .delete(commonFile)
                 .where(
                         commonFile.fileTargetId.eq(id),
                         commonFile.fileType.eq(commonFileType)
                 )
                 .execute();
-        em.clear();
-        return execute;
     }
 }

@@ -30,12 +30,12 @@ public class QuestionController {
     }
     
     @PostMapping("/question")
-    public ApiResponse createCategory(@Validated @RequestBody QuestionPostRequest request) {
+    public ApiResponse createCategory(@Validated @ModelAttribute QuestionPostRequest request) {
         return questionService.createQuestion(request);
     }
     
     @PutMapping("/question")
-    public ApiResponse modifyCategory(@Validated @RequestBody QuestionPutRequest request) {
+    public ApiResponse modifyCategory(@Validated @ModelAttribute QuestionPutRequest request) {
         return questionService.modifyQuestion(request);
     }
     

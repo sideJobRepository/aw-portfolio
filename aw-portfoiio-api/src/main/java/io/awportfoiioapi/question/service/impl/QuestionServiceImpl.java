@@ -217,11 +217,11 @@ public class QuestionServiceImpl implements QuestionService {
         
                 // 2. 기존 CommonFile 삭제 (항상)
                 commonFileRepository.deleteByTargetIdAndType(
-                        options.getId(), CommonFileType.QUESTION
+                        options.getId(), CommonFileType.OPTIONS
                 );
         
                 // 3. 새 파일 업로드
-                UploadResult upload = s3FileUtils.storeFile(newFile, "question");
+                UploadResult upload = s3FileUtils.storeFile(newFile, "options");
         
                 // 4. 옵션 업데이트
                 options.changeThumbnail(upload.url());
@@ -230,7 +230,9 @@ public class QuestionServiceImpl implements QuestionService {
                 commonFileRepository.save(
                         CommonFile.builder()
                                 .fileTargetId(options.getId())
-                                .fileType(CommonFileType.QUESTION)
+                                .fileUuidName(upload.uuid())
+                                .fileName(upload.originalFilename())
+                                .fileType(CommonFileType.OPTIONS)
                                 .fileUrl(upload.url())
                                 .build()
                 );
