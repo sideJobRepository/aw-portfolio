@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubmissionPostRequest {
     
-    private Long portfolioId;
+    private Long submissionId;
     
-    private String companyName;
+    private Long memberId;
+    
+    private Long portfolioId;
     
     private String password;
     

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class SubmissionServiceImpl implements SubmissionService {
-
+    
     private final SubmissionRepository submissionRepository;
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
@@ -35,7 +36,36 @@ public class SubmissionServiceImpl implements SubmissionService {
     
     @Override
     public ApiResponse createSubmission(SubmissionPostRequest request) {
-        return null;
+        Long memberId = request.getMemberId();
+        Long submissionId = request.getSubmissionId();
+        Long portfolioId = request.getPortfolioId();
+        Portfolio portfolio = portfolioRepository.findById(portfolioId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 포트폴리오입니다."));
+        
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
+        Submission submission = Optional.ofNullable(submissionId)
+                .flatMap(submissionRepository::findById)
+                .orElse(null);
+        
+        if (submission == null) {
+            Submission newSubmission = Submission.builder()
+                    .portfolio(portfolio)
+                    .member(member)
+                    .submissionJson(request.getResponse())
+                    .companyName(member.getLoginId())
+                    .password(member.getPassword())
+                    .completedDate(LocalDateTime.now())
+                    .isDraft(false)
+                    .build();
+            
+            Submission saved = submissionRepository.save(newSubmission);
+            
+            return new ApiResponse(200, true, "저장 되었습니다.", saved.getId());
+        }
+       
+        submission.modifySubmission(request);
+        return new ApiResponse(200, true, "저장 되었습니다.",submission.getId());
     }
     
     @Override
@@ -67,9 +97,9 @@ public class SubmissionServiceImpl implements SubmissionService {
                     .password(member.getPassword())
                     .isDraft(true)
                     .build();
-        
+            
             Submission saved = submissionRepository.save(newSubmission);
-        
+            
             return new ApiResponse(200, true, "임시저장 되었습니다.", saved.getId());
         }
         

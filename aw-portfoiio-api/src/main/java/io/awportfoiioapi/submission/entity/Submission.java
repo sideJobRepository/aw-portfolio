@@ -4,6 +4,7 @@ import io.awportfoiioapi.mapperd.DateSuperClass;
 import io.awportfoiioapi.member.entrity.Member;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.submission.dto.request.SubmissionPostDraftRequest;
+import io.awportfoiioapi.submission.dto.request.SubmissionPostRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,5 +58,11 @@ public class Submission extends DateSuperClass {
     
     public void modifyJson(SubmissionPostDraftRequest request) {
         this.submissionJson = request.getResponse();
+    }
+    
+    public void modifySubmission(SubmissionPostRequest request) {
+        this.submissionJson = request.getResponse();
+        this.completedDate = LocalDateTime.now();
+        this.isDraft = false;
     }
 }
