@@ -523,7 +523,7 @@ export default function Home() {
           ))}
 
         {/* Admin Login Link at Bottom */}
-        {currentUser?.role === "USER" && (
+        {!loginGb && (
           <div className="text-center mt-16 pt-8 border-t border-gray-200">
             <Link
               href="/admin/login"
