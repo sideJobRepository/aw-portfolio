@@ -10,13 +10,7 @@ import { userState } from "@/store/user";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import axios from "axios";
 import api from "@/lib/axiosInstance";
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-}
+import { PortfolioService } from "@/services/portfolios.service";
 
 interface Category {
   id: string;
@@ -102,25 +96,28 @@ export default function Home() {
 
   // 카테고리/포트폴리오
   const fetchCategories = async () => {
-    try {
-      const response = await fetch("/api/categories");
-      const data = await response.json();
-      if (response.ok) setCategories(data.categories);
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
+    await request(
+      () => PortfolioService.getCategorySelect(),
+      (res) => {
+        console.log("카테고리 셀렉트 목록 조회", res);
+        setCategories(res.data);
+      },
+      { ignoreErrorRedirect: true },
+    );
   };
 
   const fetchPortfolios = useCallback(async () => {
     try {
       setLoading(true);
-      const url = selectedCategory
-        ? `/api/portfolios?active=true&categoryId=${selectedCategory}`
-        : "/api/portfolios?active=true";
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log("data", data);
-      if (response.ok) setPortfolios(data.portfolios);
+
+      await request(
+        () => PortfolioService.getUser(true, selectedCategory ?? null),
+        (res) => {
+          console.log("유저 포토폴리오 조회", res);
+          setPortfolios(res.data);
+        },
+        { ignoreErrorRedirect: true },
+      );
     } catch (error) {
       console.error("Failed to fetch portfolios:", error);
     } finally {
@@ -149,8 +146,6 @@ export default function Home() {
       await request(
         () => AuthService.UserLogin(companyName, password),
         (res) => {
-          console.log("로그인 응답완료", res);
-          debugger;
           tokenStore.set(res.data.token);
           setUser(res.data.user);
           localStorage.setItem("login", "true");
@@ -160,30 +155,6 @@ export default function Home() {
         },
         { ignoreErrorRedirect: true },
       );
-      // const response = await fetch("/api/members", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ companyName: companyName.trim(), password }),
-      // });
-      //
-      // const data = await response.json();
-      //
-      // if (response.ok) {
-      //   localStorage.setItem(
-      //     "portfolio_auth",
-      //     JSON.stringify({
-      //       companyName: companyName.trim(),
-      //       password,
-      //       memberId: data.member.id,
-      //       isNewMember: data.isNewMember,
-      //     }),
-      //   );
-      //   setIsAuthenticated(true);
-      //   if (data.isNewMember)
-      //     alert("환영합니다! 새로운 회원으로 등록되었습니다.");
-      // } else {
-      //   setAuthError(data.error || "인증에 실패했습니다.");
-      // }
     } catch (error) {
       console.error("Auth error:", error);
       setAuthError("인증 처리 중 오류가 발생했습니다.");
