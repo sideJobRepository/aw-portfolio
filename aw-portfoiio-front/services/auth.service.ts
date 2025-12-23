@@ -14,5 +14,15 @@ export const AuthService = {
       },
     ),
 
-  me: () => api.get("/auth/me"),
+  UserLogin: (loginId: string, password: string) =>
+    axios.post(
+      "/api/user-login",
+      { loginId, password },
+      {
+        baseURL,
+        withCredentials: true,
+      },
+    ),
+
+  me: () => api.get("/api/user-login"),
 };
