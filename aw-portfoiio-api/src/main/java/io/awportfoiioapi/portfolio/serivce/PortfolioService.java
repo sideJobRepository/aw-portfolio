@@ -6,6 +6,7 @@ import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
 import io.awportfoiioapi.portfolio.dto.response.PortfolioGetDetailResponse;
 import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
 import io.awportfoiioapi.portfolio.dto.response.PortfoliosGetDetailResponse;
+import io.awportfoiioapi.portfolio.dto.response.PortfoliosOneGetResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,6 +17,7 @@ public interface PortfolioService {
     PortfolioGetDetailResponse getPortfolioDetail(Long id);
     List<PortfolioResponse> getPortfolioList(Boolean active,Long categoryId);
     List<PortfoliosGetDetailResponse>  getPortfolioDetailOptions(Long id);
+    PortfoliosOneGetResponse getPortfolioOneDetail(Long portfolioId);
     ApiResponse createPortfolio(PortfolioPostRequest request);
     ApiResponse modifyPortfolio(PortfolioPutRequest request);
     ApiResponse deletePortfolio(Long id);

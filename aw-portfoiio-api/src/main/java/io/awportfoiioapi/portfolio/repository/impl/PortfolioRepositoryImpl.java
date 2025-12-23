@@ -3,7 +3,9 @@ package io.awportfoiioapi.portfolio.repository.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.awportfoiioapi.category.entity.QCategory;
 import io.awportfoiioapi.portfolio.dto.response.*;
+import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.query.PortfolioQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
+import static io.awportfoiioapi.category.entity.QCategory.*;
 import static io.awportfoiioapi.options.entity.QOptions.*;
 import static io.awportfoiioapi.portfolio.entity.QPortfolio.portfolio;
 import static io.awportfoiioapi.question.entity.QQuestion.question;
@@ -150,6 +153,16 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                         portfolio.isActive
                 ))
                 .from(portfolio)
+                .where(portfolio.id.eq(id))
+                .fetchFirst();
+    }
+    
+    @Override
+    public Portfolio getPortfolio(Long id) {
+        return queryFactory
+                .select(portfolio)
+                .from(portfolio)
+                .join(portfolio.category , category).fetchJoin()
                 .where(portfolio.id.eq(id))
                 .fetchFirst();
     }

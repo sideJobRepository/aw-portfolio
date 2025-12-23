@@ -9,10 +9,7 @@ import io.awportfoiioapi.file.enums.CommonFileType;
 import io.awportfoiioapi.file.repository.CommonFileRepository;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPostRequest;
 import io.awportfoiioapi.portfolio.dto.request.PortfolioPutRequest;
-import io.awportfoiioapi.portfolio.dto.response.PortfolioGetDetailResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfolioQuestionCountResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfoliosGetDetailResponse;
+import io.awportfoiioapi.portfolio.dto.response.*;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.PortfolioRepository;
 import io.awportfoiioapi.portfolio.serivce.PortfolioService;
@@ -90,6 +87,31 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public List<PortfoliosGetDetailResponse> getPortfolioDetailOptions(Long id) {
         return portfolioRepository.getPortfolioDetailOptions(id);
+    }
+    
+    @Override
+    public PortfoliosOneGetResponse getPortfolioOneDetail(Long portfolioId) {
+        Portfolio portfolio = portfolioRepository.getPortfolio(portfolioId);
+        
+        PortfoliosOneGetResponse portfoliosOneGetResponse = new PortfoliosOneGetResponse(portfolio);
+        List<PortfolioQuestionCountResponse> byQuestionCount = portfolioRepository.findByQuestionCount();
+        
+        Map<Long, Long> questionCountMap =
+                byQuestionCount.stream()
+                        .collect(Collectors.toMap(
+                                PortfolioQuestionCountResponse::getPortfolioId,
+                                PortfolioQuestionCountResponse::getCount
+                        ));
+    
+        // 3. 단일 portfolio에 질문 수 세팅
+        Long questionCount =
+                questionCountMap.getOrDefault(portfolioId, 0L);
+    
+        portfoliosOneGetResponse.getCount().setQuestions(questionCount);
+    
+        // 4. submissions 수 (지금은 0)
+        portfoliosOneGetResponse.getCount().setSubmissions(0L);
+        return portfoliosOneGetResponse;
     }
     
     @Override

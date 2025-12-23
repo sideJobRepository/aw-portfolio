@@ -30,6 +30,12 @@ public class PortfolioController {
         return PageResponse.from(portfolioList);
     }
     
+    @GetMapping("/portfolio/{id}")
+    public PortfolioGetDetailResponse getPortfolioDetail(@PathVariable Long id) {
+        return portfolioService.getPortfolioDetail(id);
+    }
+    
+    
     @GetMapping("/portfolios")
     public List<PortfolioResponse> getPortfolios(@RequestParam(required = false) Boolean active,
                                                  @RequestParam(required = false) Long categoryId
@@ -37,14 +43,14 @@ public class PortfolioController {
         return portfolioService.getPortfolioList(active, categoryId);
     }
     
-    @GetMapping("/portfolio/{id}")
-    public PortfolioGetDetailResponse getPortfolioDetail(@PathVariable Long id) {
-        return portfolioService.getPortfolioDetail(id);
-    }
-    
     @GetMapping("/portfolios/{id}")
     public List<PortfoliosGetDetailResponse> getPortfoliosDetail(@PathVariable Long id) {
         return portfolioService.getPortfolioDetailOptions(id);
+    }
+    
+    @GetMapping("/portfolios/{id}/one")
+    public PortfolioResponse getOnePortfolio(@PathVariable Long id) {
+        return null;
     }
     
     @PostMapping("/portfolio")
