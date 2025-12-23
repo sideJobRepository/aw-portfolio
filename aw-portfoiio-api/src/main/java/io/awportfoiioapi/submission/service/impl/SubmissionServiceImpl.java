@@ -1,6 +1,9 @@
 package io.awportfoiioapi.submission.service.impl;
 
 import io.awportfoiioapi.apiresponse.ApiResponse;
+import io.awportfoiioapi.file.entity.CommonFile;
+import io.awportfoiioapi.file.enums.CommonFileType;
+import io.awportfoiioapi.file.repository.CommonFileRepository;
 import io.awportfoiioapi.member.entrity.Member;
 import io.awportfoiioapi.member.repository.MemberRepository;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
@@ -12,9 +15,12 @@ import io.awportfoiioapi.submission.dto.response.SubmissionGetRequest;
 import io.awportfoiioapi.submission.entity.Submission;
 import io.awportfoiioapi.submission.repository.SubmissionRepository;
 import io.awportfoiioapi.submission.service.SubmissionService;
+import io.awportfoiioapi.utils.S3FileUtils;
+import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +34,8 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final PortfolioRepository portfolioRepository;
     private final MemberRepository memberRepository;
+    private final CommonFileRepository commonFileRepository;
+    private final S3FileUtils s3FileUtils;
     
     @Override
     public List<SubmissionGetRequest> getSubmissions() {
@@ -63,9 +71,9 @@ public class SubmissionServiceImpl implements SubmissionService {
             
             return new ApiResponse(200, true, "저장 되었습니다.", saved.getId());
         }
-       
+        
         submission.modifySubmission(request);
-        return new ApiResponse(200, true, "저장 되었습니다.",submission.getId());
+        return new ApiResponse(200, true, "저장 되었습니다.", submission.getId());
     }
     
     @Override
@@ -87,26 +95,59 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .flatMap(submissionRepository::findById)
                 .orElse(null);
         
-        // 4. 신규 생성
+        // 4. 신규 생성 or 기존 수정
         if (submission == null) {
-            Submission newSubmission = Submission.builder()
-                    .portfolio(portfolio)
-                    .member(member)
-                    .submissionJson(request.getResponse())
-                    .companyName(member.getLoginId())
-                    .password(member.getPassword())
-                    .isDraft(true)
-                    .build();
-            
-            Submission saved = submissionRepository.save(newSubmission);
-            
-            return new ApiResponse(200, true, "임시저장 되었습니다.", saved.getId());
+            submission = submissionRepository.save(
+                    Submission.builder()
+                            .portfolio(portfolio)
+                            .member(member)
+                            .submissionJson(request.getResponse())
+                            .companyName(member.getLoginId())
+                            .password(member.getPassword())
+                            .isDraft(true)
+                            .build()
+            );
+        } else {
+            submission.modifyJson(request);
         }
         
-        // 5. 기존 수정
-        submission.modifyJson(request);
+        // 5.옵션별 파일 처리 (신규/기존 공통)
+        for (SubmissionPostDraftRequest.OptionFileRequest optionFile
+                : request.getOptionFiles()) {
+            
+            Long optionsId = optionFile.getOptionsId();
+            List<MultipartFile> files = optionFile.getFiles();
+            
+            if (files.isEmpty()) continue;
+            
+            // 5-1. 기존 옵션 파일 삭제 (덮어쓰기)
+            commonFileRepository.deleteByTargetIdAndType(
+                    optionsId,
+                    CommonFileType.SUBMISSION_OPTION
+            );
+            
+            // 5-2. 새 파일 업로드 & 저장
+            for (MultipartFile file : files) {
+                
+                UploadResult upload = s3FileUtils.storeFile(file, "submission");
+                
+                CommonFile commonFile = CommonFile.builder()
+                        .fileTargetId(submission.getId())
+                        .optionsId(optionsId)
+                        .questionStep(optionFile.getQuestionStep())
+                        .questionOrder(optionFile.getQuestionOrder())
+                        .fileName(file.getOriginalFilename())
+                        .fileType(CommonFileType.SUBMISSION_OPTION)
+                        .fileUrl(upload.url())
+                        .build();
+                
+                commonFileRepository.save(commonFile);
+            }
+        }
+        
         
         return new ApiResponse(200, true, "임시저장 되었습니다.", submission.getId());
+        
     }
     
     @Override

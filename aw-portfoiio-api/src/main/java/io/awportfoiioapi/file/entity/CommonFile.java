@@ -26,6 +26,14 @@ public class CommonFile extends DateSuperClass {
     @Column(name = "COMMON_FILE_TARGET_ID")
     private Long fileTargetId;
     
+    @Column(name = "COMMON_FILE_OPTIONS_ID")
+    private Long optionsId;
+    
+    @Column(name = "COMMON_FILE_QUESTION_STEP")
+    private Integer questionStep;
+    
+    @Column(name = "COMMON_FILE_QUESTION_ORDERS")
+    private Integer questionOrder;
     // 공통 파일 이름
     @Column(name = "COMMON_FILE_NAME")
     private String fileName;
