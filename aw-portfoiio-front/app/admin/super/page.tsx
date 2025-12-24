@@ -88,6 +88,13 @@ export default function SuperAdminPage() {
 
   //질문 목록
   const [questions, setQuestions] = useState<Question[]>([]);
+  //객실, 스페셜, 환불 숨김
+  const [showTitleDescription, setShowTitleDescription] = useState(true);
+  const QUESTION_TYPE_LABEL_MAP: Record<string, string> = {
+    parlor: "객실",
+    special: "스페셜",
+    refund: "환불",
+  };
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
 
@@ -696,6 +703,23 @@ export default function SuperAdminPage() {
           checkboxes: [{ label: "선택지 1", hasInput: false }],
         }),
       }));
+    }
+
+    //객실, 스페셜, 환불
+    if (["parlor", "special", "refund"].includes(questionForm.questionType)) {
+      const label =
+        QUESTION_TYPE_LABEL_MAP[questionForm.questionType] ||
+        questionForm.questionType;
+
+      setShowTitleDescription(false);
+
+      setQuestionForm((prev) => ({
+        ...prev,
+        title: label,
+        description: "",
+      }));
+    } else {
+      setShowTitleDescription(true);
     }
   }, [questionForm.questionType]);
 
@@ -1359,36 +1383,43 @@ export default function SuperAdminPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">
-                  질문 제목
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={questionForm.title}
-                  onChange={(e) =>
-                    setQuestionForm({ ...questionForm, title: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">
-                  설명 (선택사항)
-                </label>
-                <textarea
-                  value={questionForm.description}
-                  onChange={(e) =>
-                    setQuestionForm({
-                      ...questionForm,
-                      description: e.target.value,
-                    })
-                  }
-                  rows={3}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                />
-              </div>
+              {showTitleDescription && (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">
+                      질문 제목
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={questionForm.title}
+                      onChange={(e) =>
+                        setQuestionForm({
+                          ...questionForm,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">
+                      설명 (선택사항)
+                    </label>
+                    <textarea
+                      value={questionForm.description}
+                      onChange={(e) =>
+                        setQuestionForm({
+                          ...questionForm,
+                          description: e.target.value,
+                        })
+                      }
+                      rows={3}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                </>
+              )}
               <div>
                 <label className="block text-sm font-semibold text-black mb-2">
                   질문 유형
@@ -1410,6 +1441,9 @@ export default function SuperAdminPage() {
                   <option value="textarea">장문형 (여러 줄)</option>
                   <option value="file">파일 업로드</option>
                   <option value="checkbox">체크박스 (조건부 입력)</option>
+                  <option value="parlor">객실</option>
+                  <option value="special">스페셜</option>
+                  <option value="refund">환불</option>
                 </select>
               </div>
               {questionForm.questionType === "agreement" && (
