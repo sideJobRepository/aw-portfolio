@@ -27,7 +27,6 @@ class UsersServiceImplTest extends RepositoryAndServiceTestSupport {
     @DisplayName("어드민 회원 비밀번호 변경")
     @Test
     void test2(){
-        
         UsersPasswordPostRequest request = new UsersPasswordPostRequest(10L, "4567");
         ApiResponse apiResponse = usersService.modifyPassword(request);
         System.out.println("apiResponse = " + apiResponse);
