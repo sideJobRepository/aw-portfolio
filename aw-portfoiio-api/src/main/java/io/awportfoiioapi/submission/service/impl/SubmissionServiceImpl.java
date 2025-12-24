@@ -265,14 +265,4 @@ public class SubmissionServiceImpl implements SubmissionService {
         return new ApiResponse(200, true, "임시저장 되었습니다.", submission.getId());
         
     }
-    
-    @Override
-    public ApiResponse modifySubmission(SubmissionPutRequest request) {
-        return null;
-    }
-    
-    @Override
-    public ApiResponse deleteSubmission(Long id) {
-        return null;
-    }
 }
