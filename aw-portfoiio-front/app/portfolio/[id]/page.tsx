@@ -243,7 +243,10 @@ export default function PortfolioForm() {
     }
   };
 
-  const currentQuestions = questions.filter((q) => q.step === currentStep);
+  //sort 추가 2025.12.24
+  const currentQuestions = questions
+    .filter((q) => q.step === currentStep)
+    .sort((a, b) => a.order - b.order);
 
   const validateStep = (): boolean => {
     const newErrors: FormData = {};
@@ -722,234 +725,244 @@ export default function PortfolioForm() {
                   이 단계에는 질문이 없습니다.
                 </div>
               ) : (
-                currentQuestions.map((question) => (
-                  <DynamicFormField
-                    key={question.id}
-                    question={{
-                      ...question,
-                      questionType: question.questionType || "text",
-                    }}
-                    value={formData[question.id]}
-                    onChange={(value) => handleChange(question.id, value)}
-                    error={errors[question.id]}
-                  />
-                ))
-              )}
+                currentQuestions.map((question) => {
+                  if (question.questionType === "parlor") {
+                    return (
+                      <div key={question.id} className="mt-6 space-y-8">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-black">
+                            객실 정보 입력
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={handleAddRoom}
+                            className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+                          >
+                            + 객실 추가
+                          </button>
+                        </div>
 
-              {/* ✅ 5단계 : 객실 */}
-              {currentStep === 5 && (
-                <div className="mt-6 space-y-8">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-black">
-                      객실 정보 입력
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={handleAddRoom}
-                      className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
-                    >
-                      + 객실 추가
-                    </button>
-                  </div>
+                        {rooms.length === 0 && (
+                          <p className="text-gray-500 text-sm">
+                            아직 등록된 객실이 없습니다. “객실 추가”를
+                            눌러주세요.
+                          </p>
+                        )}
 
-                  {rooms.length === 0 && (
-                    <p className="text-gray-500 text-sm">
-                      아직 등록된 객실이 없습니다. “객실 추가”를 눌러주세요.
-                    </p>
-                  )}
+                        {rooms.map((room, index) => (
+                          <div
+                            key={room.id}
+                            className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
+                          >
+                            {rooms.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveRoom(room.id)}
+                                className="absolute top-3 right-3 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                              >
+                                삭제
+                              </button>
+                            )}
 
-                  {rooms.map((room, index) => (
-                    <div
-                      key={room.id}
-                      className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
-                    >
-                      {rooms.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveRoom(room.id)}
-                          className="absolute top-3 right-3 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                        >
-                          삭제
-                        </button>
-                      )}
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-black text-white text-xs">
+                                {index + 1}
+                              </span>
+                              <p className="text-sm text-gray-700">
+                                객실 {index + 1}
+                              </p>
+                            </div>
 
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-black text-white text-xs">
-                          {index + 1}
-                        </span>
-                        <p className="text-sm text-gray-700">
-                          객실 {index + 1}
-                        </p>
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                객실명
+                              </label>
+                              <input
+                                type="text"
+                                value={room.name}
+                                onChange={(e) => {
+                                  const updated = rooms.map((r) =>
+                                    r.id === room.id
+                                      ? { ...r, name: e.target.value }
+                                      : r,
+                                  );
+                                  setRooms(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                placeholder="예: Signature Spa Room"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                객실 설명
+                              </label>
+                              <textarea
+                                value={room.desc}
+                                onChange={(e) => {
+                                  const updated = rooms.map((r) =>
+                                    r.id === room.id
+                                      ? { ...r, desc: e.target.value }
+                                      : r,
+                                  );
+                                  setRooms(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                rows={3}
+                                placeholder="객실 특징, 뷰, 서비스 등을 적어주세요."
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                형태
+                              </label>
+                              <input
+                                type="text"
+                                value={room.type}
+                                onChange={(e) => {
+                                  const updated = rooms.map((r) =>
+                                    r.id === room.id
+                                      ? { ...r, type: e.target.value }
+                                      : r,
+                                  );
+                                  setRooms(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                placeholder="예: 침실1 + 거실1 + 화장실1"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                요금
+                              </label>
+                              <input
+                                type="text"
+                                value={room.price}
+                                onChange={(e) => {
+                                  const updated = rooms.map((r) =>
+                                    r.id === room.id
+                                      ? { ...r, price: e.target.value }
+                                      : r,
+                                  );
+                                  setRooms(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                placeholder="예: 비수기(주중/주말) : 100,000 / 200,000"
+                              />
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                    );
+                  }
 
-                      <div>
-                        <label className="block font-semibold mb-1">
-                          객실명
-                        </label>
-                        <input
-                          type="text"
-                          value={room.name}
-                          onChange={(e) => {
-                            const updated = rooms.map((r) =>
-                              r.id === room.id
-                                ? { ...r, name: e.target.value }
-                                : r,
-                            );
-                            setRooms(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          placeholder="예: Signature Spa Room"
-                        />
+                  if (question.questionType === "special") {
+                    return (
+                      <div key={question.id} className="mt-6 space-y-8">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-black">
+                            스페셜 정보 입력
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={handleAddSpecial}
+                            className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+                          >
+                            + 스페셜 추가
+                          </button>
+                        </div>
+
+                        {specials.length === 0 && (
+                          <p className="text-gray-500 text-sm">
+                            아직 등록된 스페셜이 없습니다. “스페셜 추가”를
+                            눌러주세요.
+                          </p>
+                        )}
+
+                        {specials.map((sp, index) => (
+                          <div
+                            key={sp.id}
+                            className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
+                          >
+                            {specials.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSpecial(sp.id)}
+                                className="absolute top-3 right-3 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                              >
+                                삭제
+                              </button>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-black text-white text-xs">
+                                {index + 1}
+                              </span>
+                              <p className="text-sm text-gray-700">
+                                스페셜 {index + 1}
+                              </p>
+                            </div>
+
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                스페셜명
+                              </label>
+                              <input
+                                type="text"
+                                value={sp.name}
+                                onChange={(e) => {
+                                  const updated = specials.map((s) =>
+                                    s.id === sp.id
+                                      ? { ...s, name: e.target.value }
+                                      : s,
+                                  );
+                                  setSpecials(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                placeholder="예: 바비큐 세트 / 와인 서비스"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block font-semibold mb-1">
+                                스페셜 설명
+                              </label>
+                              <textarea
+                                value={sp.desc}
+                                onChange={(e) => {
+                                  const updated = specials.map((s) =>
+                                    s.id === sp.id
+                                      ? { ...s, desc: e.target.value }
+                                      : s,
+                                  );
+                                  setSpecials(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                rows={3}
+                                placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
+                              />
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                    );
+                  }
 
-                      <div>
-                        <label className="block font-semibold mb-1">
-                          객실 설명
-                        </label>
-                        <textarea
-                          value={room.desc}
-                          onChange={(e) => {
-                            const updated = rooms.map((r) =>
-                              r.id === room.id
-                                ? { ...r, desc: e.target.value }
-                                : r,
-                            );
-                            setRooms(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          rows={3}
-                          placeholder="객실 특징, 뷰, 서비스 등을 적어주세요."
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold mb-1">형태</label>
-                        <input
-                          type="text"
-                          value={room.type}
-                          onChange={(e) => {
-                            const updated = rooms.map((r) =>
-                              r.id === room.id
-                                ? { ...r, type: e.target.value }
-                                : r,
-                            );
-                            setRooms(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          placeholder="예: 침실1 + 거실1 + 화장실1"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold mb-1">요금</label>
-                        <input
-                          type="text"
-                          value={room.price}
-                          onChange={(e) => {
-                            const updated = rooms.map((r) =>
-                              r.id === room.id
-                                ? { ...r, price: e.target.value }
-                                : r,
-                            );
-                            setRooms(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          placeholder="예: 비수기(주중/주말) : 100,000 / 200,000"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* ✅ 6단계 : 스페셜 */}
-              {currentStep === 6 && (
-                <div className="mt-6 space-y-8">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-black">
-                      스페셜 정보 입력
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={handleAddSpecial}
-                      className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
-                    >
-                      + 스페셜 추가
-                    </button>
-                  </div>
-
-                  {specials.length === 0 && (
-                    <p className="text-gray-500 text-sm">
-                      아직 등록된 스페셜이 없습니다. “스페셜 추가”를 눌러주세요.
-                    </p>
-                  )}
-
-                  {specials.map((sp, index) => (
-                    <div
-                      key={sp.id}
-                      className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
-                    >
-                      {specials.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSpecial(sp.id)}
-                          className="absolute top-3 right-3 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                        >
-                          삭제
-                        </button>
-                      )}
-
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-black text-white text-xs">
-                          {index + 1}
-                        </span>
-                        <p className="text-sm text-gray-700">
-                          스페셜 {index + 1}
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold mb-1">
-                          스페셜명
-                        </label>
-                        <input
-                          type="text"
-                          value={sp.name}
-                          onChange={(e) => {
-                            const updated = specials.map((s) =>
-                              s.id === sp.id
-                                ? { ...s, name: e.target.value }
-                                : s,
-                            );
-                            setSpecials(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          placeholder="예: 바비큐 세트 / 와인 서비스"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block font-semibold mb-1">
-                          스페셜 설명
-                        </label>
-                        <textarea
-                          value={sp.desc}
-                          onChange={(e) => {
-                            const updated = specials.map((s) =>
-                              s.id === sp.id
-                                ? { ...s, desc: e.target.value }
-                                : s,
-                            );
-                            setSpecials(updated);
-                          }}
-                          className="w-full border border-gray-300 rounded-lg p-2"
-                          rows={3}
-                          placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                  return (
+                    <DynamicFormField
+                      key={question.id}
+                      question={{
+                        ...question,
+                        questionType: question.questionType || "text",
+                      }}
+                      value={formData[question.id]}
+                      onChange={(value) => handleChange(question.id, value)}
+                      error={errors[question.id]}
+                    />
+                  );
+                })
               )}
             </div>
           </div>
@@ -966,24 +979,13 @@ export default function PortfolioForm() {
                 이전
               </button>
 
-              {/* 5단계일 때 객실 추가 */}
-              {currentStep === 5 && (
-                <button
-                  onClick={handleAddRoom}
-                  className="px-6 py-3 bg-gray-100 border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all"
-                >
-                  객실 추가
-                </button>
+              {/* 객실, 스페셜, 환불 규정 추가 예정*/}
+              {currentQuestions.some((q) => q.questionType === "parlor") && (
+                <button onClick={handleAddRoom}>객실 추가</button>
               )}
 
-              {/* 6단계일 때 스페셜 추가 */}
-              {currentStep === 6 && (
-                <button
-                  onClick={handleAddSpecial}
-                  className="px-6 py-3 bg-gray-100 border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all"
-                >
-                  스페셜 추가
-                </button>
+              {currentQuestions.some((q) => q.questionType === "special") && (
+                <button onClick={handleAddSpecial}>스페셜 추가</button>
               )}
             </div>
 
