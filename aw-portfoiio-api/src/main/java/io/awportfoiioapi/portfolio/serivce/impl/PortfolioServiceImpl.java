@@ -13,6 +13,7 @@ import io.awportfoiioapi.portfolio.dto.response.*;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.PortfolioRepository;
 import io.awportfoiioapi.portfolio.serivce.PortfolioService;
+import io.awportfoiioapi.submission.repository.SubmissionRepository;
 import io.awportfoiioapi.utils.S3FileUtils;
 import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     public Page<PortfolioResponse> getPortfolioList(Pageable pageable) {
         Page<PortfolioResponse> portfolioList = portfolioRepository.getPortfolioList(pageable);
         List<PortfolioQuestionCountResponse> byQuestionCount = portfolioRepository.findByQuestionCount();
+        List<PortfolioSubmissionCountResponse> bySubmissionCount = portfolioRepository.findBySubmissionCount();
         // count 결과를 Map으로 변환
         Map<Long, Long> questionCountMap =
                 byQuestionCount.stream().collect(Collectors.toMap(
@@ -53,8 +55,17 @@ public class PortfolioServiceImpl implements PortfolioService {
             );
             portfolio.getCount().setQuestions(count);
         });
-        
-        portfolioList.forEach(portfolio -> portfolio.getCount().setSubmissions(0L)); // 이건 나중에 구현해야함
+        Map<Long, Long> submissionCountMap =
+                bySubmissionCount.stream().collect(Collectors.toMap(
+                                PortfolioSubmissionCountResponse::getPortfolioId,
+                                PortfolioSubmissionCountResponse::getCount));
+             portfolioList.forEach(portfolio -> {
+                 Long count = submissionCountMap.getOrDefault(
+                         portfolio.getId(),
+                         0L
+                 );
+                 portfolio.getCount().setSubmissions(count);
+             });
         return portfolioList;
     }
     

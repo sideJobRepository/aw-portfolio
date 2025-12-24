@@ -1,9 +1,6 @@
 package io.awportfoiioapi.portfolio.repository.query;
 
-import io.awportfoiioapi.portfolio.dto.response.PortfolioGetDetailResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfolioQuestionCountResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfolioResponse;
-import io.awportfoiioapi.portfolio.dto.response.PortfoliosGetDetailResponse;
+import io.awportfoiioapi.portfolio.dto.response.*;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +18,10 @@ public interface PortfolioQueryRepository {
     
     List<PortfoliosGetDetailResponse>  getPortfolioDetailOptions(Long id);
     List<PortfolioQuestionCountResponse> findByQuestionCount();
+    List<PortfolioSubmissionCountResponse> findBySubmissionCount();
     
     PortfolioGetDetailResponse findByPortfolioDetail(Long id);
     Portfolio getPortfolio(Long id);
+    
+    
 }

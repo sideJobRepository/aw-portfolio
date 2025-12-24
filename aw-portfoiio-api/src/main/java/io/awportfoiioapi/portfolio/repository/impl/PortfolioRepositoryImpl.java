@@ -7,6 +7,7 @@ import io.awportfoiioapi.category.entity.QCategory;
 import io.awportfoiioapi.portfolio.dto.response.*;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.query.PortfolioQueryRepository;
+import io.awportfoiioapi.submission.entity.QSubmission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import static io.awportfoiioapi.category.entity.QCategory.*;
 import static io.awportfoiioapi.options.entity.QOptions.*;
 import static io.awportfoiioapi.portfolio.entity.QPortfolio.portfolio;
 import static io.awportfoiioapi.question.entity.QQuestion.question;
+import static io.awportfoiioapi.submission.entity.QSubmission.*;
 
 @RequiredArgsConstructor
 public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
@@ -134,6 +136,20 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 .on(question.portfolio.id.eq(portfolio.id))
                 .leftJoin(options)
                 .on(options.question.id.eq(question.id))
+                .groupBy(portfolio.id)
+                .fetch();
+    }
+    
+    @Override
+    public List<PortfolioSubmissionCountResponse> findBySubmissionCount() {
+        return queryFactory
+                .select(new QPortfolioSubmissionCountResponse(
+                        portfolio.id,
+                      submission.count()
+                ))
+                .from(submission)
+                .leftJoin(submission.portfolio, portfolio)
+                .where(submission.isDraft.eq(false))
                 .groupBy(portfolio.id)
                 .fetch();
     }
