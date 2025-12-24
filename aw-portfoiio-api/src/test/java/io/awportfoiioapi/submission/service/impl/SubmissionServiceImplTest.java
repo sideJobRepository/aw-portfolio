@@ -4,6 +4,7 @@ import io.awportfoiioapi.RepositoryAndServiceTestSupport;
 import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.submission.dto.request.SubmissionPostDraftRequest;
 import io.awportfoiioapi.submission.dto.request.SubmissionPostRequest;
+import io.awportfoiioapi.submission.dto.response.SubmissionGetListRequest;
 import io.awportfoiioapi.submission.dto.response.SubmissionGetRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -141,5 +142,15 @@ class SubmissionServiceImplTest extends RepositoryAndServiceTestSupport {
     
         System.out.println("response = " + response);
     
+    }
+    
+    @DisplayName("작성 포트폴리오 조회")
+    @Test
+    void test5(){
+        
+        List<SubmissionGetListRequest> test = submissionService.getSubmissionsList("test", "1234");
+        
+        
+        System.out.println("test = " + test);
     }
 }

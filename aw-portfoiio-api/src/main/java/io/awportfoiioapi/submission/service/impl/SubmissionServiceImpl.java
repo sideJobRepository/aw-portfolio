@@ -13,6 +13,7 @@ import io.awportfoiioapi.portfolio.repository.PortfolioRepository;
 import io.awportfoiioapi.submission.dto.request.SubmissionPostDraftRequest;
 import io.awportfoiioapi.submission.dto.request.SubmissionPostRequest;
 import io.awportfoiioapi.submission.dto.request.SubmissionPutRequest;
+import io.awportfoiioapi.submission.dto.response.SubmissionGetListRequest;
 import io.awportfoiioapi.submission.dto.response.SubmissionGetRequest;
 import io.awportfoiioapi.submission.entity.Submission;
 import io.awportfoiioapi.submission.repository.SubmissionRepository;
@@ -20,6 +21,8 @@ import io.awportfoiioapi.submission.service.SubmissionService;
 import io.awportfoiioapi.utils.S3FileUtils;
 import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -40,6 +44,73 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final MemberRepository memberRepository;
     private final CommonFileRepository commonFileRepository;
     private final S3FileUtils s3FileUtils;
+    private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
+    
+    
+    @Override
+    public List<SubmissionGetListRequest> getSubmissionsList(String companyName, String password) {
+        //회원 테이블에서 조회 먼저
+        Member findMember = memberRepository.findByPortfolioMemberId(companyName).orElseThrow(() -> new BadCredentialsException("존재하지 않는 아이디이거나 비밀번호가 맞지습니다."));// 로그인 아이디랑 같음
+        
+        if (!passwordEncoder.matches(password, findMember.getPassword())) { // 비밀번호 확인
+            throw new BadCredentialsException("존재하지 않는 아이디이거나 비밀번호가 맞지 않습니다.");
+        }
+        
+        List<Submission> submissions = submissionRepository.findBySubmissions(findMember.getId());
+        
+        List<SubmissionGetListRequest> collect = submissions
+                .stream()
+                .map(item -> {
+                    SubmissionGetListRequest submissionGetListRequest = new SubmissionGetListRequest(item.getId(), item.getPortfolio().getId(), item.getCompanyName(), item.getSubmissionJson(), item.getIsDraft(), item.getCompletedDate(), item.getModifyDate());
+                    Portfolio portfolio = item.getPortfolio();
+                    if (portfolio != null) {
+                        submissionGetListRequest.setPortfolio(new SubmissionGetListRequest.Portfolio(portfolio.getTitle(), portfolio.getSlug()));
+                    }
+                    return submissionGetListRequest;
+                }).collect(Collectors.toList());
+        
+        
+        return collect;
+    }
+    
+    @Override
+    public SubmissionGetRequest getSubmissions(Long submissionId) {
+        
+        SubmissionGetRequest submission = submissionRepository.getSubmission(submissionId);
+        
+        List<CommonFile> fileList = commonFileRepository.findByFileTargetIdAndFileTypeList(submission.getSubmissionId(), CommonFileType.SUBMISSION_OPTION);
+        
+        
+        try {
+            Map<String, Object> responseMap = objectMapper.readValue(submission.getSubmissionJson(), new TypeReference<>() {
+            });
+            
+            for (CommonFile file : fileList) {
+                Map<String, Object> fileNode = new LinkedHashMap<>();
+                fileNode.put("type", "file");
+                fileNode.put("fileId", file.getId());
+                fileNode.put("url", file.getFileUrl());
+                fileNode.put("name", file.getFileName());
+                fileNode.put("step", file.getQuestionStep());
+                fileNode.put("order", file.getQuestionOrder());
+                
+                responseMap.put(
+                        String.valueOf(file.getOptionsId()),
+                        fileNode
+                );
+            }
+            
+            submission.setSubmissionJson(
+                    objectMapper.writeValueAsString(responseMap)
+            );
+            
+        } catch (Exception e) {
+            throw new RuntimeException("submission json merge error", e);
+        }
+        
+        return submission;
+    }
     
     @Override
     public ApiResponse createSubmission(SubmissionPostRequest request) {
@@ -113,54 +184,6 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
         
         return new ApiResponse(200, true, "저장 되었습니다.", submission.getId());
-    }
-    
-    @Override
-    public SubmissionGetRequest getSubmissions(Long submissionId) {
-        
-        SubmissionGetRequest submission =
-                submissionRepository.getSubmission(submissionId);
-        
-        List<CommonFile> fileList =
-                commonFileRepository.findByFileTargetIdAndFileTypeList(
-                        submission.getSubmissionId(),
-                        CommonFileType.SUBMISSION_OPTION
-                );
-        
-        ObjectMapper objectMapper = new ObjectMapper();
-        
-        try {
-            Map<String, Object> responseMap =
-                    objectMapper.readValue(
-                            submission.getSubmissionJson(),
-                            new TypeReference<>() {
-                            }
-                    );
-            
-            for (CommonFile file : fileList) {
-                Map<String, Object> fileNode = new LinkedHashMap<>();
-                fileNode.put("type", "file");
-                fileNode.put("fileId", file.getId());
-                fileNode.put("url", file.getFileUrl());
-                fileNode.put("name", file.getFileName());
-                fileNode.put("step", file.getQuestionStep());
-                fileNode.put("order", file.getQuestionOrder());
-                
-                responseMap.put(
-                        String.valueOf(file.getOptionsId()),
-                        fileNode
-                );
-            }
-            
-            submission.setSubmissionJson(
-                    objectMapper.writeValueAsString(responseMap)
-            );
-            
-        } catch (Exception e) {
-            throw new RuntimeException("submission json merge error", e);
-        }
-        
-        return submission;
     }
     
     @Override
