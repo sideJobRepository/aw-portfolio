@@ -34,4 +34,8 @@ public class Member extends DateSuperClass {
     public void modifyIp(String ip) {
         this.ip = ip;
     }
+    
+    public void modifyPassword(String encode) {
+        this.password = encode;
+    }
 }

@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface MemberRoleQueryRepository {
     
     Optional<MemberRole> findByPortfolioMemberId(Long memberId);
+    
+    void deleteByMember(Long id);
 }

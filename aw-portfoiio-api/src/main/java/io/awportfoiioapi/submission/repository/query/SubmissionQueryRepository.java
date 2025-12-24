@@ -10,4 +10,7 @@ public interface SubmissionQueryRepository {
     
     List<Submission> findBySubmissions(Long id);
     
+    List<Long> findBySubmissionIds(Long id);
+    
+    void deleteByMemberSubmissions(Long id);
 }

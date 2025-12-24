@@ -10,4 +10,6 @@ public interface RefreshTokenQueryRepository {
     Optional<RefreshToken> findPortfolioMember(Member member);
     
     Optional<RefreshToken> findPortfolioRefreshTokenValue(String refreshTokenValue);
+    
+    void deleteByMember(Long id);
 }

@@ -18,4 +18,7 @@ public interface CommonFileQueryRepository {
     
     void deleteSubmissionOptionFiles(Long submissionId,CommonFileType commonFileType);
     
+    List<CommonFile> findBySubmissions(List<Long> ids);
+    
+    void deleteBySubmissionsFile(List<Long> ids);
 }

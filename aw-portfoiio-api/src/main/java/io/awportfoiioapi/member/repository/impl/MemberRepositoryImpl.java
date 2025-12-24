@@ -6,6 +6,8 @@ import io.awportfoiioapi.member.entrity.Member;
 import io.awportfoiioapi.member.repository.query.MemberQueryRepository;
 import io.awportfoiioapi.userlist.dto.response.QUserListGetResponse;
 import io.awportfoiioapi.userlist.dto.response.UserListGetResponse;
+import io.awportfoiioapi.users.dto.response.QUsersGetResponse;
+import io.awportfoiioapi.users.dto.response.UsersGetResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,5 +69,29 @@ public class MemberRepositoryImpl implements MemberQueryRepository {
                 .from(member);
         
          return PageableExecutionUtils.getPage(result,pageable,countQuery::fetchOne);
+    }
+    
+    @Override
+    public Page<UsersGetResponse> findUsers(Pageable pageable) {
+        List<UsersGetResponse> result = queryFactory
+                .select(
+                        new QUsersGetResponse(
+                                member.id,
+                                member.loginId,
+                                member.modifyDate,
+                                member.registDate,
+                                member.modifyDate,
+                                member.ip
+                        )
+                )
+                .from(member)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        
+        JPAQuery<Long> countQuery = queryFactory
+                .select(member.count())
+                .from(member);
+        return PageableExecutionUtils.getPage(result,pageable,countQuery::fetchOne);
     }
 }

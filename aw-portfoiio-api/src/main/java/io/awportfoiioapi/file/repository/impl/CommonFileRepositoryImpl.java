@@ -15,7 +15,7 @@ import static io.awportfoiioapi.file.entity.QCommonFile.commonFile;
 
 @RequiredArgsConstructor
 public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
-
+    
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
     
@@ -42,12 +42,12 @@ public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
     @Override
     public List<CommonFile> findByFileTargetIdAndFileTypeList(Long fileTargetId, CommonFileType fileType) {
         return queryFactory
-                     .selectFrom(commonFile)
-                     .where(
-                             commonFile.fileTargetId.eq(fileTargetId),
-                             commonFile.fileType.eq(fileType)
-                     )
-                     .fetch();
+                .selectFrom(commonFile)
+                .where(
+                        commonFile.fileTargetId.eq(fileTargetId),
+                        commonFile.fileType.eq(fileType)
+                )
+                .fetch();
     }
     
     @Override
@@ -63,14 +63,31 @@ public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
     }
     
     @Override
-    public void deleteSubmissionOptionFiles(Long submissionId,CommonFileType commonFileType) {
+    public void deleteSubmissionOptionFiles(Long submissionId, CommonFileType commonFileType) {
         em.flush();
         queryFactory
-                   .delete(commonFile)
-                   .where(
-                           commonFile.fileTargetId.eq(submissionId),
-                           commonFile.fileType.eq(commonFileType)
-                   )
-                   .execute();
+                .delete(commonFile)
+                .where(
+                        commonFile.fileTargetId.eq(submissionId),
+                        commonFile.fileType.eq(commonFileType)
+                )
+                .execute();
+    }
+    
+    @Override
+    public List<CommonFile> findBySubmissions(List<Long> ids) {
+        return queryFactory
+                .selectFrom(commonFile)
+                .where(commonFile.fileTargetId.in(ids))
+                .fetch();
+    }
+    
+    @Override
+    public void deleteBySubmissionsFile(List<Long> ids) {
+        em.flush();
+        queryFactory
+                .delete(commonFile)
+                .where(commonFile.fileTargetId.in(ids))
+                .execute();
     }
 }
