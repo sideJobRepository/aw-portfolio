@@ -253,6 +253,12 @@ export default function PortfolioForm() {
     let isValid = true;
 
     currentQuestions.forEach((question) => {
+
+      //객실, 스페셜은 제외
+      if (["parlor", "special"].includes(question.questionType)) {
+        return;
+      }
+
       const value = formData[question.id];
       if (question.isRequired) {
         if (question.questionType === "file") {
