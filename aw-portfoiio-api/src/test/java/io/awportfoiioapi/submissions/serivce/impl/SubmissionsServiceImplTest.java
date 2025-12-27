@@ -5,10 +5,8 @@ import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.submissions.dto.response.SubmissionsGetRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 class SubmissionsServiceImplTest extends RepositoryAndServiceTestSupport {
 
@@ -16,8 +14,8 @@ class SubmissionsServiceImplTest extends RepositoryAndServiceTestSupport {
     @DisplayName("제출목록 조회")
     @Test
     void test1(){
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<SubmissionsGetRequest> submissions = submissionsService.getSubmissions(pageRequest);
+        
+        List<SubmissionsGetRequest> submissions = submissionsService.getSubmissions();
         System.out.println("submissions = " + submissions);
     }
     

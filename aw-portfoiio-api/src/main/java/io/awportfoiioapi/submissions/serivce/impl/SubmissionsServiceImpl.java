@@ -9,8 +9,6 @@ import io.awportfoiioapi.submissions.dto.response.SubmissionsGetRequest;
 import io.awportfoiioapi.submissions.serivce.SubmissionsService;
 import io.awportfoiioapi.utils.S3FileUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +27,8 @@ public class SubmissionsServiceImpl implements SubmissionsService {
     private final S3FileUtils s3FileUtils;
     
     @Override
-    public Page<SubmissionsGetRequest> getSubmissions(Pageable pageable) {
-        return submissionRepository.findByAdminSubmissions(pageable);
+    public List<SubmissionsGetRequest> getSubmissions() {
+        return submissionRepository.findByAdminSubmissions();
     }
     
     @Override

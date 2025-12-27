@@ -1,6 +1,5 @@
 package io.awportfoiioapi.submission.repository.impl;
 
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.awportfoiioapi.submission.dto.response.QSubmissionGetRequest;
 import io.awportfoiioapi.submission.dto.response.SubmissionGetRequest;
@@ -11,9 +10,6 @@ import io.awportfoiioapi.submissions.dto.response.QSubmissionsGetRequest_Portfol
 import io.awportfoiioapi.submissions.dto.response.SubmissionsGetRequest;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -83,8 +79,8 @@ public class SubmissionRepositoryImpl implements SubmissionQueryRepository {
         }
     
     @Override
-    public Page<SubmissionsGetRequest> findByAdminSubmissions(Pageable pageable) {
-        List<SubmissionsGetRequest> result = queryFactory
+    public List<SubmissionsGetRequest> findByAdminSubmissions() {
+        return queryFactory
                 .select(
                         new QSubmissionsGetRequest(
                                 submission.id,
@@ -102,13 +98,6 @@ public class SubmissionRepositoryImpl implements SubmissionQueryRepository {
                 )
                 .from(submission)
                 .join(submission.portfolio, portfolio)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
-        
-        JPAQuery<Long> countQuery = queryFactory.select(submission.count())
-                .from(submission);
-        
-        return  PageableExecutionUtils.getPage(result,pageable,countQuery::fetchOne);
     }
 }

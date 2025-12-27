@@ -2,12 +2,12 @@ package io.awportfoiioapi.submissions.serivce;
 
 import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.submissions.dto.response.SubmissionsGetRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface SubmissionsService {
     
-    Page<SubmissionsGetRequest> getSubmissions(Pageable pageable);
+    List<SubmissionsGetRequest> getSubmissions();
     
     
     ApiResponse deleteSubmission(Long id);
