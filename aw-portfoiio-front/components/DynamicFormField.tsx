@@ -79,31 +79,7 @@ export default function DynamicFormField({ question, value, onChange, error }: D
     // 옵션 파싱 (메모)
     const parsedOptions = useMemo(() => parseOptions(question.options), [question.options]);
 
-    // 파일 업로드 핸들러
-    const handleFileUpload = async (file: File): Promise<string | null> => {
-        setUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
 
-            const response = await fetch('/api/upload', { method: 'POST', body: formData });
-            const data = await response.json();
-
-            if (response.ok && data.url) {
-                return data.url as string;
-            } else {
-                console.error('Upload failed:', data);
-                alert(`파일 업로드 실패: ${data.error || '알 수 없는 오류'}`);
-                return null;
-            }
-        } catch (err) {
-            console.error('Upload error:', err);
-            alert('파일 업로드 중 오류가 발생했습니다.');
-            return null;
-        } finally {
-            setUploading(false);
-        }
-    };
 
     // 텍스트 입력
     if (questionType === 'text') {
@@ -165,6 +141,8 @@ export default function DynamicFormField({ question, value, onChange, error }: D
 
     // 파일 업로드
     if (questionType === 'file') {
+
+        const hasUploadedFile = value && value.url;
         return (
             <div className="space-y-3">
                 {question.thumbnail && (
@@ -183,17 +161,27 @@ export default function DynamicFormField({ question, value, onChange, error }: D
                     type="file"
                     accept="image/*,.pdf"
                     disabled={uploading}
-                    onChange={async (e) => {
+                    onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) {
-                            const url = await handleFileUpload(file);
-                            if (url) onChange(url);
-                        }
+                        console.log("SELECTED FILE:", file);
+                        if (file) onChange(file); // file 변경
                     }}
                     className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-black file:text-white file:cursor-pointer hover:file:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
+                {hasUploadedFile && (
+                    <div className="text-sm text-green-700">
+                        기존 파일:
+                        <a
+                            href={value.url}
+                            download
+                            target="_blank"
+                            className="ml-2 underline"
+                        >
+                            {value.name}
+                        </a>
+                    </div>
+                )}
                 {uploading && <p className="text-sm text-blue-600">⏳ 업로드 중...</p>}
-                {value && !uploading && <p className="text-sm text-green-600">✅ 파일 업로드 완료: {typeof value === 'string' ? value.split('/').pop() : String(value)}</p>}
                 {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
         );
@@ -292,116 +280,113 @@ export default function DynamicFormField({ question, value, onChange, error }: D
         );
     }
 
-    // 반복 가능한 필드
-    if (questionType === 'repeatable') {
-        if (!isRepeatableOptions(parsedOptions)) {
-            console.error('Invalid repeatable options:', parsedOptions);
-            return (
-                <div className="space-y-3">
-                    <label className="block">
-                        <span className="text-lg font-semibold text-black">
-                            {question.title}
-                            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-                        </span>
-                        {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
-                    </label>
-                    <p className="text-sm text-red-500">반복 필드 설정 오류: 관리자에게 문의하세요.</p>
-                </div>
-            );
-        }
-
-        const currentValue: any[] = Array.isArray(value) ? value : [{}];
-
-        return (
-            <div className="space-y-3">
-                {question.thumbnail && (
-                    <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
-                        <img src={question.thumbnail} alt={question.title} className="w-full h-full" loading="lazy" />
-                    </div>
-                )}
-                <label className="block">
-                    <span className="text-lg font-semibold text-black">
-                        {question.title}
-                        {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-                    </span>
-                    {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
-                </label>
-
-                <div className="space-y-4">
-                    {currentValue.map((item, itemIdx) => (
-                        <div key={itemIdx} className="border-2 border-gray-300 rounded-lg p-4 space-y-3">
-                            <div className="flex justify-between items-center mb-3">
-                                <span className="font-semibold text-gray-700">항목 {itemIdx + 1}</span>
-                                {currentValue.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            const newValue = currentValue.filter((_, idx) => idx !== itemIdx);
-                                            onChange(newValue);
-                                        }}
-                                        className="text-sm text-red-600 hover:text-red-800 font-semibold"
-                                    >
-                                        삭제
-                                    </button>
-                                )}
-                            </div>
-
-                            {parsedOptions.fields.map((field, fieldIdx) => (
-                                <div key={fieldIdx}>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1">{field.label}</label>
-                                    {field.type === 'text' ? (
-                                        <input
-                                            type="text"
-                                            value={item[field.label] || ''}
-                                            onChange={(e) => {
-                                                const newValue = [...currentValue];
-                                                newValue[itemIdx] = {
-                                                    ...newValue[itemIdx],
-                                                    [field.label]: e.target.value,
-                                                };
-                                                onChange(newValue);
-                                            }}
-                                            placeholder={field.placeholder}
-                                            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                                        />
-                                    ) : (
-                                        <>
-                                            <input
-                                                type="file"
-                                                accept="image/*,.pdf"
-                                                disabled={uploading}
-                                                onChange={async (e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        const url = await handleFileUpload(file);
-                                                        if (url) {
-                                                            const newValue = [...currentValue];
-                                                            newValue[itemIdx] = {
-                                                                ...newValue[itemIdx],
-                                                                [field.label]: url,
-                                                            };
-                                                            onChange(newValue);
-                                                        }
-                                                    }
-                                                }}
-                                                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-black file:text-white file:cursor-pointer hover:file:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            />
-                                            {item[field.label] && field.type === 'file' && <p className="text-sm text-green-600 mt-1">✅ 파일: {typeof item[field.label] === 'string' ? item[field.label].split('/').pop() : String(item[field.label])}</p>}
-                                        </>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ))}
-
-                    <button type="button" onClick={() => onChange([...currentValue, {}])} className="w-full px-4 py-3 border-2 border-dashed border-gray-400 rounded-lg font-semibold text-gray-700 hover:border-black hover:text-black transition-all">
-                        + 항목 추가
-                    </button>
-                </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-            </div>
-        );
-    }
+    // 반복 가능한 필드 - 사용안함으로 체크
+    // if (questionType === 'repeatable') {
+    //     if (!isRepeatableOptions(parsedOptions)) {
+    //         console.error('Invalid repeatable options:', parsedOptions);
+    //         return (
+    //             <div className="space-y-3">
+    //                 <label className="block">
+    //                     <span className="text-lg font-semibold text-black">
+    //                         {question.title}
+    //                         {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+    //                     </span>
+    //                     {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
+    //                 </label>
+    //                 <p className="text-sm text-red-500">반복 필드 설정 오류: 관리자에게 문의하세요.</p>
+    //             </div>
+    //         );
+    //     }
+    //
+    //     const currentValue: any[] = Array.isArray(value) ? value : [{}];
+    //
+    //     return (
+    //         <div className="space-y-3">
+    //             {question.thumbnail && (
+    //                 <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
+    //                     <img src={question.thumbnail} alt={question.title} className="w-full h-full" loading="lazy" />
+    //                 </div>
+    //             )}
+    //             <label className="block">
+    //                 <span className="text-lg font-semibold text-black">
+    //                     {question.title}
+    //                     {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+    //                 </span>
+    //                 {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
+    //             </label>
+    //
+    //             <div className="space-y-4">
+    //                 {currentValue.map((item, itemIdx) => (
+    //                     <div key={itemIdx} className="border-2 border-gray-300 rounded-lg p-4 space-y-3">
+    //                         <div className="flex justify-between items-center mb-3">
+    //                             <span className="font-semibold text-gray-700">항목 {itemIdx + 1}</span>
+    //                             {currentValue.length > 1 && (
+    //                                 <button
+    //                                     type="button"
+    //                                     onClick={() => {
+    //                                         const newValue = currentValue.filter((_, idx) => idx !== itemIdx);
+    //                                         onChange(newValue);
+    //                                     }}
+    //                                     className="text-sm text-red-600 hover:text-red-800 font-semibold"
+    //                                 >
+    //                                     삭제
+    //                                 </button>
+    //                             )}
+    //                         </div>
+    //
+    //                         {parsedOptions.fields.map((field, fieldIdx) => (
+    //                             <div key={fieldIdx}>
+    //                                 <label className="block text-sm font-semibold text-gray-700 mb-1">{field.label}</label>
+    //                                 {field.type === 'text' ? (
+    //                                     <input
+    //                                         type="text"
+    //                                         value={item[field.label] || ''}
+    //                                         onChange={(e) => {
+    //                                             const newValue = [...currentValue];
+    //                                             newValue[itemIdx] = {
+    //                                                 ...newValue[itemIdx],
+    //                                                 [field.label]: e.target.value,
+    //                                             };
+    //                                             onChange(newValue);
+    //                                         }}
+    //                                         placeholder={field.placeholder}
+    //                                         className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+    //                                     />
+    //                                 ) : (
+    //                                     <>
+    //                                         <input
+    //                                             type="file"
+    //                                             accept="image/*,.pdf"
+    //                                             disabled={uploading}
+    //                                             onChange={async (e) => {
+    //                                                 const file = e.target.files?.[0];
+    //                                                 if (file) {
+    //                                                     const newValue = [...currentValue];
+    //                                                     newValue[itemIdx] = {
+    //                                                         ...newValue[itemIdx],
+    //                                                         [field.label]: file, // File 그대로
+    //                                                     };
+    //                                                     onChange(newValue);
+    //                                                 }
+    //                                             }}
+    //                                             className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-black file:text-white file:cursor-pointer hover:file:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+    //                                         />
+    //                                         {item[field.label] && field.type === 'file' && <p className="text-sm text-green-600 mt-1">✅ 파일 선택됨: {item[field.label].name}</p>}
+    //                                     </>
+    //                                 )}
+    //                             </div>
+    //                         ))}
+    //                     </div>
+    //                 ))}
+    //
+    //                 <button type="button" onClick={() => onChange([...currentValue, {}])} className="w-full px-4 py-3 border-2 border-dashed border-gray-400 rounded-lg font-semibold text-gray-700 hover:border-black hover:text-black transition-all">
+    //                     + 항목 추가
+    //                 </button>
+    //             </div>
+    //             {error && <p className="text-sm text-red-500">{error}</p>}
+    //         </div>
+    //     );
+    // }
 
     // 동의 체크박스 (0단계 안내사항)
     if (questionType === 'agreement') {

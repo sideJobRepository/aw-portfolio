@@ -1735,30 +1735,30 @@ export default function SuperAdminPage() {
                         </div>
                       </div>
                   )}
-
-                  {questionForm.questionType === "repeatable" && (
-                      <div>
-                        <label className="block text-sm font-semibold text-black mb-2">
-                          반복 필드 설정 (JSON 형식)
-                        </label>
-                        <textarea
-                            value={questionForm.options}
-                            onChange={(e) =>
-                                setQuestionForm({
-                                  ...questionForm,
-                                  options: e.target.value,
-                                })
-                            }
-                            rows={8}
-                            placeholder='{"fields": [{"label": "대표자명", "type": "text", "placeholder": "이름"}]}'
-                            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm"
-                        />
-                        <p className="text-xs text-gray-600 mt-1">
-                          반복 필드:{" "}
-                          {`{"fields": [{"label": "라벨", "type": "text/file", "placeholder": "힌트"}]}`}
-                        </p>
-                      </div>
-                  )}
+                  {/*repeatable 사용 안함으로 체크*/}
+                  {/*{questionForm.questionType === "repeatable" && (*/}
+                  {/*    <div>*/}
+                  {/*      <label className="block text-sm font-semibold text-black mb-2">*/}
+                  {/*        반복 필드 설정 (JSON 형식)*/}
+                  {/*      </label>*/}
+                  {/*      <textarea*/}
+                  {/*          value={questionForm.options}*/}
+                  {/*          onChange={(e) =>*/}
+                  {/*              setQuestionForm({*/}
+                  {/*                ...questionForm,*/}
+                  {/*                options: e.target.value,*/}
+                  {/*              })*/}
+                  {/*          }*/}
+                  {/*          rows={8}*/}
+                  {/*          placeholder='{"fields": [{"label": "대표자명", "type": "text", "placeholder": "이름"}]}'*/}
+                  {/*          className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black font-mono text-sm"*/}
+                  {/*      />*/}
+                  {/*      <p className="text-xs text-gray-600 mt-1">*/}
+                  {/*        반복 필드:{" "}*/}
+                  {/*        {`{"fields": [{"label": "라벨", "type": "text/file", "placeholder": "힌트"}]}`}*/}
+                  {/*      </p>*/}
+                  {/*    </div>*/}
+                  {/*)}*/}
                   <div>
                     <label className="block text-sm font-semibold text-black mb-2">
                       썸네일 이미지 (선택사항)

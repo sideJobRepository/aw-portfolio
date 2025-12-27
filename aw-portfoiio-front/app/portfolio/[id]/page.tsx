@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useState, useEffect, useRef} from "react";
 import {useRouter, useParams, useSearchParams} from "next/navigation";
 import DynamicFormField from "@/components/DynamicFormField";
 import { useRecoilValue } from "recoil";
@@ -88,6 +88,43 @@ export default function PortfolioForm() {
   const minStep =
     questions.length > 0 ? Math.min(...questions.map((q) => q.step)) : 0;
 
+
+  const fileMapRef = useRef<Record<string, File>>({});
+
+  //파일 전송시 수정
+  const extractSubmitData = () => {
+    const optionFiles: any[] = [];
+    const cleanedFormData: any = {};
+
+    Object.entries(fileMapRef.current).forEach(([questionId, file]) => {
+      const question = questions.find(q => String(q.id) === String(questionId));
+      if (!question) return;
+
+      optionFiles.push({
+        optionsId: question.id,
+        questionStep: question.step,
+        questionOrder: question.order,
+        files: [file],
+      });
+
+      cleanedFormData[questionId] = null;
+    });
+
+    Object.entries(formData).forEach(([k, v]) => {
+      if (fileMapRef.current[k]) return;
+      cleanedFormData[k] = v;
+    });
+
+    return {
+      response: {
+        ...cleanedFormData,
+        rooms,
+        specials,
+      },
+      optionFiles,
+    };
+  };
+
   useEffect(() => {
     if (questions.length > 0 && currentStep === -1) {
       setCurrentStep(minStep);
@@ -134,7 +171,7 @@ export default function PortfolioForm() {
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, [currentStep, maxStep, submitting]);
 
-  const checkExistingSubmission = async (company: string, pass: string) => {
+  const checkExistingSubmission = async () => {
     if (!submissionId) return;
     try {
       await request(
@@ -146,6 +183,8 @@ export default function PortfolioForm() {
 
             if (data) {
               const parsedResponses = JSON.parse(data.submissionJson);
+
+              console.log('parsedResponses', parsedResponses)
 
               setExistingSubmissionId(data.submissionId);
               setFormData(parsedResponses);
@@ -250,13 +289,9 @@ export default function PortfolioForm() {
       const value = formData[question.id];
       if (question.isRequired) {
         if (question.questionType === "file") {
-          if (
-            !value ||
-            (typeof value === "string" && value.trim().length === 0)
-          ) {
+          if (!(value instanceof File)) {
             newErrors[question.id] = "파일을 업로드해주세요.";
             isValid = false;
-            return;
           }
         } else if (question.questionType === "checkbox") {
           if (!value || typeof value !== "object") {
@@ -507,6 +542,9 @@ export default function PortfolioForm() {
     if (!portfolio) return;
     setSubmitting(true);
     try {
+
+
+      const { response, optionFiles } = extractSubmitData();
       const fd = new FormData();
 
       // 수정일 경우
@@ -515,15 +553,18 @@ export default function PortfolioForm() {
       }
 
       fd.append("portfolioId", String(portfolio.id));
+      fd.append("response", JSON.stringify(response));
 
-      fd.append(
-          "response",
-          JSON.stringify({
-            ...formData,
-            rooms,
-            specials,
-          })
-      );
+      console.log("optionFiles", optionFiles)
+
+      optionFiles.forEach((opt, idx) => {
+        fd.append(`optionFiles[${idx}].optionsId`, opt.optionsId);
+        fd.append(`optionFiles[${idx}].questionStep`, String(opt.questionStep));
+        fd.append(`optionFiles[${idx}].questionOrder`, String(opt.questionOrder));
+        opt.files.forEach((file: File) => {
+          fd.append(`optionFiles[${idx}].files`, file);
+        });
+      });
 
       await request(
           () => SubmissionService.temporaryPost(fd),
@@ -585,7 +626,22 @@ export default function PortfolioForm() {
     }
   };
 
-  const handleChange = (questionId: string, value: string) => {
+  const handleChange = (questionId: string, value: any) => {
+
+    if (value instanceof File) {
+      fileMapRef.current[questionId] = value; // 즉시 저장
+      return;
+    }
+
+    if (value instanceof FileList) {
+      const file = value[0];
+      if (file) {
+        fileMapRef.current[questionId] = file;
+      }
+      return;
+    }
+
+
     setFormData((prev) => ({
       ...prev,
       [questionId]: value,
@@ -616,11 +672,8 @@ export default function PortfolioForm() {
           </h2>
           <button
             onClick={() => {
-              if (userRole === "MEMBER") {
-                router.push("/member/portfolios");
-              } else {
                 router.push("/");
-              }
+
             }}
             className="px-4 py-2 bg-black text-white rounded-lg"
           >
@@ -641,11 +694,7 @@ export default function PortfolioForm() {
           <p className="text-gray-600 mb-4">관리자에게 문의해주세요.</p>
           <button
             onClick={() => {
-              if (userRole === "MEMBER") {
-                router.push("/member/portfolios");
-              } else {
                 router.push("/");
-              }
             }}
             className="px-4 py-2 bg-black text-white rounded-lg"
           >
@@ -1011,11 +1060,7 @@ export default function PortfolioForm() {
         <div className="text-center mt-6">
           <button
             onClick={() => {
-              if (userRole === "MEMBER") {
-                router.push("/member/portfolios");
-              } else {
                 router.push("/");
-              }
             }}
             className="text-gray-600 hover:text-black transition-all"
           >
