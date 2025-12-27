@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import {useRouter, useParams, useSearchParams} from "next/navigation";
 import DynamicFormField from "@/components/DynamicFormField";
 import { useRecoilValue } from "recoil";
 import { userState } from "@/store/user";
@@ -39,13 +39,14 @@ interface FormData {
 export default function PortfolioForm() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
 
   //hooks
   const { request } = useRequest();
 
   //id 방식 교체
   const id = params.id as string;
-  const slug = params.slug as string;
+  const submissionId = searchParams.get('submissionId')
 
   //로그인 상태
   const currentUser = useRecoilValue(userState);
@@ -67,7 +68,7 @@ export default function PortfolioForm() {
     }>
   >([{ id: "room-1", name: "", desc: "", type: "", price: "" }]);
 
-  // ✅ 스페셜 (6단계)
+  // 스페셜 (6단계)
   const [specials, setSpecials] = useState<
     Array<{ id: string; name: string; desc: string }>
   >([{ id: "special-1", name: "", desc: "" }]);
@@ -107,24 +108,13 @@ export default function PortfolioForm() {
       router.push("/");
     }
 
-    // const portfolioAuth = localStorage.getItem("portfolio_auth");
-    // if (portfolioAuth) {
-    //   try {
-    //     const authData = JSON.parse(portfolioAuth);
-    //     setCompanyName(authData.companyName);
-    //     setPassword(authData.password);
-    //   } catch (error) {
-    //     console.error("Failed to parse portfolio auth:", error);
-    //   }
-    // }
-    // 포트폴리오 + 질문 목록
-  }, [slug, currentUser]);
+  }, [id, currentUser]);
 
   useEffect(() => {
-    if (companyName && password && portfolio?.id) {
-      checkExistingSubmission(companyName, password);
+    if (currentUser && portfolio?.id && submissionId) {
+      checkExistingSubmission();
     }
-  }, [companyName, password, portfolio?.id]);
+  }, [currentUser, portfolio?.id]);
 
   // Enter로 다음
   useEffect(() => {
@@ -145,59 +135,61 @@ export default function PortfolioForm() {
   }, [currentStep, maxStep, submitting]);
 
   const checkExistingSubmission = async (company: string, pass: string) => {
-    if (!portfolio) return;
+    if (!submissionId) return;
     try {
-      const response = await fetch(`/api/submissions/check`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          portfolioId: portfolio.id,
-          companyName: company,
-          password: pass,
-        }),
-      });
+      await request(
+          () => SubmissionService.get(submissionId),
+          (res) => {
+            console.log("res 작성내역 불러오기----", res)
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.submission) {
-          setExistingSubmissionId(data.submission.id);
-          setFormData(data.submission.responses);
+            const data = res.data;
 
-          // ✅ rooms 복원
-          const savedRooms = data.submission.responses?.rooms;
-          if (Array.isArray(savedRooms) && savedRooms.length > 0) {
-            setRooms(
-              savedRooms.map((r: any, idx: number) => ({
-                id: r.id ? String(r.id) : `room-${idx + 1}`,
-                name: r.name || "",
-                desc: r.desc || "",
-                type: r.type || "",
-                price: r.price || "",
-              })),
-            );
-          } else {
-            setRooms([
-              { id: "room-1", name: "", desc: "", type: "", price: "" },
-            ]);
-          }
+            if (data) {
+              const parsedResponses = JSON.parse(data.submissionJson);
 
-          // ✅ specials 복원
-          const savedSpecials = data.submission.responses?.specials;
-          if (Array.isArray(savedSpecials) && savedSpecials.length > 0) {
-            setSpecials(
-              savedSpecials.map((s: any, idx: number) => ({
-                id: s.id ? String(s.id) : `special-${idx + 1}`,
-                name: s.name || "",
-                desc: s.desc || "",
-              })),
-            );
-          } else {
-            setSpecials([{ id: "special-1", name: "", desc: "" }]);
-          }
+              setExistingSubmissionId(data.submissionId);
+              setFormData(parsedResponses);
 
-          alert("기존 작성 내역을 불러왔습니다.");
-        }
-      }
+              // rooms 복원
+              const savedRooms = parsedResponses?.rooms;
+              if (Array.isArray(savedRooms) && savedRooms.length > 0) {
+                setRooms(
+                    savedRooms.map((r: any, idx: number) => ({
+                      id: r.id ? String(r.id) : `room-${idx + 1}`,
+                      name: r.name || "",
+                      desc: r.desc || "",
+                      type: r.type || "",
+                      price: r.price || "",
+                    })),
+                );
+              } else {
+                setRooms([
+                  { id: "room-1", name: "", desc: "", type: "", price: "" },
+                ]);
+              }
+
+              // specials 복원
+              const savedSpecials = parsedResponses?.specials;
+              if (Array.isArray(savedSpecials) && savedSpecials.length > 0) {
+                setSpecials(
+                    savedSpecials.map((s: any, idx: number) => ({
+                      id: s.id ? String(s.id) : `special-${idx + 1}`,
+                      name: s.name || "",
+                      desc: s.desc || "",
+                    })),
+                );
+              } else {
+                setSpecials([{ id: "special-1", name: "", desc: "" }]);
+              }
+
+              alert("기존 작성 내역을 불러왔습니다.");
+            }
+
+
+          },
+          { ignoreErrorRedirect: true },
+      );
+
     } catch (error) {
       console.error("Failed to check existing submission:", error);
     }

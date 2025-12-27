@@ -85,7 +85,7 @@ export default function MySubmissionsPage() {
 
     const handleContinue = (submission: Submission) => {
 
-        router.push(`/portfolio/${submission.portfolioId}`);
+        router.push(`/portfolio/${submission.portfolioId}?submissionId=${submission.id}`);
     };
 
     return (
