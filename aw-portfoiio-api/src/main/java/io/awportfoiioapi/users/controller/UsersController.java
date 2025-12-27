@@ -29,7 +29,7 @@ public class UsersController {
         return usersService.modifyPassword(request);
     }
     
-    @PostMapping("/members/{id}")
+    @DeleteMapping("/members/{id}")
     public ApiResponse deleteMember(@PathVariable Long id){
         return usersService.deleteUser(id);
     }
