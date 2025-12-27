@@ -15,6 +15,8 @@ import { Portfolio, PortfolioContent, PortfolioForm } from "@/tpyes/portfolio";
 import { Category, CategoryContent, CategorySelect } from "@/tpyes/category";
 import { QuestionService } from "@/services/question.service";
 import { QuestionForm } from "@/tpyes/question";
+import {SubmissionService} from "@/services/submission.service";
+import {Submission} from "@/tpyes/submission";
 
 interface User {
   id: string;
@@ -48,20 +50,7 @@ type TabType =
     | "categories"
     | "members";
 
-interface Submission {
-  id: string;
-  portfolioId: string;
-  companyName: string;
-  password: string;
-  isDraft: boolean;
-  completedAt: string;
-  updatedAt: string;
-  responses: any;
-  portfolio: {
-    title: string;
-    slug: string;
-  };
-}
+
 
 export default function SuperAdminPage() {
   const router = useRouter();
@@ -84,6 +73,11 @@ export default function SuperAdminPage() {
   //포토폴리오 카테고리 목록
   const [selectCategory, setSelectCategory] = useState<CategorySelect[]>();
 
+  //제출 목록
+  const [submissions, setSubmissions] = useState<Submission>();
+
+
+
   const [users, setUsers] = useState<User[]>([]);
 
   //질문 목록
@@ -95,8 +89,6 @@ export default function SuperAdminPage() {
     special: "스페셜",
     refund: "환불",
   };
-
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
 
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -205,19 +197,16 @@ export default function SuperAdminPage() {
 
   const fetchSubmissions = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/api/submissions", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setSubmissions(data.submissions || []);
-        console.log("제출목록 로드:", data.submissions?.length || 0, "건");
-      } else {
-        console.error("제출목록 조회 실패:", data.error);
-      }
+
+      await request(
+          () => SubmissionService.adminGet({ page: page, size: 5 }),
+          (res) => {
+            console.log("제출목록 조회", res);
+            setSubmissions(res.data || []);
+          },
+          { ignoreErrorRedirect: true },
+      );
+
     } catch (error) {
       console.error("Failed to fetch submissions:", error);
     }
@@ -790,7 +779,6 @@ export default function SuperAdminPage() {
               <button
                   onClick={() => {
                     setActiveTab("submissions");
-                    fetchSubmissions();
                   }}
                   className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === "submissions" ? "border-black text-black" : "border-transparent text-gray-500 hover:text-black"}`}
               >
@@ -2008,7 +1996,7 @@ export default function SuperAdminPage() {
                 </div>
               </div>
 
-              {submissions.length === 0 ? (
+              {submissions?.content.length === 0 ? (
                   <div className="bg-white border-2 border-gray-200 rounded-lg p-12 text-center">
                     <span className="text-6xl mb-4 block">📝</span>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">
@@ -2021,8 +2009,8 @@ export default function SuperAdminPage() {
               ) : (
                   <div className="space-y-6">
                     {/* 포트폴리오별로 그룹화 */}
-                    {Object.entries(
-                        submissions.reduce((groups: any, submission) => {
+                    {submissions?.content && submissions.content.length > 0 && Object.entries(
+                        submissions?.content?.reduce((groups: any, submission) => {
                           const portfolioId = submission.portfolioId;
                           const portfolioTitle =
                               submission.portfolio?.title || "알 수 없음";
@@ -2044,7 +2032,8 @@ export default function SuperAdminPage() {
                             className="bg-white border-2 border-black rounded-lg overflow-hidden"
                         >
                           {/* 포트폴리오 헤더 */}
-                          <div className="bg-gray-50 px-6 py-4 border-b-2 border-gray-200 flex justify-between items-center">
+                          <div
+                              className="bg-gray-50 px-6 py-4 border-b-2 border-gray-200 flex justify-between items-center">
                             <div>
                               <h3 className="text-lg font-bold text-black">
                                 {group.portfolioTitle}
@@ -2097,11 +2086,13 @@ export default function SuperAdminPage() {
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                       {submission.isDraft ? (
-                                          <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+                                          <span
+                                              className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
                                   임시저장
                                 </span>
                                       ) : (
-                                          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                          <span
+                                              className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
                                   제출완료
                                 </span>
                                       )}
@@ -2173,26 +2164,34 @@ export default function SuperAdminPage() {
                         </div>
                     ))}
 
+                    <div className="my-6">
+                      <Pagination
+                          current={page}
+                          totalPages={submissions?.totalPages ?? 0}
+                          onChange={handlePageClick}
+                      />
+                    </div>
+
                     {/* 전체 요약 */}
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                       <h3 className="text-lg font-bold text-black mb-3">전체 요약</h3>
                       <div className="flex gap-6 text-sm text-gray-600">
                   <span>
                     전체:{" "}
-                    <strong className="text-black">{submissions.length}</strong>
+                    <strong className="text-black">{submissions?.content.length}</strong>
                     건
                   </span>
                         <span>
                     제출완료:{" "}
                           <strong className="text-green-600">
-                      {submissions.filter((s) => !s.isDraft).length}
+                      {submissions?.content.filter((s) => !s.isDraft).length}
                     </strong>
                     건
                   </span>
                         <span>
                     임시저장:{" "}
                           <strong className="text-yellow-600">
-                      {submissions.filter((s) => s.isDraft).length}
+                      {submissions?.content.filter((s) => s.isDraft).length}
                     </strong>
                     건
                   </span>
