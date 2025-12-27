@@ -40,7 +40,6 @@ export default function MembersPage() {
     const [passwordTargetMember, setPasswordTargetMember] = useState<MemberContent | null>(null);
     const [newPassword, setNewPassword] = useState("");
 
-    const [user, setUser] = useState<User | null>(null);
     const [members, setMembers] = useState<Member>();
     const [loading, setLoading] = useState(true);
     const [selectedMember, setSelectedMember] = useState<MemberContent | null>(null);

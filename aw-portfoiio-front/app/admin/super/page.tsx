@@ -17,14 +17,9 @@ import { QuestionService } from "@/services/question.service";
 import { QuestionForm } from "@/tpyes/question";
 import {SubmissionService} from "@/services/submission.service";
 import {Submission} from "@/tpyes/submission";
+import {UserService} from "@/services/user.service";
+import {UserList} from "@/tpyes/userList";
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  createdAt: string;
-}
 
 interface Question {
   id: string;
@@ -78,7 +73,7 @@ export default function SuperAdminPage() {
 
 
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserList>();
 
   //질문 목록
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -148,20 +143,17 @@ export default function SuperAdminPage() {
     order: 0,
   });
 
-  const fetchUsers = async (token: string) => {
-    try {
-      const response = await fetch("/api/users/list", {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  const fetchUsers = async () => {
+
+    await request(
+        () => UserService.get({ page: page, size: 5 }),
+        (res) => {
+          console.log("사용자 관리 목록 조회", res);
+          setUsers(res.data);
         },
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setUsers(data.users);
-      }
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-    }
+        { ignoreErrorRedirect: true },
+    );
+
   };
 
   const fetchPortfolios = async () => {
@@ -324,31 +316,18 @@ export default function SuperAdminPage() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch("/api/users/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+    await request(
+        () => UserService.post(newUser),
+        (res) => {
+          console.log("사용자 관리 목록 조회", res);
+          alert("사용자가 생성되었습니다.");
+          setShowUserForm(false);
+          setNewUser({ email: "", password: "", name: "", role: "ADMIN" });
+          fetchUsers();
         },
-        body: JSON.stringify(newUser),
-      });
-
-      if (response.ok) {
-        alert("사용자가 생성되었습니다.");
-        setShowUserForm(false);
-        setNewUser({ email: "", password: "", name: "", role: "ADMIN" });
-        // await fetchUsers(token!);
-      } else {
-        const data = await response.json();
-        alert(data.error || "사용자 생성에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Create user error:", error);
-      alert("사용자 생성 중 오류가 발생했습니다.");
-    }
+        { ignoreErrorRedirect: true },
+    );
   };
 
   //포토폴리오 추가, 수정
@@ -641,7 +620,7 @@ export default function SuperAdminPage() {
         break;
 
       case "users":
-        // fetchUsers();
+        fetchUsers();
         break;
 
       case "submissions":
@@ -1068,7 +1047,7 @@ export default function SuperAdminPage() {
                     </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {users.map((user) => (
+                    {users?.content.map((user) => (
                         <tr key={user.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-black">
@@ -1084,9 +1063,9 @@ export default function SuperAdminPage() {
                         <span
                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === "SUPER_ADMIN" ? "bg-black text-white" : "bg-gray-200 text-gray-800"}`}
                         >
-                          {user.role === "SUPER_ADMIN"
-                              ? "최고 관리자"
-                              : "관리자"}
+                          {user.role === "SUPER_ADMIN" && "최고 관리자"}
+                          {user.role === "ADMIN" && "최고 관리자"}
+                          {user.role === "USER" && "일반 회원"}
                         </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -1096,6 +1075,13 @@ export default function SuperAdminPage() {
                     ))}
                     </tbody>
                   </table>
+                  <div className="my-6">
+                    <Pagination
+                        current={page}
+                        totalPages={users?.totalPages ?? 0}
+                        onChange={handlePageClick}
+                    />
+                  </div>
                 </div>
               </div>
           )}
@@ -1923,7 +1909,7 @@ export default function SuperAdminPage() {
                       이메일
                     </label>
                     <input
-                        type="email"
+                        type="text"
                         required
                         value={newUser.email}
                         onChange={(e) =>
@@ -1953,12 +1939,13 @@ export default function SuperAdminPage() {
                     <select
                         value={newUser.role}
                         onChange={(e) =>
-                            setNewUser({ ...newUser, role: e.target.value })
+                            setNewUser({...newUser, role: e.target.value})
                         }
                         className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                     >
                       <option value="ADMIN">관리자</option>
                       <option value="SUPER_ADMIN">최고 관리자</option>
+                      <option value="USER">일반 회원</option>
                     </select>
                   </div>
                   <div className="flex gap-2 pt-4">
