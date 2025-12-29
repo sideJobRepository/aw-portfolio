@@ -97,23 +97,36 @@ export default function DynamicFormField({
   if (questionType === "text") {
     return (
       <div className="space-y-3">
-        {question.thumbnail && (
-          <div className="w-full h-40 bg-gray-200 rounded-lg overflow-hidden">
-            <img
-              src={question.thumbnail}
-              alt={question.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        )}
+        {/*{question.thumbnail && (*/}
+        {/*  <div className="w-full h-40 bg-gray-200 rounded-lg overflow-hidden">*/}
+        {/*    <img*/}
+        {/*      src={question.thumbnail}*/}
+        {/*      alt={question.title}*/}
+        {/*      className="w-full h-full object-cover"*/}
+        {/*      loading="lazy"*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*)}*/}
         <label className="block">
-          <span className="text-lg font-semibold text-black">
-            {question.title}
-            {question.isRequired && (
-              <span className="text-red-500 ml-1">*</span>
+          <div className="flex items-center gap-1 text-lg font-semibold text-black">
+            <span>{question.title}</span>
+            {question.isRequired && <span className="text-red-500">*</span>}
+
+            {question.thumbnail && (
+              <div className="relative group cursor-pointer inline-flex items-center">
+                <span className="text-gray-400 hover:text-black text-xs leading-none">
+                  ❓
+                </span>
+                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                  <img
+                    src={question.thumbnail}
+                    alt={question.title}
+                    className="w-full h-auto object-cover rounded"
+                  />
+                </div>
+              </div>
             )}
-          </span>
+          </div>
           {question.description && (
             <span className="block text-sm text-gray-600 mt-1">
               {question.description}
@@ -139,28 +152,31 @@ export default function DynamicFormField({
     return (
       <div className="space-y-3">
         <label className="block">
-          <span className="text-lg font-semibold text-black">
-            {question.title}
-            {question.isRequired && (
-              <span className="text-red-500 ml-1">*</span>
+          <div className="flex items-center gap-1 text-lg font-semibold text-black">
+            <span>{question.title}</span>
+            {question.isRequired && <span className="text-red-500">*</span>}
+
+            {question.thumbnail && (
+              <div className="relative group cursor-pointer inline-flex items-center">
+                <span className="text-gray-400 hover:text-black text-xs leading-none">
+                  ❓
+                </span>
+                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                  <img
+                    src={question.thumbnail}
+                    alt={question.title}
+                    className="w-full h-auto object-cover rounded"
+                  />
+                </div>
+              </div>
             )}
-          </span>
+          </div>
           {question.description && (
             <span className="block text-sm text-gray-600 mt-1">
               {question.description}
             </span>
           )}
         </label>
-        {question.thumbnail && (
-          <div className="w-full bg-gray-200 overflow-hidden">
-            <img
-              src={question.thumbnail}
-              alt={question.title}
-              className="w-full h-full object-contain"
-              loading="lazy"
-            />
-          </div>
-        )}
         <textarea
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value)}
@@ -180,23 +196,26 @@ export default function DynamicFormField({
     const hasUploadedFile = value && value.url;
     return (
       <div className="space-y-3">
-        {question.thumbnail && (
-          <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
-            <img
-              src={question.thumbnail}
-              alt={question.title}
-              className="w-full h-full"
-              loading="lazy"
-            />
-          </div>
-        )}
         <label className="block">
-          <span className="text-lg font-semibold text-black">
-            {question.title}
-            {question.isRequired && (
-              <span className="text-red-500 ml-1">*</span>
+          <div className="flex items-center gap-1 text-lg font-semibold text-black">
+            <span>{question.title}</span>
+            {question.isRequired && <span className="text-red-500">*</span>}
+
+            {question.thumbnail && (
+              <div className="relative group cursor-pointer inline-flex items-center">
+                <span className="text-gray-400 hover:text-black text-xs leading-none">
+                  ❓
+                </span>
+                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                  <img
+                    src={question.thumbnail}
+                    alt={question.title}
+                    className="w-full h-auto object-cover rounded"
+                  />
+                </div>
+              </div>
             )}
-          </span>
+          </div>
           {question.description && (
             <span className="block text-sm text-gray-600 mt-1">
               {question.description}
@@ -239,12 +258,25 @@ export default function DynamicFormField({
       return (
         <div className="space-y-3">
           <label className="block">
-            <span className="text-lg font-semibold text-black">
-              {question.title}
-              {question.isRequired && (
-                <span className="text-red-500 ml-1">*</span>
+            <div className="flex items-center gap-1 text-lg font-semibold text-black">
+              <span>{question.title}</span>
+              {question.isRequired && <span className="text-red-500">*</span>}
+
+              {question.thumbnail && (
+                <div className="relative group cursor-pointer inline-flex items-center">
+                  <span className="text-gray-400 hover:text-black text-xs leading-none">
+                    ❓
+                  </span>
+                  <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                    <img
+                      src={question.thumbnail}
+                      alt={question.title}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </div>
+                </div>
               )}
-            </span>
+            </div>
             {question.description && (
               <span className="block text-sm text-gray-600 mt-1">
                 {question.description}
@@ -275,23 +307,26 @@ export default function DynamicFormField({
 
     return (
       <div className="space-y-4 bg-white p-6 rounded-lg border-2 border-gray-200">
-        {question.thumbnail && (
-          <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
-            <img
-              src={question.thumbnail}
-              alt={question.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        )}
         <div>
-          <span className="text-lg font-semibold text-black">
-            {question.title}
-            {question.isRequired && (
-              <span className="text-red-500 ml-1">*</span>
+          <div className="flex items-center gap-1 text-lg font-semibold text-black">
+            <span>{question.title}</span>
+            {question.isRequired && <span className="text-red-500">*</span>}
+
+            {question.thumbnail && (
+              <div className="relative group cursor-pointer inline-flex items-center">
+                <span className="text-gray-400 hover:text-black text-xs leading-none">
+                  ❓
+                </span>
+                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                  <img
+                    src={question.thumbnail}
+                    alt={question.title}
+                    className="w-full h-auto object-cover rounded"
+                  />
+                </div>
+              </div>
             )}
-          </span>
+          </div>
           {question.description && (
             <p className="text-sm text-gray-600 mt-1">{question.description}</p>
           )}
@@ -374,114 +409,6 @@ export default function DynamicFormField({
     );
   }
 
-  // 반복 가능한 필드 - 사용안함으로 체크
-  // if (questionType === 'repeatable') {
-  //     if (!isRepeatableOptions(parsedOptions)) {
-  //         console.error('Invalid repeatable options:', parsedOptions);
-  //         return (
-  //             <div className="space-y-3">
-  //                 <label className="block">
-  //                     <span className="text-lg font-semibold text-black">
-  //                         {question.title}
-  //                         {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-  //                     </span>
-  //                     {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
-  //                 </label>
-  //                 <p className="text-sm text-red-500">반복 필드 설정 오류: 관리자에게 문의하세요.</p>
-  //             </div>
-  //         );
-  //     }
-  //
-  //     const currentValue: any[] = Array.isArray(value) ? value : [{}];
-  //
-  //     return (
-  //         <div className="space-y-3">
-  //             {question.thumbnail && (
-  //                 <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
-  //                     <img src={question.thumbnail} alt={question.title} className="w-full h-full" loading="lazy" />
-  //                 </div>
-  //             )}
-  //             <label className="block">
-  //                 <span className="text-lg font-semibold text-black">
-  //                     {question.title}
-  //                     {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-  //                 </span>
-  //                 {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
-  //             </label>
-  //
-  //             <div className="space-y-4">
-  //                 {currentValue.map((item, itemIdx) => (
-  //                     <div key={itemIdx} className="border-2 border-gray-300 rounded-lg p-4 space-y-3">
-  //                         <div className="flex justify-between items-center mb-3">
-  //                             <span className="font-semibold text-gray-700">항목 {itemIdx + 1}</span>
-  //                             {currentValue.length > 1 && (
-  //                                 <button
-  //                                     type="button"
-  //                                     onClick={() => {
-  //                                         const newValue = currentValue.filter((_, idx) => idx !== itemIdx);
-  //                                         onChange(newValue);
-  //                                     }}
-  //                                     className="text-sm text-red-600 hover:text-red-800 font-semibold"
-  //                                 >
-  //                                     삭제
-  //                                 </button>
-  //                             )}
-  //                         </div>
-  //
-  //                         {parsedOptions.fields.map((field, fieldIdx) => (
-  //                             <div key={fieldIdx}>
-  //                                 <label className="block text-sm font-semibold text-gray-700 mb-1">{field.label}</label>
-  //                                 {field.type === 'text' ? (
-  //                                     <input
-  //                                         type="text"
-  //                                         value={item[field.label] || ''}
-  //                                         onChange={(e) => {
-  //                                             const newValue = [...currentValue];
-  //                                             newValue[itemIdx] = {
-  //                                                 ...newValue[itemIdx],
-  //                                                 [field.label]: e.target.value,
-  //                                             };
-  //                                             onChange(newValue);
-  //                                         }}
-  //                                         placeholder={field.placeholder}
-  //                                         className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-  //                                     />
-  //                                 ) : (
-  //                                     <>
-  //                                         <input
-  //                                             type="file"
-  //                                             accept="image/*,.pdf"
-  //                                             disabled={uploading}
-  //                                             onChange={async (e) => {
-  //                                                 const file = e.target.files?.[0];
-  //                                                 if (file) {
-  //                                                     const newValue = [...currentValue];
-  //                                                     newValue[itemIdx] = {
-  //                                                         ...newValue[itemIdx],
-  //                                                         [field.label]: file, // File 그대로
-  //                                                     };
-  //                                                     onChange(newValue);
-  //                                                 }
-  //                                             }}
-  //                                             className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-black file:text-white file:cursor-pointer hover:file:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-  //                                         />
-  //                                         {item[field.label] && field.type === 'file' && <p className="text-sm text-green-600 mt-1">✅ 파일 선택됨: {item[field.label].name}</p>}
-  //                                     </>
-  //                                 )}
-  //                             </div>
-  //                         ))}
-  //                     </div>
-  //                 ))}
-  //
-  //                 <button type="button" onClick={() => onChange([...currentValue, {}])} className="w-full px-4 py-3 border-2 border-dashed border-gray-400 rounded-lg font-semibold text-gray-700 hover:border-black hover:text-black transition-all">
-  //                     + 항목 추가
-  //                 </button>
-  //             </div>
-  //             {error && <p className="text-sm text-red-500">{error}</p>}
-  //         </div>
-  //     );
-  // }
-
   // 동의 체크박스 (0단계 안내사항)
   if (questionType === "agreement") {
     const agreementItems = isAgreementOptions(parsedOptions)
@@ -560,21 +487,26 @@ export default function DynamicFormField({
   // 기본: textarea (호환용)
   return (
     <div className="space-y-3">
-      {question.thumbnail && (
-        <div className="w-full h-35 bg-gray-200 rounded-lg overflow-hidden">
-          <img
-            src={question.thumbnail}
-            alt={question.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-      )}
       <label className="block">
-        <span className="text-lg font-semibold text-black">
-          {question.title}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </span>
+        <div className="flex items-center gap-1 text-lg font-semibold text-black">
+          <span>{question.title}</span>
+          {question.isRequired && <span className="text-red-500">*</span>}
+
+          {question.thumbnail && (
+            <div className="relative group cursor-pointer inline-flex items-center">
+              <span className="text-gray-400 hover:text-black text-xs leading-none">
+                ❓
+              </span>
+              <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                <img
+                  src={question.thumbnail}
+                  alt={question.title}
+                  className="w-full h-auto object-cover rounded"
+                />
+              </div>
+            </div>
+          )}
+        </div>
         {question.description && (
           <span className="block text-sm text-gray-600 mt-1">
             {question.description}
