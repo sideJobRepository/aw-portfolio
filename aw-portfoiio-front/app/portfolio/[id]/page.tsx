@@ -47,6 +47,8 @@ export default function PortfolioForm() {
   //id 방식 교체
   const id = params.id as string;
   const submissionId = searchParams.get("submissionId");
+  //상세보기 제어
+  const isDetailMode = searchParams.get("detail") === "true";
 
   //로그인 상태
   const currentUser = useRecoilValue(userState);
@@ -511,13 +513,19 @@ export default function PortfolioForm() {
     ]);
   };
 
-  // ✅ 스페셜 삭제
+  // 스페셜 삭제
   const handleRemoveSpecial = (id: string) => {
     setSpecials((prev) => prev.filter((sp) => sp.id !== id));
   };
 
   const handleNext = async () => {
-    if (validateStep()) {
+    //디테일 모드 일 경우는 검증 제외
+    if (!isDetailMode && validateStep()) {
+      if (currentStep < maxStep) {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo(0, 0);
+      }
+    } else {
       if (currentStep < maxStep) {
         setCurrentStep(currentStep + 1);
         window.scrollTo(0, 0);
@@ -759,13 +767,15 @@ export default function PortfolioForm() {
                           <h3 className="text-lg font-semibold text-black">
                             객실 정보 입력
                           </h3>
-                          <button
-                            type="button"
-                            onClick={handleAddRoom}
-                            className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
-                          >
-                            + 객실 추가
-                          </button>
+                          {!isDetailMode && (
+                            <button
+                              type="button"
+                              onClick={handleAddRoom}
+                              className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+                            >
+                              + 객실 추가
+                            </button>
+                          )}
                         </div>
 
                         {rooms.length === 0 && (
@@ -806,6 +816,7 @@ export default function PortfolioForm() {
                               <input
                                 type="text"
                                 value={room.name}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = rooms.map((r) =>
                                     r.id === room.id
@@ -825,6 +836,7 @@ export default function PortfolioForm() {
                               </label>
                               <textarea
                                 value={room.desc}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = rooms.map((r) =>
                                     r.id === room.id
@@ -846,6 +858,7 @@ export default function PortfolioForm() {
                               <input
                                 type="text"
                                 value={room.type}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = rooms.map((r) =>
                                     r.id === room.id
@@ -866,6 +879,7 @@ export default function PortfolioForm() {
                               <input
                                 type="text"
                                 value={room.price}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = rooms.map((r) =>
                                     r.id === room.id
@@ -891,13 +905,15 @@ export default function PortfolioForm() {
                           <h3 className="text-lg font-semibold text-black">
                             스페셜 정보 입력
                           </h3>
-                          <button
-                            type="button"
-                            onClick={handleAddSpecial}
-                            className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
-                          >
-                            + 스페셜 추가
-                          </button>
+                          {!isDetailMode && (
+                            <button
+                              type="button"
+                              onClick={handleAddSpecial}
+                              className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+                            >
+                              + 스페셜 추가
+                            </button>
+                          )}
                         </div>
 
                         {specials.length === 0 && (
@@ -938,6 +954,7 @@ export default function PortfolioForm() {
                               <input
                                 type="text"
                                 value={sp.name}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = specials.map((s) =>
                                     s.id === sp.id
@@ -957,6 +974,7 @@ export default function PortfolioForm() {
                               </label>
                               <textarea
                                 value={sp.desc}
+                                disabled={isDetailMode}
                                 onChange={(e) => {
                                   const updated = specials.map((s) =>
                                     s.id === sp.id
@@ -986,6 +1004,7 @@ export default function PortfolioForm() {
                       value={formData[question.id]}
                       onChange={(value) => handleChange(question.id, value)}
                       error={errors[question.id]}
+                      disabled={isDetailMode}
                     />
                   );
                 })
@@ -1015,33 +1034,46 @@ export default function PortfolioForm() {
               )}
             </div>
 
-            {/* 오른쪽 */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleSaveDraft}
-                disabled={submitting}
-                className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-black transition-all disabled:opacity-50"
-              >
-                💾 임시저장
-              </button>
-
-              {currentStep < maxStep ? (
+            {/* 오른쪽 - 디테일 모드 분리*/}
+            {!isDetailMode ? (
+              <div className="flex gap-3">
                 <button
-                  onClick={handleNext}
-                  className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all"
-                >
-                  {currentStep === 0 ? "시작하기" : "다음"}
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
+                  onClick={handleSaveDraft}
                   disabled={submitting}
-                  className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-black transition-all disabled:opacity-50"
                 >
-                  {submitting ? "제출 중..." : "제출하기"}
+                  💾 임시저장
                 </button>
-              )}
-            </div>
+
+                {currentStep < maxStep ? (
+                  <button
+                    onClick={handleNext}
+                    className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all"
+                  >
+                    {currentStep === 0 ? "시작하기" : "다음"}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? "제출 중..." : "제출하기"}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                {currentStep < maxStep && (
+                  <button
+                    onClick={handleNext}
+                    className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all"
+                  >
+                    다음
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
