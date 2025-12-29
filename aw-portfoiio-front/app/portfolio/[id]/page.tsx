@@ -96,10 +96,26 @@ export default function PortfolioForm() {
     },
   ]);
 
-  // 스페셜 (6단계)
+  // 스페셜
   const [specials, setSpecials] = useState<
     Array<{ id: string; name: string; desc: string }>
   >([{ id: "special-1", name: "", desc: "" }]);
+
+  //환불
+  const [refunds, setRefunds] = useState<
+    Array<{ id: string; day: string; percent: string }>
+  >([{ id: "refund-1", day: "", percent: "" }]);
+
+  const handleAddRefund = () => {
+    setRefunds((prev) => [
+      ...prev,
+      { id: `refund-${Date.now()}`, day: "", percent: "" },
+    ]);
+  };
+
+  const handleRemoveRefund = (id: string) => {
+    setRefunds((prev) => prev.filter((r) => r.id !== id));
+  };
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -147,6 +163,7 @@ export default function PortfolioForm() {
         ...cleanedFormData,
         rooms,
         specials,
+        refunds,
       },
       optionFiles,
     };
@@ -271,6 +288,20 @@ export default function PortfolioForm() {
               );
             } else {
               setSpecials([{ id: "special-1", name: "", desc: "" }]);
+            }
+
+            // 환불 복원
+            const savedRefunds = parsedResponses?.refunds;
+            if (Array.isArray(savedRefunds) && savedRefunds.length > 0) {
+              setRefunds(
+                savedRefunds.map((r: any, idx: number) => ({
+                  id: r.id || `refund-${idx + 1}`,
+                  day: r.day || "",
+                  percent: r.percent || "",
+                })),
+              );
+            } else {
+              setRefunds([{ id: "refund-1", day: "", percent: "" }]);
             }
 
             alert("기존 작성 내역을 불러왔습니다.");
@@ -1089,6 +1120,117 @@ export default function PortfolioForm() {
                                 rows={3}
                                 placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
                               />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  if (question.questionType === "refund") {
+                    return (
+                      <div key={question.id} className="mt-6 space-y-8">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-black">
+                            취소/환불정책
+                          </h3>
+                          {!isDetailMode && (
+                            <button
+                              type="button"
+                              onClick={handleAddRefund}
+                              className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+                            >
+                              + 추가
+                            </button>
+                          )}
+                        </div>
+
+                        {refunds.length === 0 && (
+                          <p className="text-gray-500 text-sm">
+                            아직 등록된 환불 기준이 없습니다. “환불 기준 추가”를
+                            눌러주세요.
+                          </p>
+                        )}
+
+                        {refunds.map((refund, index) => (
+                          <div
+                            key={refund.id}
+                            className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
+                          >
+                            {refunds.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveRefund(refund.id)}
+                                className="absolute top-3 right-3 text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                              >
+                                삭제
+                              </button>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex w-7 h-7 items-center justify-center rounded-full bg-black text-white text-xs">
+                                {index + 1}
+                              </span>
+                              <p className="text-sm text-gray-700">
+                                환불기준 {index + 1}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-2">
+                              {index === 0 ? (
+                                <>
+                                  <span>방문당일 총 금액의</span>
+                                  <input
+                                    type="number"
+                                    value={refund.percent}
+                                    disabled={isDetailMode}
+                                    onChange={(e) => {
+                                      const updated = refunds.map((r) =>
+                                        r.id === refund.id
+                                          ? { ...r, percent: e.target.value }
+                                          : r,
+                                      );
+                                      setRefunds(updated);
+                                    }}
+                                    className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-center"
+                                  />
+                                  <span>% 환불</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>방문</span>
+                                  <input
+                                    type="number"
+                                    value={refund.day}
+                                    disabled={isDetailMode}
+                                    onChange={(e) => {
+                                      const updated = refunds.map((r) =>
+                                        r.id === refund.id
+                                          ? { ...r, day: e.target.value }
+                                          : r,
+                                      );
+                                      setRefunds(updated);
+                                    }}
+                                    className="w-12 border border-gray-300 rounded-lg px-2 py-1 text-center"
+                                  />
+                                  <span>일 전 총 금액의</span>
+                                  <input
+                                    type="number"
+                                    value={refund.percent}
+                                    disabled={isDetailMode}
+                                    onChange={(e) => {
+                                      const updated = refunds.map((r) =>
+                                        r.id === refund.id
+                                          ? { ...r, percent: e.target.value }
+                                          : r,
+                                      );
+                                      setRefunds(updated);
+                                    }}
+                                    className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-center"
+                                  />
+                                  <span>% 환불</span>
+                                </>
+                              )}
                             </div>
                           </div>
                         ))}
