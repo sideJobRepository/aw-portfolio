@@ -595,7 +595,7 @@ export default function PortfolioForm() {
   //임시저장
   const handleSaveDraft = async () => {
     if (!portfolio) return;
-    debugger;
+
     setSubmitting(true);
     try {
       const { response, optionFiles } = extractSubmitData();
