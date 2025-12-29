@@ -53,6 +53,20 @@ export default function PortfolioForm() {
   //로그인 상태
   const currentUser = useRecoilValue(userState);
 
+  //자동 저장
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [shouldAutoSave, setShouldAutoSave] = useState(false);
+  const startAutoSave = () => {
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      setShouldAutoSave(true); // 트리거
+      startAutoSave(); // 다음 타이머 예약
+    }, 60000);
+  };
+
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentStep, setCurrentStep] = useState(-1); // -1 = 로딩, 0+ = 질문 단계
@@ -91,8 +105,6 @@ export default function PortfolioForm() {
   const [submitting, setSubmitting] = useState(false);
   const [userRole, setUserRole] = useState<string>("");
 
-  const [companyName, setCompanyName] = useState("");
-  const [password, setPassword] = useState("");
   const [existingSubmissionId, setExistingSubmissionId] = useState<
     string | null
   >(null);
@@ -165,7 +177,23 @@ export default function PortfolioForm() {
     if (currentUser && portfolio?.id && submissionId) {
       checkExistingSubmission();
     }
+
+    if (!isDetailMode) {
+      startAutoSave();
+    }
   }, [currentUser, portfolio?.id]);
+
+  //자동저장 트리거
+  useEffect(() => {
+    if (!shouldAutoSave) return;
+
+    const save = async () => {
+      await handleSaveDraft();
+      setShouldAutoSave(false);
+    };
+
+    save();
+  }, [shouldAutoSave]);
 
   // Enter로 다음
   useEffect(() => {
@@ -567,6 +595,7 @@ export default function PortfolioForm() {
   //임시저장
   const handleSaveDraft = async () => {
     if (!portfolio) return;
+    debugger;
     setSubmitting(true);
     try {
       const { response, optionFiles } = extractSubmitData();
@@ -602,6 +631,7 @@ export default function PortfolioForm() {
             setExistingSubmissionId(res.data.submissionId);
           }
           alert("임시저장되었습니다.");
+          startAutoSave();
         },
         { ignoreErrorRedirect: true },
       );
