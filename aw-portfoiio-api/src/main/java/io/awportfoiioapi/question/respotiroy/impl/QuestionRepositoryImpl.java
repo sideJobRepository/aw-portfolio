@@ -2,6 +2,9 @@ package io.awportfoiioapi.question.respotiroy.impl;
 
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.awportfoiioapi.excel.dto.response.ExcelColumnResponse;
+import io.awportfoiioapi.excel.dto.response.QExcelColumnResponse;
+import io.awportfoiioapi.options.enums.OptionsType;
 import io.awportfoiioapi.question.dto.response.QQuestionGetResponse;
 import io.awportfoiioapi.question.dto.response.QuestionGetResponse;
 import io.awportfoiioapi.question.entity.Question;
@@ -72,5 +75,24 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
                         );
         
         return new ArrayList<>(result.values());
+    }
+    
+    @Override
+    public List<ExcelColumnResponse> findByColumn(Long portfolioId) {
+        return queryFactory
+                .select(
+                        new QExcelColumnResponse(
+                                question.id,
+                                options.id,
+                                options.orders,
+                                options.title
+                        )
+                )
+                .from(options)
+                .join(options.question, question)
+                .where(question.portfolio.id.eq(portfolioId) , options.type.ne(OptionsType.FILE))
+                .orderBy(question.id.asc(),options.id.asc(), options.orders.asc())
+                .fetch();
+       
     }
 }

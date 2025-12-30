@@ -2,6 +2,7 @@ package io.awportfoiioapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awportfoiioapi.category.service.CategoryService;
+import io.awportfoiioapi.excel.service.ExcelService;
 import io.awportfoiioapi.portfolio.serivce.PortfolioService;
 import io.awportfoiioapi.question.service.QuestionService;
 import io.awportfoiioapi.submission.service.SubmissionService;
@@ -36,4 +37,7 @@ public abstract class RepositoryAndServiceTestSupport {
     
     @Autowired
     protected SubmissionsService submissionsService;
+    
+    @Autowired
+    protected ExcelService excelService;
 }

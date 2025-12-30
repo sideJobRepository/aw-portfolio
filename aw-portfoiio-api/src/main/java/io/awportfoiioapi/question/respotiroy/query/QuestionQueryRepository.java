@@ -1,5 +1,6 @@
 package io.awportfoiioapi.question.respotiroy.query;
 
+import io.awportfoiioapi.excel.dto.response.ExcelColumnResponse;
 import io.awportfoiioapi.question.dto.response.QuestionGetResponse;
 import io.awportfoiioapi.question.entity.Question;
 
@@ -13,4 +14,7 @@ public interface QuestionQueryRepository {
     Question findByPortfolioStep(Long portfolioId, Integer step);
     
     List<QuestionGetResponse>findByQuestions(Long portfolioId);
+    
+    List<ExcelColumnResponse> findByColumn(Long portfolioId);
+    
 }
