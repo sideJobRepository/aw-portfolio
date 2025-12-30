@@ -301,8 +301,6 @@ export default function PortfolioForm() {
             } else {
               setRefunds([{ id: "refund-1", day: "", percent: "" }]);
             }
-
-            alert("기존 작성 내역을 불러왔습니다.");
           }
         },
         { ignoreErrorRedirect: true },
@@ -661,6 +659,8 @@ export default function PortfolioForm() {
           }
           alert("임시저장되었습니다.");
           startAutoSave();
+
+          window.location.href = `/portfolio/${portfolio.id}?submissionId=${res.data.submissionId}`;
         },
         { ignoreErrorRedirect: true },
       );
