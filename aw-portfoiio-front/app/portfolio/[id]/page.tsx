@@ -119,7 +119,6 @@ export default function PortfolioForm() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [userRole, setUserRole] = useState<string>("");
 
   const [existingSubmissionId, setExistingSubmissionId] = useState<
     string | null
@@ -182,7 +181,6 @@ export default function PortfolioForm() {
     //로그인 정보 확인
     if (loginGb) {
       if (currentUser) {
-        setUserRole(currentUser.role);
         fetchPortfolioAndQuestions();
       }
     } else {
@@ -739,7 +737,7 @@ export default function PortfolioForm() {
     }
   };
 
-  if (loading || currentStep === -1) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">로딩 중...</div>
