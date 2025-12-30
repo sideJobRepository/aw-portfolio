@@ -150,7 +150,6 @@ class SubmissionServiceImplTest extends RepositoryAndServiceTestSupport {
         
         List<SubmissionGetListRequest> test = submissionService.getSubmissionsList(2L);
         
-        
         System.out.println("test = " + test);
     }
 }

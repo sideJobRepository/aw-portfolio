@@ -15,15 +15,18 @@ public class ExcelColumnResponse {
     
     private Integer optionsOrders;
     
+    private String optionsType;
+    
     private String column;
     
     
     
     @QueryProjection
-    public ExcelColumnResponse(Long questionId, Long optionsId, Integer optionsOrders, String column) {
+    public ExcelColumnResponse(Long questionId, Long optionsId, Integer optionsOrders, String optionsType, String column) {
         this.questionId = questionId;
         this.optionsId = optionsId;
         this.optionsOrders = optionsOrders;
+        this.optionsType = optionsType;
         this.column = column;
     }
 }

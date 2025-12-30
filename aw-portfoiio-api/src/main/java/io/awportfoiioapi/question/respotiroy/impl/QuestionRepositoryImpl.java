@@ -85,6 +85,7 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
                                 question.id,
                                 options.id,
                                 options.orders,
+                                options.type.stringValue(),
                                 options.title
                         )
                 )
@@ -93,6 +94,6 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
                 .where(question.portfolio.id.eq(portfolioId) , options.type.ne(OptionsType.FILE))
                 .orderBy(question.id.asc(),options.id.asc(), options.orders.asc())
                 .fetch();
-       
+
     }
 }
