@@ -15,7 +15,8 @@ public enum OptionsType {
     CHECKBOX("체크박스(조건부 입력)"),
     PARLOR("객실"),
     SPECIAL("스페셜"),
-    REFUND("환불");
+    REFUND("환불"),
+    MULTI_TEXT("멀티 텍스트");
     
     private final String value;
     public static OptionsType fromValue(String value) {
