@@ -28,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -114,6 +111,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     
     @Override
     public ApiResponse createSubmission(SubmissionPostRequest request) {
+        
         Long memberId = request.getMemberId();
         Long submissionId = request.getSubmissionId();
         Long portfolioId = request.getPortfolioId();
@@ -144,22 +142,69 @@ public class SubmissionServiceImpl implements SubmissionService {
                             .build()
             );
         } else {
+            // JSON 수정 + 완료처리
             submission.modifySubmission(request);
         }
         
-        // 4. 기존 옵션 파일 전부 삭제
-        List<CommonFile> oldFiles = commonFileRepository.findByFileTargetIdAndFileTypeList(submission.getId(), CommonFileType.SUBMISSION_OPTION);
-        
-        commonFileRepository.deleteSubmissionOptionFiles(submission.getId(), CommonFileType.SUBMISSION_OPTION);
-        
-        for (CommonFile file : oldFiles) {
-            s3FileUtils.deleteFile(file.getFileUrl());
+        /**
+         * 4️⃣ optionFiles 자체가 없으면 파일은 건드리지 않음
+         * -> 다른 질문 파일 삭제되는 문제 방지
+         */
+        if (request.getOptionFiles() == null || request.getOptionFiles().isEmpty()) {
+            return new ApiResponse(200, true, "제출이 완료되었습니다.", submission.getId());
         }
         
-        // 5. 옵션별 파일 재업로드
+        /**
+         * 5️DB에 저장된 기존 파일 전체 조회
+         */
+        List<CommonFile> existingFiles =
+                commonFileRepository.findByFileTargetIdAndFileTypeList(
+                        submission.getId(),
+                        CommonFileType.SUBMISSION_OPTION
+                );
+        
+        /**
+         * 요청 optionId 기준 그룹핑
+         */
+        Map<Long, List<MultipartFile>> requestFilesByOption =
+                request.getOptionFiles().stream()
+                        .collect(Collectors.toMap(
+                                SubmissionPostRequest.OptionFileRequest::getOptionsId,
+                                SubmissionPostRequest.OptionFileRequest::getFiles
+                        ));
+        
+        // 요청에 포함된 optionId만 변경대상
+        Set<Long> optionIdsInRequest = requestFilesByOption.keySet();
+        
+        /**
+         * 삭제 처리
+         * -> 요청된 optionId 범위 안에서만 삭제 판단
+         */
+        for (CommonFile file : existingFiles) {
+            
+            Long optionId = file.getOptionsId();
+            
+            // 요청되지 않은 optionId는 유지 (절대 건들지 않음)
+            if (!optionIdsInRequest.contains(optionId)) continue;
+            
+            boolean existsInRequest =
+                    requestFilesByOption.containsKey(optionId)
+                            && requestFilesByOption.get(optionId) != null
+                            && !requestFilesByOption.get(optionId).isEmpty();
+            
+            // 요청에서 해당 옵션 파일 없이 오면 → 삭제로 간주
+            if (!existsInRequest) {
+                s3FileUtils.deleteFile(file.getFileUrl());
+                commonFileRepository.delete(file);
+            }
+        }
+        
+        /**
+         * 신규 업로드 처리 (해당 optionId 내부)
+         */
         for (SubmissionPostRequest.OptionFileRequest optionFile : request.getOptionFiles()) {
             
-            Long optionsId = optionFile.getOptionsId();
+            Long optionId = optionFile.getOptionsId();
             List<MultipartFile> files = optionFile.getFiles();
             
             if (files == null || files.isEmpty()) continue;
@@ -170,7 +215,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 
                 CommonFile commonFile = CommonFile.builder()
                         .fileTargetId(submission.getId())
-                        .optionsId(optionsId)
+                        .optionsId(optionId)
                         .questionStep(optionFile.getQuestionStep())
                         .questionOrder(optionFile.getQuestionOrder())
                         .fileName(upload.originalFilename())
@@ -183,7 +228,7 @@ public class SubmissionServiceImpl implements SubmissionService {
             }
         }
         
-        return new ApiResponse(200, true, "저장 되었습니다.", submission.getId());
+        return new ApiResponse(200, true, "제출이 완료되었습니다.", submission.getId());
     }
     
     @Override
@@ -220,35 +265,83 @@ public class SubmissionServiceImpl implements SubmissionService {
         } else {
             submission.modifyJson(request);
         }
-        List<CommonFile> oldFiles = commonFileRepository.findByFileTargetIdAndFileTypeList(submission.getId(), CommonFileType.SUBMISSION_OPTION);
-        // 옵션 단위 전부 delete → insert
-        commonFileRepository.deleteSubmissionOptionFiles(
-                submission.getId(),
-                CommonFileType.SUBMISSION_OPTION
-        );
         
-        for (CommonFile file : oldFiles) {
-            s3FileUtils.deleteFile(file.getFileUrl());
+        /**
+         * optionFiles 자체가 없으면 파일은 건드리지 않고 종료
+         *  - 다른 질문 영역 파일 삭제 방지
+         */
+        if (request.getOptionFiles() == null || request.getOptionFiles().isEmpty()) {
+            return new ApiResponse(200, true, "임시저장 되었습니다.", submission.getId());
         }
         
+        /**
+         * 5. DB에 있는 모든 파일 조회 (SUBMISSION_OPTION 전체)
+         */
+        List<CommonFile> existingFiles =
+                commonFileRepository.findByFileTargetIdAndFileTypeList(
+                        submission.getId(),
+                        CommonFileType.SUBMISSION_OPTION
+                );
         
-        // 5.옵션별 파일 처리 (신규/기존 공통)
+        /**
+         * 6. 요청 optionId 기준으로 파일 그룹핑
+         */
+        Map<Long, List<MultipartFile>> requestFilesByOption =
+                request.getOptionFiles().stream()
+                        .collect(Collectors.toMap(
+                                SubmissionPostDraftRequest.OptionFileRequest::getOptionsId,
+                                SubmissionPostDraftRequest.OptionFileRequest::getFiles
+                        ));
+        
+        /**
+         *  7. 요청에 포함된 optionId만 “변경 대상”으로 삼음
+         *  - 나머지 옵션은 유지(절대 삭제 안 함)
+         */
+        Set<Long> optionIdsInRequest = requestFilesByOption.keySet();
+        
+        /**
+         * 8. 삭제 처리
+         *  - 동일 optionId 안에서만 삭제 판단
+         */
+        for (CommonFile file : existingFiles) {
+            
+            Long optionId = file.getOptionsId();
+            
+            // 요청되지 않은 optionId는 아예 건드리지 않음
+            if (!optionIdsInRequest.contains(optionId)) {
+                continue;
+            }
+            
+            boolean existsInRequest =
+                    requestFilesByOption.containsKey(optionId)
+                            && requestFilesByOption.get(optionId) != null
+                            && !requestFilesByOption.get(optionId).isEmpty();
+            
+            // 요청 optionId 안에서 files 비어 있으면 해당 옵션은 삭제 의사로 간주
+            if (!existsInRequest) {
+                s3FileUtils.deleteFile(file.getFileUrl());
+                commonFileRepository.delete(file);
+            }
+        }
+        
+        /**
+         * 9. 신규 업로드 처리
+         *  - 요청 optionId 범위 안에서만 새 파일 추가
+         */
         for (SubmissionPostDraftRequest.OptionFileRequest optionFile : request.getOptionFiles()) {
             
-            Long optionsId = optionFile.getOptionsId();
+            Long optionId = optionFile.getOptionsId();
             List<MultipartFile> files = optionFile.getFiles();
             
-            if (files.isEmpty()) continue;
+            if (files == null || files.isEmpty()) continue;
             
-            
-            // 5-2. 새 파일 업로드 & 저장
             for (MultipartFile file : files) {
                 
                 UploadResult upload = s3FileUtils.storeFile(file, "submission");
                 
                 CommonFile commonFile = CommonFile.builder()
                         .fileTargetId(submission.getId())
-                        .optionsId(optionsId)
+                        .optionsId(optionId)
                         .questionStep(optionFile.getQuestionStep())
                         .questionOrder(optionFile.getQuestionOrder())
                         .fileName(upload.originalFilename())
@@ -261,8 +354,6 @@ public class SubmissionServiceImpl implements SubmissionService {
             }
         }
         
-        
         return new ApiResponse(200, true, "임시저장 되었습니다.", submission.getId());
-        
     }
 }

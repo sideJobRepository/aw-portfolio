@@ -48,6 +48,9 @@ dependencies {
     //스프링 시큐리티 리소스 서버
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
+    //아파치 poi
+    implementation 'org.apache.poi:poi-ooxml:5.4.0'
+
 }
 
 tasks.named('test') {
