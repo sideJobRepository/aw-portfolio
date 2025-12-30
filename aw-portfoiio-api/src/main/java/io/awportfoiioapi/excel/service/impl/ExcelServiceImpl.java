@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -189,13 +190,42 @@ public class ExcelServiceImpl implements ExcelService {
                 }
             }
 
-            // 자동 컬럼 너비
+      
             for (int i = 0; i < colIdx; i++) {
-                sheet.autoSizeColumn(i, true);          // 변경
-                int width = sheet.getColumnWidth(i);
-                sheet.setColumnWidth(i, width + 1024);  // (여유공간 주기)
+            
+                int maxWidth = 0;
+            
+                int lastRowNum = sheet.getLastRowNum();
+            
+                for (int r = 0; r <= lastRowNum; r++) {
+            
+                    Row row = sheet.getRow(r);
+                    if (row == null) continue;
+            
+                    Cell cell = row.getCell(i);
+                    if (cell == null) continue;
+            
+                    String text = cell.toString();
+                    if (text == null) continue;
+            
+                    int visual = 0;
+            
+                    for (char ch : text.toCharArray()) {
+                        // 한글·문자 → 2폭
+                        if (ch > 0x007F) {
+                            visual += 2;
+                        } else {
+                            visual += 1;
+                        }
+                    }
+            
+                    maxWidth = Math.max(maxWidth, visual);
+                }
+            
+                int width = Math.min(255 * 256, (maxWidth + 2) * 256);
+            
+                sheet.setColumnWidth(i, width);
             }
-
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
 
