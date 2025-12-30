@@ -64,7 +64,7 @@ export default function PortfolioForm() {
     autoSaveTimeoutRef.current = setTimeout(() => {
       setShouldAutoSave(true); // 트리거
       startAutoSave(); // 다음 타이머 예약
-    }, 60000);
+    }, 180000);
   };
 
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);

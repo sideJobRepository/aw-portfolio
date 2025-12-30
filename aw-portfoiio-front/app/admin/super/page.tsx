@@ -19,6 +19,7 @@ import { SubmissionService } from "@/services/submission.service";
 import { Submission } from "@/tpyes/submission";
 import { UserService } from "@/services/user.service";
 import { UserList } from "@/tpyes/userList";
+import {AuthService} from "@/services/auth.service";
 
 interface Question {
   id: string;
@@ -62,6 +63,8 @@ export default function SuperAdminPage() {
 
   //포토폴리오 list
   const [portfolios, setPortfolios] = useState<Portfolio>();
+  //포트폴리오 검색
+  const [searchName, setSearchName] = useState("");
   //포토폴리오 카테고리 목록
   const [selectCategory, setSelectCategory] = useState<CategorySelect[]>();
   //전체 포토폴리오
@@ -154,7 +157,7 @@ export default function SuperAdminPage() {
   //포트폴리오 탭
   const fetchPortfolios = async () => {
     await request(
-      () => PortfolioService.get({ page: page, size: 5 }),
+      () => PortfolioService.get({ page: page, size: 5, name: searchName }),
       (res) => {
         console.log("포토폴리오 목록 조회", res);
         setPortfolios(res.data);
@@ -643,7 +646,7 @@ export default function SuperAdminPage() {
         break;
 
       case "questions":
-        if (portfolios) setSelectedPortfolio(portfolios.content[0].id);
+        if (allPortfolios) setSelectedPortfolio(allPortfolios[0].id);
         break;
 
       default:
@@ -801,131 +804,159 @@ export default function SuperAdminPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Portfolios Tab */}
         {activeTab === "portfolios" && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-black">포트폴리오 목록</h2>
-              <button
-                onClick={() => {
-                  setEditingPortfolio(null);
-                  setPortfolioForm({
-                    title: "",
-                    description: "",
-                    slug: "",
-                    thumbnail: "",
-                    isActive: true,
-                    order: portfolios?.content?.length
-                      ? portfolios?.content?.length + 1
-                      : 0,
-                    categoryId: "",
-                    domain: "",
-                    thumbnailFile: null,
-                  });
-                  setShowPortfolioForm(true);
-                }}
-                className="px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all"
-              >
-                + 새 포트폴리오 추가
-              </button>
-            </div>
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-black">포트폴리오 목록</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {portfolios?.content?.map((portfolio) => (
-                <div
-                  key={portfolio.id}
-                  className="bg-white border-2 border-black rounded-lg overflow-hidden"
+                <button
+                    onClick={() => {
+                      setEditingPortfolio(null);
+                      setPortfolioForm({
+                        title: "",
+                        description: "",
+                        slug: "",
+                        thumbnail: "",
+                        isActive: true,
+                        order: portfolios?.content?.length
+                            ? portfolios?.content?.length + 1
+                            : 0,
+                        categoryId: "",
+                        domain: "",
+                        thumbnailFile: null,
+                      });
+                      setShowPortfolioForm(true);
+                    }}
+                    className="px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all"
                 >
-                  {portfolio.thumbnail && (
-                    <div className="w-full bg-gray-200">
-                      <img
-                        src={portfolio.thumbnail}
-                        alt={portfolio.title}
-                        className="w-full h-full"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-black">
-                          {portfolio.title}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          {portfolio.category && (
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                  + 새 포트폴리오 추가
+                </button>
+              </div>
+
+              {/* 검색 영역 */}
+              <div className="mb-6 flex items-center gap-3">
+                <input
+                    type="text"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setPage(0);
+                        fetchPortfolios();
+                      }
+                    }}
+                    placeholder="포트폴리오 이름으로 검색"
+                    className="flex-1 min-w-0 px-4 py-2 border-2 border-gray-300 rounded-lg max-w-xs focus:outline-none focus:ring-2 focus:ring-black"
+                />
+
+                <button
+                    onClick={() => {
+                      setPage(0);
+                      fetchPortfolios();
+                    }}
+                    className="shrink-0 px-6 py-2 border-2 border-black rounded-lg font-semibold whitespace-nowrap hover:bg-black hover:text-white transition-all"
+                >
+                  검색
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {portfolios?.content?.map((portfolio) => (
+                    <div
+                        key={portfolio.id}
+                        className="bg-white border-2 border-black rounded-lg overflow-hidden"
+                    >
+                      {portfolio.thumbnail && (
+                          <div className="w-full bg-gray-200">
+                            <img
+                                src={portfolio.thumbnail}
+                                alt={portfolio.title}
+                                className="w-full h-full"
+                            />
+                          </div>
+                      )}
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-black">
+                              {portfolio.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              {portfolio.category && (
+                                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                               {portfolio.category.name}
                             </span>
-                          )}
-                          {!portfolio.isActive && (
-                            <span className="text-xs bg-gray-200 px-2 py-1 rounded">
+                              )}
+                              {!portfolio.isActive && (
+                                  <span className="text-xs bg-gray-200 px-2 py-1 rounded">
                               비활성
                             </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        {portfolio.description && (
+                            <p className="text-gray-600 mb-4">
+                              {portfolio.description}
+                            </p>
+                        )}
+                        <div className="text-sm text-gray-500 mb-4">
+                          <div>슬러그: {portfolio.slug}</div>
+                          <div>순서: {portfolio.order}</div>
+                          {portfolio.count && (
+                              <>
+                                <div>질문: {portfolio.count.questions}개</div>
+                                <div>제출: {portfolio.count.submissions}개</div>
+                              </>
                           )}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                              onClick={() => handleEditPortfolio(portfolio)}
+                              className="flex-1 px-3 py-2 text-sm border-2 border-black rounded hover:bg-black hover:text-white transition-all"
+                          >
+                            수정
+                          </button>
+                          <button
+                              onClick={() => handleDeletePortfolio(portfolio.id)}
+                              className="flex-1 px-3 py-2 text-sm border-2 border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition-all"
+                          >
+                            삭제
+                          </button>
                         </div>
                       </div>
                     </div>
-                    {portfolio.description && (
-                      <p className="text-gray-600 mb-4">
-                        {portfolio.description}
-                      </p>
-                    )}
-                    <div className="text-sm text-gray-500 mb-4">
-                      <div>슬러그: {portfolio.slug}</div>
-                      <div>순서: {portfolio.order}</div>
-                      {portfolio.count && (
-                        <>
-                          <div>질문: {portfolio.count.questions}개</div>
-                          <div>제출: {portfolio.count.submissions}개</div>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEditPortfolio(portfolio)}
-                        className="flex-1 px-3 py-2 text-sm border-2 border-black rounded hover:bg-black hover:text-white transition-all"
-                      >
-                        수정
-                      </button>
-                      <button
-                        onClick={() => handleDeletePortfolio(portfolio.id)}
-                        className="flex-1 px-3 py-2 text-sm border-2 border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition-all"
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="my-6">
+                <Pagination
+                    current={page}
+                    totalPages={portfolios?.totalPages ?? 0}
+                    onChange={handlePageClick}
+                />
+              </div>
             </div>
-            <div className="my-6">
-              <Pagination
-                current={page}
-                totalPages={portfolios?.totalPages ?? 0}
-                onChange={handlePageClick}
-              />
-            </div>
-          </div>
         )}
 
         {/* Questions Tab */}
         {activeTab === "questions" && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-4">
-                <h2 className="text-2xl font-bold text-black">질문 목록</h2>
-                <select
-                  value={selectedPortfolio}
-                  onChange={(e) => setSelectedPortfolio(e.target.value)}
-                  className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                >
-                  {portfolios?.content?.map((portfolio) => (
-                    <option key={portfolio.id} value={portfolio.id}>
-                      {portfolio.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                onClick={() => {
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-2xl font-bold text-black">질문 목록</h2>
+                  <select
+                      value={selectedPortfolio}
+                      onChange={(e) => setSelectedPortfolio(e.target.value)}
+                      className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  >
+                    {allPortfolios?.map((portfolio) => (
+                        <option key={portfolio.id} value={portfolio.id}>
+                          {portfolio.title}
+                        </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                    onClick={() => {
                   setEditingQuestion(null);
                   const maxStep =
                     questions.length > 0
@@ -2132,30 +2163,15 @@ export default function SuperAdminPage() {
                                       if (
                                         confirm("이 제출을 삭제하시겠습니까?")
                                       ) {
-                                        try {
-                                          const token =
-                                            localStorage.getItem("token");
-                                          const response = await fetch(
-                                            `/api/submissions/${submission.id}`,
-                                            {
-                                              method: "DELETE",
-                                              headers: {
-                                                Authorization: `Bearer ${token}`,
-                                              },
-                                            },
-                                          );
 
-                                          if (response.ok) {
-                                            alert("삭제되었습니다.");
-                                            fetchSubmissions();
-                                          } else {
-                                            const data = await response.json();
-                                            alert(data.error || "삭제 실패");
-                                          }
-                                        } catch (error) {
-                                          console.error("Delete error:", error);
-                                          alert("삭제 중 오류가 발생했습니다.");
-                                        }
+                                        await request(
+                                            () => SubmissionService.delete(submission.id),
+                                            (res) => {
+                                              alert("삭제되었습니다.");
+                                              fetchSubmissions();
+                                            },
+                                            { ignoreErrorRedirect: true },
+                                        );
                                       }
                                     }}
                                     className="text-red-600 hover:text-red-900 font-semibold"

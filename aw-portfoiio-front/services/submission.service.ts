@@ -21,5 +21,5 @@ export const SubmissionService = {
             { params }
         ),
 
-    delete: (id: string) => api.delete(`/api/question/${id}`),
+    delete: (id: string) => api.delete(`/api/admin-submissions/${id}`),
 };

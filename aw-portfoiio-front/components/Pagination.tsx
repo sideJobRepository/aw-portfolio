@@ -3,6 +3,7 @@
 export interface Params {
   page: number;
   size: number;
+  name?: string;
 }
 
 type Props = {
