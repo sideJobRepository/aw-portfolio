@@ -223,10 +223,24 @@ export default function SuperAdminPage() {
         submissionId: submission.id,
       };
 
+      console.log("parmas", params);
+
       await request(
         () => SubmissionService.adminExcelGet(params),
         (res) => {
           console.log("엑셀 다운로드", res);
+          const blob = new Blob([res.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `제출_목록_${submission.companyName}_${new Date().toISOString().split("T")[0]}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
         },
         { ignoreErrorRedirect: true },
       );
