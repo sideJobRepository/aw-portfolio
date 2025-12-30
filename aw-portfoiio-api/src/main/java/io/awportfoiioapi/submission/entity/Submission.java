@@ -65,4 +65,9 @@ public class Submission extends DateSuperClass {
         this.completedDate = LocalDateTime.now();
         this.isDraft = false;
     }
+    
+    public void modifySubmitOff() {
+        this.completedDate = null;
+        this.isDraft = true;
+    }
 }

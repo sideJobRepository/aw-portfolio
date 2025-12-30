@@ -1,5 +1,6 @@
 package io.awportfoiioapi.excel.controller;
 
+import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.excel.dto.request.ExcelRequest;
 import io.awportfoiioapi.excel.service.ExcelService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,10 @@ public class ExcelController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
             .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             .body(excelFile);
+    }
+    
+    @PostMapping("/submitOff")
+    public ApiResponse submitOff(@RequestBody ExcelRequest request) {
+        return excelService.modifySubmitOff(request);
     }
 }

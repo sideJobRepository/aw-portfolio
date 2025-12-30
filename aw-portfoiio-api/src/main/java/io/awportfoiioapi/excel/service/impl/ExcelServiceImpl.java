@@ -3,12 +3,14 @@ package io.awportfoiioapi.excel.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.excel.dto.request.ExcelRequest;
 import io.awportfoiioapi.excel.dto.response.ExcelColumnResponse;
 import io.awportfoiioapi.excel.service.ExcelService;
 import io.awportfoiioapi.question.respotiroy.QuestionRepository;
 import io.awportfoiioapi.submission.entity.Submission;
 import io.awportfoiioapi.submission.repository.SubmissionRepository;
+import io.awportfoiioapi.submission.service.SubmissionService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -234,5 +236,16 @@ public class ExcelServiceImpl implements ExcelService {
         } catch (Exception e) {
             throw new RuntimeException("엑셀 생성 실패", e);
         }
+    }
+    
+    @Override
+    public ApiResponse modifySubmitOff(ExcelRequest request) {
+        Long submissionId = request.getSubmissionId();
+        
+        Submission submission = submissionRepository.findById(submissionId).orElseThrow(() -> new RuntimeException("존재하지않는 제출내역입니다."));
+        
+        submission.modifySubmitOff();
+        
+        return new ApiResponse(200,true,"제출완료가 취소 되었습니다.");
     }
 }
