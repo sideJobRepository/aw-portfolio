@@ -52,6 +52,9 @@ export default function PortfolioForm() {
 
   //로그인 상태
   const currentUser = useRecoilValue(userState);
+  //썸네일
+  const [showPreview, setShowPreview] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   //자동 저장
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -850,6 +853,31 @@ export default function PortfolioForm() {
                         <div className="flex items-center justify-between">
                           <h3 className="text-lg font-semibold text-black">
                             객실 정보 입력
+                            {question.thumbnail && (
+                              <div className="relative inline-flex items-center gap-1">
+                                <span
+                                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                                  onClick={() =>
+                                    setShowPreview((prev) => !prev)
+                                  }
+                                >
+                                  ❓
+                                </span>
+
+                                {showPreview && (
+                                  <div
+                                    ref={previewRef}
+                                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                                  >
+                                    <img
+                                      src={question.thumbnail}
+                                      alt={question.title}
+                                      className="w-full h-auto object-cover rounded"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </h3>
                           {!isDetailMode && (
                             <button

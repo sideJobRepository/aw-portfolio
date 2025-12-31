@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface FieldOption {
   label: string;
@@ -78,7 +78,9 @@ export default function DynamicFormField({
   error,
   disabled,
 }: DynamicFormFieldProps) {
-  const [uploading, setUploading] = useState(false);
+  //썸네일
+  const [showPreview, setShowPreview] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   // 파일업로드 drag
   const inputRef = useRef<HTMLInputElement>(null);
@@ -95,37 +97,55 @@ export default function DynamicFormField({
     [question.options],
   );
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        previewRef.current &&
+        !previewRef.current.contains(e.target as Node)
+      ) {
+        setShowPreview(false);
+      }
+    };
+    if (showPreview) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPreview]);
+
   // 텍스트 입력
   if (questionType === "text") {
     return (
       <div className="space-y-3">
-        {/*{question.thumbnail && (*/}
-        {/*  <div className="w-full h-40 bg-gray-200 rounded-lg overflow-hidden">*/}
-        {/*    <img*/}
-        {/*      src={question.thumbnail}*/}
-        {/*      alt={question.title}*/}
-        {/*      className="w-full h-full object-cover"*/}
-        {/*      loading="lazy"*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*)}*/}
         <label className="block">
           <div className="flex items-center gap-1 text-lg font-semibold text-black">
             <span>{question.title}</span>
             {question.isRequired && <span className="text-red-500">*</span>}
 
             {question.thumbnail && (
-              <div className="relative group cursor-pointer inline-flex items-center">
-                <span className="text-gray-400 hover:text-black text-xs leading-none">
+              <div className="relative inline-flex items-center gap-1">
+                <span
+                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                  onClick={() => setShowPreview((prev) => !prev)}
+                >
                   ❓
                 </span>
-                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                  <img
-                    src={question.thumbnail}
-                    alt={question.title}
-                    className="w-full h-auto object-cover rounded"
-                  />
-                </div>
+
+                {showPreview && (
+                  <div
+                    ref={previewRef}
+                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                  >
+                    <img
+                      src={question.thumbnail}
+                      alt={question.title}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -159,17 +179,26 @@ export default function DynamicFormField({
             {question.isRequired && <span className="text-red-500">*</span>}
 
             {question.thumbnail && (
-              <div className="relative group cursor-pointer inline-flex items-center">
-                <span className="text-gray-400 hover:text-black text-xs leading-none">
+              <div className="relative inline-flex items-center gap-1">
+                <span
+                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                  onClick={() => setShowPreview((prev) => !prev)}
+                >
                   ❓
                 </span>
-                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                  <img
-                    src={question.thumbnail}
-                    alt={question.title}
-                    className="w-full h-auto object-cover rounded"
-                  />
-                </div>
+
+                {showPreview && (
+                  <div
+                    ref={previewRef}
+                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                  >
+                    <img
+                      src={question.thumbnail}
+                      alt={question.title}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -204,17 +233,26 @@ export default function DynamicFormField({
             {question.isRequired && <span className="text-red-500">*</span>}
 
             {question.thumbnail && (
-              <div className="relative group cursor-pointer inline-flex items-center">
-                <span className="text-gray-400 hover:text-black text-xs leading-none">
+              <div className="relative inline-flex items-center gap-1">
+                <span
+                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                  onClick={() => setShowPreview((prev) => !prev)}
+                >
                   ❓
                 </span>
-                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                  <img
-                    src={question.thumbnail}
-                    alt={question.title}
-                    className="w-full h-auto object-cover rounded"
-                  />
-                </div>
+
+                {showPreview && (
+                  <div
+                    ref={previewRef}
+                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                  >
+                    <img
+                      src={question.thumbnail}
+                      alt={question.title}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -298,17 +336,26 @@ export default function DynamicFormField({
               {question.isRequired && <span className="text-red-500">*</span>}
 
               {question.thumbnail && (
-                <div className="relative group cursor-pointer inline-flex items-center">
-                  <span className="text-gray-400 hover:text-black text-xs leading-none">
+                <div className="relative inline-flex items-center gap-1">
+                  <span
+                    className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                    onClick={() => setShowPreview((prev) => !prev)}
+                  >
                     ❓
                   </span>
-                  <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                    <img
-                      src={question.thumbnail}
-                      alt={question.title}
-                      className="w-full h-auto object-cover rounded"
-                    />
-                  </div>
+
+                  {showPreview && (
+                    <div
+                      ref={previewRef}
+                      className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                    >
+                      <img
+                        src={question.thumbnail}
+                        alt={question.title}
+                        className="w-full h-auto object-cover rounded"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -348,17 +395,26 @@ export default function DynamicFormField({
             {question.isRequired && <span className="text-red-500">*</span>}
 
             {question.thumbnail && (
-              <div className="relative group cursor-pointer inline-flex items-center">
-                <span className="text-gray-400 hover:text-black text-xs leading-none">
+              <div className="relative inline-flex items-center gap-1">
+                <span
+                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                  onClick={() => setShowPreview((prev) => !prev)}
+                >
                   ❓
                 </span>
-                <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                  <img
-                    src={question.thumbnail}
-                    alt={question.title}
-                    className="w-full h-auto object-cover rounded"
-                  />
-                </div>
+
+                {showPreview && (
+                  <div
+                    ref={previewRef}
+                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                  >
+                    <img
+                      src={question.thumbnail}
+                      alt={question.title}
+                      className="w-full h-auto object-cover rounded"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -528,17 +584,26 @@ export default function DynamicFormField({
           {question.isRequired && <span className="text-red-500">*</span>}
 
           {question.thumbnail && (
-            <div className="relative group cursor-pointer inline-flex items-center">
-              <span className="text-gray-400 hover:text-black text-xs leading-none">
+            <div className="relative inline-flex items-center gap-1">
+              <span
+                className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                onClick={() => setShowPreview((prev) => !prev)}
+              >
                 ❓
               </span>
-              <div className="absolute top-6 left-0 z-10 hidden group-hover:block w-48 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
-                <img
-                  src={question.thumbnail}
-                  alt={question.title}
-                  className="w-full h-auto object-cover rounded"
-                />
-              </div>
+
+              {showPreview && (
+                <div
+                  ref={previewRef}
+                  className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                >
+                  <img
+                    src={question.thumbnail}
+                    alt={question.title}
+                    className="w-full h-auto object-cover rounded"
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
