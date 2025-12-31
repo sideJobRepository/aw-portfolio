@@ -154,30 +154,43 @@ public class ExcelServiceImpl implements ExcelService {
 
                 // ===================== 환불 =====================
                 if ("REFUND".equals(optionsType)) {
-
+                
                     List<Map<String, Object>> refunds =
                             (List<Map<String, Object>>) responseMap.get("refunds");
-
+                
                     headerRow.createCell(colIdx + 0).setCellValue("환불기준일");
                     headerRow.createCell(colIdx + 1).setCellValue("환불퍼센트");
-
+                
                     if (refunds != null) {
-
+                        // 방문 기준일 문구 생성
                         String days = refunds.stream()
-                                .map(r -> String.valueOf(r.getOrDefault("day", "")))
+                                .map(r -> {
+                                    String id = String.valueOf(r.getOrDefault("id", ""));
+                                    String day = String.valueOf(r.getOrDefault("day", ""));
+                
+                                    if ("refund-1".equals(id)) {
+                                        // 당일
+                                        return "방문당일 총 금액의";
+                                    } else {
+                                        // n일 전
+                                        return "방문 " + day + "일 전 총 금액의";
+                                    }
+                                })
                                 .collect(Collectors.joining(", "));
-
+                
+                        // 퍼센트 + %문구
                         String percents = refunds.stream()
-                                .map(r -> String.valueOf(r.getOrDefault("percent", "")))
+                                .map(r -> String.valueOf(r.getOrDefault("percent", "")) + "% 환불")
                                 .collect(Collectors.joining(", "));
-
+                
                         dataRow.createCell(colIdx + 0).setCellValue(days);
                         dataRow.createCell(colIdx + 1).setCellValue(percents);
                     }
-
+                
                     colIdx += 2;
                     continue;
                 }
+                
 
                 // ===================== 일반 단답형 =====================
 
