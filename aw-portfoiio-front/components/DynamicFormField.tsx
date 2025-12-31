@@ -97,6 +97,7 @@ export default function DynamicFormField({
     [question.options],
   );
 
+  //이미지 외부 영역
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -306,9 +307,7 @@ export default function DynamicFormField({
             </a>
           </div>
         )}
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
     );
   }

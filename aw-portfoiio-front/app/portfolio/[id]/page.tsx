@@ -358,10 +358,8 @@ export default function PortfolioForm() {
     let isValid = true;
 
     currentQuestions.forEach((question) => {
-
       const value = formData[question.id];
       if (question.isRequired) {
-
         //객실
         if (question.questionType === "parlor") {
           if (!rooms || rooms.length === 0) {
@@ -370,13 +368,14 @@ export default function PortfolioForm() {
             return;
           }
 
-          const hasInvalidRoom = rooms.some((room) =>
+          const hasInvalidRoom = rooms.some(
+            (room) =>
               !room.name?.trim() ||
               !room.desc?.trim() ||
               !room.type?.trim() ||
               !room.priceLow?.trim() ||
               !room.priceMid?.trim() ||
-              !room.priceHigh?.trim()
+              !room.priceHigh?.trim(),
           );
 
           if (hasInvalidRoom) {
@@ -398,7 +397,8 @@ export default function PortfolioForm() {
           });
 
           if (hasInvalidSpecial) {
-            newErrors[question.id] = "스페셜명과 스페셜 설명을 입력하고, 설명은 최소 20자 이상이어야 합니다.";
+            newErrors[question.id] =
+              "스페셜명과 스페셜 설명을 입력하고, 설명은 최소 20자 이상이어야 합니다.";
             isValid = false;
             return;
           }
@@ -426,7 +426,7 @@ export default function PortfolioForm() {
 
           if (invalid) {
             newErrors[question.id] =
-                "환불 비율과 방문일 기준을 모두 입력해주세요.";
+              "환불 비율과 방문일 기준을 모두 입력해주세요.";
             isValid = false;
             return;
           }
@@ -554,13 +554,13 @@ export default function PortfolioForm() {
         }
 
         const hasInvalidRoom = rooms.some(
-            (room) =>
-                !room.name?.trim() ||
-                !room.desc?.trim() ||
-                !room.type?.trim() ||
-                !room.priceLow?.trim() ||
-                !room.priceMid?.trim() ||
-                !room.priceHigh?.trim(),
+          (room) =>
+            !room.name?.trim() ||
+            !room.desc?.trim() ||
+            !room.type?.trim() ||
+            !room.priceLow?.trim() ||
+            !room.priceMid?.trim() ||
+            !room.priceHigh?.trim(),
         );
 
         if (hasInvalidRoom) {
@@ -572,15 +572,13 @@ export default function PortfolioForm() {
       //스페셜
       if (question.questionType === "special") {
         const hasInvalidSpecial = specials.some(
-            (sp) =>
-                !sp.name?.trim() ||
-                !sp.desc?.trim() ||
-                sp.desc.trim().length < 20,
+          (sp) =>
+            !sp.name?.trim() || !sp.desc?.trim() || sp.desc.trim().length < 20,
         );
 
         if (hasInvalidSpecial) {
           fail(
-              "스페셜명과 스페셜 설명을 입력하고, 설명은 최소 20자 이상이어야 합니다.",
+            "스페셜명과 스페셜 설명을 입력하고, 설명은 최소 20자 이상이어야 합니다.",
           );
         }
         return;
@@ -667,9 +665,9 @@ export default function PortfolioForm() {
       }
 
       if (
-          question.requireMinLength &&
-          typeof value === "string" &&
-          value.trim().length < question.minLength
+        question.requireMinLength &&
+        typeof value === "string" &&
+        value.trim().length < question.minLength
       ) {
         fail(`최소 ${question.minLength}자 이상 입력해주세요.`);
       }
@@ -679,7 +677,7 @@ export default function PortfolioForm() {
 
     if (!isValid && missingSteps.length > 0) {
       alert(
-          `${missingSteps.sort((a, b) => a - b).join(", ")}단계에 미완성된 필수 항목이 있습니다.\n해당 단계로 이동하여 모든 필수 항목을 완성해주세요.`,
+        `${missingSteps.sort((a, b) => a - b).join(", ")}단계에 미완성된 필수 항목이 있습니다.\n해당 단계로 이동하여 모든 필수 항목을 완성해주세요.`,
       );
     }
 
@@ -793,7 +791,6 @@ export default function PortfolioForm() {
             window.location.href = `/portfolio/${portfolio.id}?submissionId=${res.data.submissionId}`;
           }
           startAutoSave();
-
         },
         { ignoreErrorRedirect: true },
       );
@@ -869,6 +866,26 @@ export default function PortfolioForm() {
       });
     }
   };
+
+  //이미지 외부 영역
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        previewRef.current &&
+        !previewRef.current.contains(e.target as Node)
+      ) {
+        setShowPreview(false);
+      }
+    };
+    if (showPreview) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPreview]);
 
   if (loading) {
     return (
@@ -981,9 +998,11 @@ export default function PortfolioForm() {
                     return (
                       <div key={question.id} className="mt-6 space-y-8">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-black">
+                          <h3 className="flex items-center gap-1 text-lg font-semibold text-black">
                             객실 정보 입력
-                            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+                            {question.isRequired && (
+                              <span className="text-red-500 ml-1">*</span>
+                            )}
                             {question.thumbnail && (
                               <div className="relative inline-flex items-center gap-1">
                                 <span
@@ -1185,9 +1204,9 @@ export default function PortfolioForm() {
                           </div>
                         ))}
                         {errors[question.id] && (
-                            <p className="text-sm text-red-500 mt-2">
-                              {errors[question.id]}
-                            </p>
+                          <p className="text-sm text-red-500 mt-2">
+                            {errors[question.id]}
+                          </p>
                         )}
                       </div>
                     );
@@ -1197,9 +1216,36 @@ export default function PortfolioForm() {
                     return (
                       <div key={question.id} className="mt-6 space-y-8">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-black">
+                          <h3 className="flex items-center gap-1 text-lg font-semibold text-black">
                             스페셜 정보 입력
-                            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+                            {question.isRequired && (
+                              <span className="text-red-500 ml-1">*</span>
+                            )}
+                            {question.thumbnail && (
+                              <div className="relative inline-flex items-center gap-1">
+                                <span
+                                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                                  onClick={() =>
+                                    setShowPreview((prev) => !prev)
+                                  }
+                                >
+                                  ❓
+                                </span>
+
+                                {showPreview && (
+                                  <div
+                                    ref={previewRef}
+                                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                                  >
+                                    <img
+                                      src={question.thumbnail}
+                                      alt={question.title}
+                                      className="w-full h-auto object-cover rounded"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </h3>
                           {!isDetailMode && (
                             <button
@@ -1269,24 +1315,26 @@ export default function PortfolioForm() {
                                 스페셜 설명
                               </label>
                               <textarea
-                                  value={sp.desc}
-                                  disabled={isDetailMode}
-                                  onChange={(e) => {
-                                    const updated = specials.map((s) =>
-                                        s.id === sp.id
-                                            ? {...s, desc: e.target.value}
-                                            : s,
-                                    );
-                                    setSpecials(updated);
-                                  }}
-                                  className="w-full border border-gray-300 rounded-lg p-2"
-                                  rows={3}
-                                  placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
+                                value={sp.desc}
+                                disabled={isDetailMode}
+                                onChange={(e) => {
+                                  const updated = specials.map((s) =>
+                                    s.id === sp.id
+                                      ? { ...s, desc: e.target.value }
+                                      : s,
+                                  );
+                                  setSpecials(updated);
+                                }}
+                                className="w-full border border-gray-300 rounded-lg p-2"
+                                rows={3}
+                                placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
                               />
                               <p
-                                  className={`text-xs mt-1 text-right ${
-                                      sp.desc.length < 20 ? "text-red-500" : "text-gray-500"
-                                  }`}
+                                className={`text-xs mt-1 text-right ${
+                                  sp.desc.length < 20
+                                    ? "text-red-500"
+                                    : "text-gray-500"
+                                }`}
                               >
                                 {sp.desc.length} / 최소 20자
                               </p>
@@ -1294,9 +1342,9 @@ export default function PortfolioForm() {
                           </div>
                         ))}
                         {errors[question.id] && (
-                            <p className="text-sm text-red-500 mt-2">
-                              {errors[question.id]}
-                            </p>
+                          <p className="text-sm text-red-500 mt-2">
+                            {errors[question.id]}
+                          </p>
                         )}
                       </div>
                     );
@@ -1306,9 +1354,36 @@ export default function PortfolioForm() {
                     return (
                       <div key={question.id} className="mt-6 space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-black">
+                          <h3 className="flex items-center gap-1 text-lg font-semibold text-black">
                             취소/환불정책
-                            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+                            {question.isRequired && (
+                              <span className="text-red-500 ml-1">*</span>
+                            )}
+                            {question.thumbnail && (
+                              <div className="relative inline-flex items-center gap-1">
+                                <span
+                                  className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                                  onClick={() =>
+                                    setShowPreview((prev) => !prev)
+                                  }
+                                >
+                                  ❓
+                                </span>
+
+                                {showPreview && (
+                                  <div
+                                    ref={previewRef}
+                                    className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                                  >
+                                    <img
+                                      src={question.thumbnail}
+                                      alt={question.title}
+                                      className="w-full h-auto object-cover rounded"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </h3>
                           {!isDetailMode && (
                             <button
@@ -1402,9 +1477,9 @@ export default function PortfolioForm() {
                           ))}
                         </div>
                         {errors[question.id] && (
-                            <p className="text-sm text-red-500 mt-2">
-                              {errors[question.id]}
-                            </p>
+                          <p className="text-sm text-red-500 mt-2">
+                            {errors[question.id]}
+                          </p>
                         )}
                       </div>
                     );
