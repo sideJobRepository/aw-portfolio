@@ -6,7 +6,7 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const AuthService = {
   login: (loginId: string, password: string) =>
     axios.post(
-      "/api/admin-login",
+       "/api/admin-login",
       { loginId, password },
       {
         baseURL,

@@ -41,7 +41,7 @@ cookie:
   secure: true
 
 cors:
-  url: https://alwaysdomain.store
+  url: https://alwaysdesign-portfolio.com
 
 server:
   address: 127.0.0.1
