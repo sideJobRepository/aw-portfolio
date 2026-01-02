@@ -406,12 +406,21 @@ export default function DynamicFormField({
         </div>
         {hasUploadedFile && (
           <div className="text-sm text-green-700">
-            <button
-              onClick={() => downloadFile(value)}
-              className="underline text-sm text-green-700"
+            기존 파일:
+            <a
+              href={value.url}
+              download
+              target="_blank"
+              className="ml-2 underline"
             >
-              기존 파일: {value.name} 다운로드
-            </button>
+              {value.name}
+            </a>
+            {/*<button*/}
+            {/*  onClick={() => downloadFile(value)}*/}
+            {/*  className="underline text-sm text-green-700"*/}
+            {/*>*/}
+            {/*  기존 파일: {value.name} 다운로드*/}
+            {/*</button>*/}
           </div>
         )}
         {error && <p className="text-sm text-red-500">{error}</p>}
