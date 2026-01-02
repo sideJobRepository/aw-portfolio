@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class ProxyController {
     
     private final RestClient restClient;
-    
+
     @GetMapping("/proxy")
     public ResponseEntity<String> proxy(@RequestParam String url) {
         // http만 허용
