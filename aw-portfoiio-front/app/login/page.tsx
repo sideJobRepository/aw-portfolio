@@ -1,7 +1,7 @@
 "use client";
 
 import { useRequest } from "@/hooks/useRequest";
-import { useRouter } from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import { useState } from "react";
 import { AuthService } from "@/services/auth.service";
 import { tokenStore } from "@/services/tokenStore";
@@ -11,6 +11,10 @@ import { userState } from "@/store/user";
 export default function LoginPage() {
   //hooks
   const { request } = useRequest();
+
+  const searchParams = useSearchParams();
+
+  const redirect = searchParams.get("redirect");
 
   const setUser = useSetRecoilState(userState);
 
@@ -43,7 +47,8 @@ export default function LoginPage() {
           if (res.data.isNewMember)
             alert("환영합니다! 새로운 회원으로 등록되었습니다.");
 
-          window.location.href = "/";
+          const target = redirect ? decodeURIComponent(redirect) : "/";
+          window.location.href = target;
         },
         { ignoreErrorRedirect: true },
       );

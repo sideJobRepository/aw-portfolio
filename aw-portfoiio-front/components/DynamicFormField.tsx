@@ -29,7 +29,16 @@ interface AgreementOptions {
   agreementItems: string[];
 }
 
-type AnyOptions = CheckboxOptions | RepeatableOptions | AgreementOptions | null;
+interface CheckboxInputOptions {
+    inputs: string[]; // 기본 문구들
+}
+
+interface CheckboxInputValue {
+    checked: number[];
+    inputs: string[];
+}
+
+type AnyOptions = CheckboxOptions | RepeatableOptions | AgreementOptions | CheckboxInputOptions | null;
 
 interface DynamicFormFieldProps {
   question: {
@@ -66,11 +75,13 @@ function parseOptions(options?: string): AnyOptions {
 function isCheckboxOptions(o: AnyOptions): o is CheckboxOptions {
   return !!o && Array.isArray((o as any).checkboxes);
 }
-function isRepeatableOptions(o: AnyOptions): o is RepeatableOptions {
-  return !!o && Array.isArray((o as any).fields);
-}
+
 function isAgreementOptions(o: AnyOptions): o is AgreementOptions {
   return !!o && Array.isArray((o as any).agreementItems);
+}
+
+function isCheckboxInputOptions(o: AnyOptions): o is CheckboxInputOptions {
+    return !!o && Array.isArray((o as any).inputs);
 }
 
 export default function DynamicFormField({
@@ -614,39 +625,120 @@ export default function DynamicFormField({
     );
   }
 
-  // 동의 체크박스 (0단계 안내사항)
-  if (questionType === "agreement") {
-    const agreementItems = isAgreementOptions(parsedOptions)
-      ? parsedOptions.agreementItems
-      : [];
-    const currentValue = value || { agreed: false };
+    // 체크박스 input
+    if (questionType === "checkbox_input") {
+        if (!isCheckboxInputOptions(parsedOptions)) {
+            return <p className="text-sm text-red-500">입력형 체크박스 옵션 설정 오류</p>;
+        }
 
-    return (
-      <div className="space-y-6 bg-white rounded-lg border-gray-200">
-        {question.thumbnail && (
-          <div className="w-full h-48 bg-gray-100 rounded-xl overflow-hidden">
-            <img
-              src={question.thumbnail}
-              alt={question.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        )}
+        const defaults = parsedOptions.inputs;
 
-        <div className="text-center">
-          {/* <h2 className="text-2xl font-bold text-black mb-4">{question.title}</h2> */}
-          {question.description && (
-            <p className="text-gray-600 leading-relaxed mb-6">
-              {question.description}
-            </p>
-          )}
-        </div>
+        const currentValue: CheckboxInputValue = {
+            checked: Array.isArray(value?.checked) ? value.checked : [],
+            inputs: Array.isArray(value?.inputs)
+                ? value.inputs
+                : [...defaults],
+        };
 
-        {/* 안내사항 리스트 */}
-        {agreementItems.length > 0 && (
-          <div className="space-y-4">
-            {/* <h3 className="text-lg font-semibold text-black">안내사항</h3> */}
+        const isChecked = (idx: number) =>
+            currentValue.checked.includes(idx);
+
+        return (
+            <div className="space-y-4">
+                <div className="flex items-center gap-1 text-lg font-semibold text-black">
+                    <span>{question.title}</span>
+                    {question.isRequired && <span className="text-red-500">*</span>}
+                </div>
+
+                {defaults.map((defaultValue, idx) => {
+                    const checked = isChecked(idx);
+
+                    return (
+                        <div
+                            key={idx}
+                            className={`flex items-center gap-3 p-3 border-2 rounded-lg ${
+                                checked ? "border-black" : "border-gray-300"
+                            }`}
+                        >
+                            <input
+                                type="checkbox"
+                                checked={checked}
+                                disabled={disabled}
+                                onChange={(e) => {
+                                    const newChecked = e.target.checked
+                                        ? [...currentValue.checked, idx]
+                                        : currentValue.checked.filter((i) => i !== idx);
+
+                                    onChange({
+                                        ...currentValue,
+                                        checked: newChecked,
+                                    });
+                                }}
+                                className="w-5 h-5"
+                            />
+
+                            <input
+                                type="text"
+                                value={currentValue.inputs[idx] ?? defaultValue}
+                                disabled={disabled || !checked}
+                                onChange={(e) => {
+                                    const newInputs = [...currentValue.inputs];
+                                    newInputs[idx] = e.target.value;
+
+                                    onChange({
+                                        ...currentValue,
+                                        inputs: newInputs,
+                                    });
+                                }}
+                                className={`flex-1 px-4 py-2 border-2 rounded-lg ${
+                                    checked
+                                        ? "border-gray-300 focus:ring-2 focus:ring-black"
+                                        : "border-gray-200 bg-gray-100"
+                                }`}
+                                placeholder={`항목 ${idx + 1}을 입력해주세요.`}
+                            />
+                        </div>
+                    );
+                })}
+
+                {error && <p className="text-sm text-red-500">{error}</p>}
+            </div>
+        );
+    }
+
+    // 동의 체크박스 (0단계 안내사항)
+    if (questionType === "agreement") {
+        const agreementItems = isAgreementOptions(parsedOptions)
+            ? parsedOptions.agreementItems
+            : [];
+        const currentValue = value || {agreed: false};
+
+        return (
+            <div className="space-y-6 bg-white rounded-lg border-gray-200">
+                {question.thumbnail && (
+                    <div className="w-full h-48 bg-gray-100 rounded-xl overflow-hidden">
+                        <img
+                            src={question.thumbnail}
+                            alt={question.title}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                        />
+                    </div>
+                )}
+
+                <div className="text-center">
+                    {/* <h2 className="text-2xl font-bold text-black mb-4">{question.title}</h2> */}
+                    {question.description && (
+                        <p className="text-gray-600 leading-relaxed mb-6">
+                            {question.description}
+                        </p>
+                    )}
+                </div>
+
+                {/* 안내사항 리스트 */}
+                {agreementItems.length > 0 && (
+                    <div className="space-y-4">
+                    {/* <h3 className="text-lg font-semibold text-black">안내사항</h3> */}
             <div className="rounded-lg space-y-3">
               {agreementItems.map((item: string, index: number) => (
                 <div key={index} className="flex items-start gap-3">

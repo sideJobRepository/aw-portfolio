@@ -684,6 +684,16 @@ export default function SuperAdminPage() {
       }));
     }
 
+    if (questionForm.questionType === "checkbox_input") {
+      setQuestionForm((prev) => ({
+        ...prev,
+        options: JSON.stringify({
+          multiple: true,
+          inputs: [""],
+        }),
+      }));
+    }
+
     if (questionForm.questionType === "checkbox") {
       setQuestionForm((prev) => ({
         ...prev,
@@ -1448,14 +1458,14 @@ export default function SuperAdminPage() {
                   질문 유형
                 </label>
                 <select
-                  value={questionForm.questionType}
-                  onChange={(e) =>
-                    setQuestionForm({
-                      ...questionForm,
-                      questionType: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    value={questionForm.questionType}
+                    onChange={(e) =>
+                        setQuestionForm({
+                          ...questionForm,
+                          questionType: e.target.value,
+                        })
+                    }
+                    className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                 >
                   <option value="agreement">
                     동의 체크박스 (0단계 안내사항)
@@ -1465,6 +1475,7 @@ export default function SuperAdminPage() {
                   <option value="multi_text">멀티 텍스트</option>
                   <option value="file">파일 업로드</option>
                   <option value="checkbox">체크박스 (조건부 입력)</option>
+                  <option value="checkbox_input">이용안내</option>
                   <option value="parlor">객실</option>
                   <option value="special">스페셜</option>
                   <option value="refund">환불</option>
@@ -1788,6 +1799,86 @@ export default function SuperAdminPage() {
                   </div>
                 </div>
               )}
+
+              {questionForm.questionType === "checkbox_input" && (
+                  <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-black">체크박스 입력 설정</h4>
+
+                    <div>
+                      <label className="block text-sm font-semibold mb-2">
+                        체크박스 개수
+                      </label>
+                      <input
+                          type="number"
+                          min={1}
+                          value={(() => {
+                            try {
+                              const parsed = JSON.parse(questionForm.options || "{}");
+                              return parsed.inputs?.length || 1;
+                            } catch {
+                              return 1;
+                            }
+                          })()}
+                          onChange={(e) => {
+                            const count = Number(e.target.value) || 1;
+                            const inputs = Array.from({ length: count }, (_, i) => {
+                              try {
+                                const parsed = JSON.parse(questionForm.options || "{}");
+                                return parsed.inputs?.[i] || "";
+                              } catch {
+                                return "";
+                              }
+                            });
+
+                            setQuestionForm({
+                              ...questionForm,
+                              options: JSON.stringify({
+                                multiple: true,
+                                inputs,
+                              }),
+                            });
+                          }}
+                          className="w-full border px-3 py-2 rounded"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold">
+                        체크박스 인풋
+                      </label>
+
+                      {(() => {
+                        try {
+                          const parsed = JSON.parse(questionForm.options || "{}");
+                          return (parsed.inputs || []).map((val: string, idx: number) => (
+                              <input
+                                  key={idx}
+                                  type="text"
+                                  value={val}
+                                  onChange={(e) => {
+                                    const newInputs = [...parsed.inputs];
+                                    newInputs[idx] = e.target.value;
+
+                                    setQuestionForm({
+                                      ...questionForm,
+                                      options: JSON.stringify({
+                                        ...parsed,
+                                        inputs: newInputs,
+                                      }),
+                                    });
+                                  }}
+                                  placeholder={`${idx + 1}번 항목 이용안내 입력`}
+                                  className="w-full border px-3 py-2 rounded"
+                              />
+                          ));
+                        } catch {
+                          return null;
+                        }
+                      })()}
+                    </div>
+                  </div>
+              )}
+
               <div>
                 <label className="block text-sm font-semibold text-black mb-2">
                   썸네일 이미지 (선택사항)

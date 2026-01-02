@@ -474,6 +474,38 @@ export default function PortfolioForm() {
           }
         }
 
+        if (question.questionType === "checkbox_input") {
+          if (!value || typeof value !== "object") {
+            newErrors[question.id] = "최소 하나 이상 선택해주세요.";
+            isValid = false;
+            return;
+          }
+
+          const { checked, inputs } = value as {
+            checked?: number[];
+            inputs?: string[];
+          };
+
+          if (!Array.isArray(checked) || checked.length === 0) {
+            newErrors[question.id] = "최소 하나 이상 선택해주세요.";
+            isValid = false;
+            return;
+          }
+
+          const hasEmptyInput = checked.some((idx) => {
+            const v = inputs?.[idx];
+            return !v || !v.trim();
+          });
+
+          if (hasEmptyInput) {
+            newErrors[question.id] = "선택한 항목의 내용을 모두 입력해주세요.";
+            isValid = false;
+            return;
+          }
+
+          return;
+        }
+
         if (question.questionType === "repeatable") {
           if (!value || !Array.isArray(value) || value.length === 0) {
             newErrors[question.id] = "최소 하나 이상 입력해주세요.";
@@ -629,6 +661,34 @@ export default function PortfolioForm() {
             fail("최소 하나 이상 선택해주세요.");
           }
         }
+        return;
+      }
+
+      if (question.questionType === "checkbox_input") {
+        if (!value || typeof value !== "object") {
+          fail("최소 하나 이상 선택해주세요.");
+          return;
+        }
+
+        const { checked, inputs } = value as {
+          checked?: number[];
+          inputs?: string[];
+        };
+
+        if (!Array.isArray(checked) || checked.length === 0) {
+          fail("최소 하나 이상 선택해주세요.");
+          return;
+        }
+
+        const hasEmptyInput = checked.some((idx) => {
+          const v = inputs?.[idx];
+          return !v || !v.trim();
+        });
+
+        if (hasEmptyInput) {
+          fail("선택한 항목의 내용을 모두 입력해주세요.");
+        }
+
         return;
       }
 
@@ -1518,13 +1578,13 @@ export default function PortfolioForm() {
             {/* 오른쪽 - 디테일 모드 분리*/}
             {!isDetailMode ? (
               <div className="flex gap-3">
-                <button
-                  onClick={handleSaveDraft}
-                  disabled={submitting}
-                  className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-black transition-all disabled:opacity-50"
+                {currentStep !== 0 && (<button
+                    onClick={handleSaveDraft}
+                    disabled={submitting}
+                    className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-black transition-all disabled:opacity-50"
                 >
                   💾 임시저장
-                </button>
+                </button>)}
 
                 {currentStep < maxStep ? (
                   <button

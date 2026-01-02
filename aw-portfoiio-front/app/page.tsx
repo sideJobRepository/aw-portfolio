@@ -229,13 +229,20 @@ export default function Home() {
                 </>
               ) : (
                 <button
-                  onClick={() => {
-                    if (!currentUser) {
-                      window.location.href = "/login";
-                      return;
-                    }
-                    router.push("/my-submissions");
-                  }}
+                    onClick={() => {
+                      const targetPath = `/my-submissions`;
+
+                      // 비로그인시
+                      if (!currentUser) {
+                        router.push(
+                            `/login?redirect=${encodeURIComponent(targetPath)}`
+                        );
+                        return;
+                      }
+
+                      // 로그인 상태면 바로 이동
+                      router.push(targetPath);
+                    }}
                   className="px-4 py-2 border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all"
                 >
                   작성 내역 불러오기
@@ -424,14 +431,19 @@ export default function Home() {
               <div className="flex-1 flex justify-end items-center gap-3">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    //비로그인시
+                  onClick={() => {
+                    const targetPath = `/portfolio/${previewPortfolioId}`;
+
+                    // 비로그인시
                     if (!currentUser) {
-                      window.location.href = "/login";
+                      router.push(
+                          `/login?redirect=${encodeURIComponent(targetPath)}`
+                      );
                       return;
                     }
 
-                    router.push(`/portfolio/${previewPortfolioId}`);
+                    // 로그인 상태면 바로 이동
+                    router.push(targetPath);
                   }}
                   className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-all"
                 >
