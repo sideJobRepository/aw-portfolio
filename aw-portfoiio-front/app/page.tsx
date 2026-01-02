@@ -138,6 +138,8 @@ export default function Home() {
 
   // 프록시 URL 생성 함수
   const getProxyUrl = (originalUrl: string) => {
+    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
+
     try {
       const url = new URL(originalUrl);
       // HTTPS 사이트는 직접 사용
@@ -145,7 +147,7 @@ export default function Home() {
         return originalUrl;
       }
       // HTTP 사이트는 프록시를 통해 사용
-      return `/api/proxy?url=${encodeURIComponent(originalUrl)}`;
+      return `${API_BASE}/api/proxy?url=${encodeURIComponent(originalUrl)}`;
     } catch (error) {
       console.error("Invalid URL:", originalUrl);
       return originalUrl;
@@ -166,6 +168,8 @@ export default function Home() {
     setPreviewTitle(title);
     setPreviewMode("desktop");
     setShowPreview(true);
+
+    setIsPreviewLoading(false);
   };
 
   return (
@@ -556,7 +560,9 @@ export default function Home() {
                         }
                       } catch (error) {
                         // Cross-origin 오류는 정상적인 경우
-                        setProxyError("");
+                        setProxyError(
+                          "이 사이트는 미리보기를 허용하지 않습니다.",
+                        );
                         setIsPreviewLoading(false);
                       }
                     }}

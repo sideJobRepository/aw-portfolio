@@ -2,6 +2,7 @@ package io.awportfoiioapi.proxy.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +30,19 @@ public class ProxyController {
                 .uri(url)
                 .retrieve()
                 .toEntity(byte[].class);
-        
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.putAll(upstream.getHeaders());
+
+        // iframe 차단 헤더 제거
+        headers.remove("X-Frame-Options");
+        headers.remove("Content-Security-Policy");
+
+
         // 그대로 반환
         return ResponseEntity
                 .status(upstream.getStatusCode())
-                .headers(upstream.getHeaders())
+                .headers(headers)
                 .body(upstream.getBody());
     }
 }
