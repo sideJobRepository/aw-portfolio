@@ -645,9 +645,41 @@ export default function DynamicFormField({
 
         return (
             <div className="space-y-4">
-                <div className="flex items-center gap-1 text-lg font-semibold text-black">
-                    <span>{question.title}</span>
-                    {question.isRequired && <span className="text-red-500">*</span>}
+                <div>
+                    <div className="flex items-center gap-1 text-lg font-semibold text-black">
+                        <span>{question.title}</span>
+                        {question.isRequired && <span className="text-red-500">*</span>}
+
+                        {question.thumbnail && (
+                            <div className="relative inline-flex items-center gap-1">
+                <span
+                    className="text-xs text-gray-400 hover:text-black cursor-pointer"
+                    onClick={() => setShowPreview((prev) => !prev)}
+                >
+                  ❓
+                </span>
+
+                                {showPreview && (
+                                    <div
+                                        ref={previewRef}
+                                        className="absolute top-6 left-0 z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2"
+                                    >
+                                        <img
+                                            src={question.thumbnail}
+                                            alt={question.title}
+                                            className="w-full h-auto object-cover rounded"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    {question.description && (
+                        <p className="text-sm text-gray-600 mt-1">{question.description}</p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2">
+                        원하는 항목을 선택하고 정보를 입력해주세요
+                    </p>
                 </div>
 
                 {defaults.map((defaultValue, idx) => {
