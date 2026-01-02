@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -21,6 +22,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -68,6 +71,17 @@ public class PortfolioSecurityConfig {
                 .exceptionHandling(e ->
                         e.authenticationEntryPoint(portfolioAuthenticationEntryPoint).
                     accessDeniedHandler(portfolioAccessDeniedHandler))
+                .headers(headers -> headers
+                    .addHeaderWriter(
+                        new DelegatingRequestMatcherHeaderWriter(
+                                PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/api/proxy/**"),
+                            (request, response) -> {
+                                response.setHeader("X-Frame-Options", "ALLOWALL");
+                                response.setHeader("Content-Security-Policy", "frame-ancestors *");
+                            }
+                        )
+                    )
+                )
                 .with(new PortfolioSecurityDsl<>(), securityDsl -> securityDsl
                         .portfolioSuccessHandler(portfolioAuthenticationSuccessHandler)
                         .portfolioFailureHandler(portfolioAuthenticationFailureHandler)
