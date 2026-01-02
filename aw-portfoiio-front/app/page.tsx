@@ -166,31 +166,6 @@ export default function Home() {
     setPreviewTitle(title);
     setPreviewMode("desktop");
     setShowPreview(true);
-
-    // HTTP 사이트인 경우 프록시 상태 미리 확인
-    try {
-      const url = new URL(domain);
-      if (url.protocol === "http:") {
-        // 프록시 API 상태 확인 (헤드 요청)
-        const checkResponse = await fetch(proxyUrl, { method: "HEAD" });
-        if (!checkResponse.ok) {
-          const errorData = await fetch(proxyUrl)
-            .then((r) => r.json())
-            .catch(() => ({}));
-          setProxyError(errorData.error || "웹사이트에 연결할 수 없습니다.");
-          setIsPreviewLoading(false);
-        } else {
-          // 성공적으로 로드되면 잠시 후 로딩 상태 해제
-          setTimeout(() => setIsPreviewLoading(false), 2000);
-        }
-      } else {
-        // HTTPS 사이트는 바로 로딩 상태 해제
-        setTimeout(() => setIsPreviewLoading(false), 1000);
-      }
-    } catch (error) {
-      console.error("Preview check error:", error);
-      setIsPreviewLoading(false);
-    }
   };
 
   return (
@@ -568,29 +543,8 @@ export default function Home() {
                     title={`${previewTitle} 미리보기`}
                     sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
                     onError={() => {
-                      // iframe 로드 실패 시 프록시 API에서 상세 오류 정보 가져오기
-                      if (previewUrl.includes("/api/proxy")) {
-                        fetch(previewUrl)
-                          .then((response) => response.json())
-                          .then((data) => {
-                            if (data.error) {
-                              setProxyError(data.error);
-                            } else {
-                              setProxyError(
-                                "사이트를 로드할 수 없습니다. 네트워크 연결을 확인해주세요.",
-                              );
-                            }
-                          })
-                          .catch(() => {
-                            setProxyError(
-                              "사이트를 로드할 수 없습니다. 네트워크 연결을 확인해주세요.",
-                            );
-                          });
-                      } else {
-                        setProxyError(
-                          "사이트를 로드할 수 없습니다. 네트워크 연결을 확인해주세요.",
-                        );
-                      }
+                      setIsPreviewLoading(false);
+                      setProxyError("사이트를 불러올 수 없습니다.");
                     }}
                     onLoad={(e) => {
                       const iframe = e.target as HTMLIFrameElement;
