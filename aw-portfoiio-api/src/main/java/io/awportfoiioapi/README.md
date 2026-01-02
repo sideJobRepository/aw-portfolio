@@ -1,64 +1,8 @@
-# 멀티 스텝 폼 시스템
-
-단계별 양식 작성 및 관리 시스템입니다. 구글 폼과 유사한 인터페이스로 다단계 양식을 만들고 제출받을 수 있습니다.
-
-## 주요 기능
-
--   ✅ **단계별 양식**: 5단계 이상의 다단계 양식 지원
--   ✅ **유효성 검증**: 각 질문별 최소 글자 수 요구사항 설정
--   ✅ **관리자 시스템**: 최고 관리자와 일반 관리자 권한 분리
--   ✅ **질문 관리**: 최고 관리자가 질문을 자유롭게 추가/수정/삭제
--   ✅ **제출 내역 조회**: 제출된 양식을 관리자 페이지에서 확인
--   ✅ **깔끔한 디자인**: 블랙 앤 화이트 테마
-
-## 기술 스택
-
--   **Frontend**: Next.js 14 (App Router), React, TypeScript
--   **Styling**: Tailwind CSS
--   **Backend**: Spring Boot, SpringSecurity, JPA, QueryDSL
--   **Database**: MySQL JPA 기반 ORM 구조
--   **Authentication / Authorization**: JWT 기반 인증, Role 기반 권한 제어
--   **File Storage**: AWS S3 (파일 관리)
--   **CI / CD**: GitHub Actions 기반 자동 빌드 및 배포
--   **Infra**: Aws EC2 , Aws ELB , Aws RDS , Aws S3
-
 ## 백엔드 설정
 
 1. JDK 17설정
-2. 환경변수 값 세팅
+2. 환경변수 값 세팅 - 환경변수는 중요 정보가있어 excel 파일 로 전달
 3. @SpringBootApplication 있는곳에서 실행
-
-
-## 기본 계정 정보
-
-초기 설정 후 다음 계정으로 로그인할 수 있습니다:
-
--   **이메일**: admin@example.com
--   **비밀번호**: admin123
--   **역할**: 최고 관리자
-
-⚠️ **프로덕션 환경에서는 반드시 비밀번호를 변경하세요!**
-
-## 사용 방법
-
-### 최고 관리자
-
-1. `/admin/login`에서 로그인
-2. 최고 관리자 페이지에서:
-    - 새로운 관리자 계정 생성
-    - 질문 추가/수정/삭제
-    - 단계별 질문 구성
-
-### 일반 관리자
-
-1. 최고 관리자가 생성한 계정으로 로그인
-2. 대시보드에서 제출된 양식 확인
-
-### 일반 사용자
-
-1. 메인 페이지에서 "양식 작성하기" 클릭
-2. 단계별로 질문에 답변 (최소 글자 수 충족 필요)
-3. 마지막 단계에서 제출
 
 ## 프로젝트 구조
 
@@ -69,6 +13,8 @@ awportfolioapi
 ├─ apiresponse/           # 공통 API 응답 객체 (ApiResponse 등)
 │
 ├─ category/              # 카테고리 도메인
+│
+├─ excel/                 # 엑셀 다운로드
 │
 ├─ config/                # 설정 클래스 (QueryDSL, Security, CORS 등)
 │
