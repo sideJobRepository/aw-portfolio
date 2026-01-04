@@ -176,13 +176,13 @@ export default function Home() {
             {/* Header */}
             <header className="bg-white border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center md:flex-row flex-col">
                         <a href="/" className="block">
                             <h1 className="text-2xl font-bold text-black">
                                 <img src="/logo.png" alt="로고" className="h-8" />
                             </h1>
                         </a>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 md:gap-4">
                             {/* 상호명 표시 (비관리자 인증시) */}
                             {currentUser && currentUser?.role !== 'SUPER_ADMIN' && (
                                 <div className="flex items-center gap-2 mr-4">
@@ -198,10 +198,10 @@ export default function Home() {
                                     <span className="text-gray-600">
                                         {currentUser.name}님 ({currentUser.role === 'SUPER_ADMIN' ? '최고 관리자' : '관리자'})
                                     </span>
-                                    <button onClick={() => router.push(currentUser.role === 'SUPER_ADMIN' ? '/admin/super' : '/admin/dashboard')} className="px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all">
+                                    <button onClick={() => router.push(currentUser.role === 'SUPER_ADMIN' ? '/admin/super' : '/admin/dashboard')} className="text-xs md:text-base px-2 md:px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all">
                                         관리자 페이지
                                     </button>
-                                    <button onClick={handleClearAuth} className="px-4 py-2 bg-white text-black border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all">
+                                    <button onClick={handleClearAuth} className="text-xs md:text-base px-2 md:px-4 py-2 bg-white text-black border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all">
                                         로그아웃
                                     </button>
                                 </>
