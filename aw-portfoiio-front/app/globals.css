@@ -135,3 +135,31 @@ input[type='text']:disabled {
 .object-contain {
     object-fit: contain;
 }
+
+/* Swiper 커스터마이징 */
+.swiper {
+    border-radius: .375rem;
+    overflow: hidden;
+}
+
+/* Swiper 화살표 스타일 */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #000000 !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 30px !important;
+    font-weight: bold !important;
+}
+
+/* Swiper 페이지네이션 스타일 */
+.swiper-pagination-bullet {
+    background: #9ca3af !important; /* 회색 */
+    opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+    background: #000000 !important; /* 검정 */
+}

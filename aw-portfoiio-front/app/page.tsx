@@ -232,7 +232,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 {/* Swiper Slide */}
                 <div className="mb-18">
-                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full" style={{ height: '500px' }}>
+                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full rounded-md" style={{ height: '500px' }}>
                         <SwiperSlide>
                             <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
                         </SwiperSlide>
