@@ -11,6 +11,11 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import axios from 'axios';
 import api from '@/lib/axiosInstance';
 import { PortfolioService } from '@/services/portfolios.service';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 interface Category {
     id: string;
@@ -225,9 +230,19 @@ export default function Home() {
             </header>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-                <div className="text-center mb-18">
-                    <h2 className="text-4xl text-black mb-4">당신의 감각에 맞는 디자인을 찾아보세요</h2>
-                    <p className="text-xl text-gray-600">쉽고 간편하게 만들어보세요</p>
+                {/* Swiper Slide */}
+                <div className="mb-18">
+                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full" style={{ height: '500px' }}>
+                        <SwiperSlide>
+                            <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <img src="/slide2.jpg" alt="슬라이드 2" className="w-full h-full object-cover" />
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <img src="/slide3.jpg" alt="슬라이드 3" className="w-full h-full object-cover" />
+                        </SwiperSlide>
+                    </Swiper>
                 </div>
 
                 {/* Category Filter */}
