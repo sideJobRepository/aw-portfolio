@@ -176,7 +176,7 @@ export default function Home() {
             {/* Header */}
             <header className="bg-white border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex justify-between items-center md:flex-row flex-col">
+                    <div className="flex justify-between items-center gap-2 md:gap-1 md:flex-row flex-col">
                         <a href="/" className="block">
                             <h1 className="text-2xl font-bold text-black">
                                 <img src="/logo.png" alt="로고" className="h-8" />
@@ -232,7 +232,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 {/* Swiper Slide */}
                 <div className="mb-10 md:mb-18">
-                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full rounded-md h-[280px] md:h-[400px] lg:h-[500px]">
+                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full rounded-md h-[200px] md:h-[400px] lg:h-[500px]">
                         <SwiperSlide>
                             <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
                         </SwiperSlide>
@@ -248,8 +248,8 @@ export default function Home() {
                 {/* Category Filter */}
                 {categories.length > 0 && (
                     <div className="mb-8">
-                        <div className="flex justify-center gap-3 flex-wrap">
-                            <button onClick={() => setSelectedCategory(null)} className={`rounded-md px-6 py-1 text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}>
+                        <div className="flex justify-center gap-1 md:gap-3 flex-wrap">
+                            <button onClick={() => setSelectedCategory(null)} className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}>
                                 전체
                             </button>
 
@@ -257,7 +257,7 @@ export default function Home() {
                                 <button
                                     key={category.id}
                                     onClick={() => setSelectedCategory(category.id)}
-                                    className={`rounded-md px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                    className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                                 >
                                     {category.name}
                                 </button>
