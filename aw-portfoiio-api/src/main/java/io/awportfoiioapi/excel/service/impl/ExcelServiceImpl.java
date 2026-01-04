@@ -357,7 +357,6 @@ public class ExcelServiceImpl implements ExcelService {
                 .domain(original.getDomain())
                 .orders(original.getOrders())
                 .slug(original.getSlug())
-                .thumbnail(original.getThumbnail())
                 .isActive(original.getIsActive())
                 .build();
         
@@ -387,7 +386,6 @@ public class ExcelServiceImpl implements ExcelService {
                         .title(op.getTitle())
                         .description(op.getDescription())
                         .type(op.getType())
-                        .thumbnail(op.getThumbnail())
                         .minLength(op.getMinLength())
                         .maxLength(op.getMaxLength())
                         .minLengthIsActive(op.getMinLengthIsActive())
