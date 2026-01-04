@@ -1321,7 +1321,7 @@ export default function PortfolioForm() {
                         {specials.map((sp, index) => (
                           <div
                             key={sp.id}
-                            className="p-4 border rounded-lg space-y-4 relative bg-gray-50"
+                            className="p-4 border rounded-lg space-y-4 relative"
                           >
                             {specials.length > 1 && (
                               <button

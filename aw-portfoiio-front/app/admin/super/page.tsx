@@ -712,17 +712,17 @@ export default function SuperAdminPage() {
             {/* Header */}
             <header className="bg-black text-white border-b-2 border-black">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center md:flex-row flex-col">
                         <h1 className="text-2xl font-bold">최고 관리자 페이지</h1>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 mt-2 md:mt-0">
                             <span className="text-gray-300">{currentUser?.name}</span>
-                            <button onClick={() => router.push('/')} className="px-4 py-2 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                            <button onClick={() => router.push('/')} className="px-2 md:px-4 py-2 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all">
                                 메인 페이지
                             </button>
-                            <button onClick={() => router.push('/admin/dashboard')} className="px-4 py-2 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                            <button onClick={() => router.push('/admin/dashboard')} className="hidden md:block px-2 md:px-4 py-2 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all">
                                 일반 대시보드
                             </button>
-                            <button onClick={handleLogout} className="px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 transition-all">
+                            <button onClick={handleLogout} className="px-2 md:px-4 py-2 bg-gray-800 text-white rounded-lg font-semibold hover:bg-gray-700 transition-all">
                                 로그아웃
                             </button>
                         </div>
@@ -733,26 +733,26 @@ export default function SuperAdminPage() {
             {/* Tabs */}
             <div className="bg-white border-b-2 border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex gap-8">
+                    <div className="flex gap-0 md:gap-8 justify-center md:justify-start flex-wrap md:flex-nowrap">
                         <button
                             onClick={() => {
                                 setActiveTab('portfolios');
                             }}
-                            className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'portfolios' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
+                            className={`py-1 md:py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'portfolios' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
                         >
                             포트폴리오 관리
                         </button>
-                        <button onClick={() => setActiveTab('questions')} className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'questions' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}>
+                        <button onClick={() => setActiveTab('questions')} className={`py-1 md:py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'questions' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}>
                             질문 관리
                         </button>
-                        <button onClick={() => setActiveTab('users')} className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'users' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}>
+                        <button onClick={() => setActiveTab('users')} className={`py-1 md:py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'users' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}>
                             사용자 관리
                         </button>
                         <button
                             onClick={() => {
                                 setActiveTab('submissions');
                             }}
-                            className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'submissions' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
+                            className={`py-1 md:py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'submissions' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
                         >
                             제출 목록
                         </button>
@@ -760,7 +760,7 @@ export default function SuperAdminPage() {
                             onClick={() => {
                                 setActiveTab('categories');
                             }}
-                            className={`py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'categories' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
+                            className={`py-1 md:py-4 px-2 font-semibold border-b-4 transition-all ${activeTab === 'categories' ? 'border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
                         >
                             카테고리 관리
                         </button>
@@ -768,7 +768,7 @@ export default function SuperAdminPage() {
                             onClick={() => {
                                 window.location.href = '/admin/members';
                             }}
-                            className="py-4 px-2 font-semibold border-b-4 border-transparent text-gray-500 hover:text-black transition-all"
+                            className="py-1 md:py-4 px-2 font-semibold border-b-4 border-transparent text-gray-500 hover:text-black transition-all"
                         >
                             회원 관리
                         </button>
@@ -886,9 +886,9 @@ export default function SuperAdminPage() {
                 {activeTab === 'questions' && (
                     <div>
                         <div className="flex justify-between items-center mb-6">
-                            <div className="flex items-center gap-4">
-                                <h2 className="text-2xl font-bold text-black">질문 목록</h2>
-                                <select value={selectedPortfolio} onChange={(e) => setSelectedPortfolio(e.target.value)} className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                            <div className="flex items-center gap-4 md:justify-center md:gap-1 md:flex-col">
+                                <h2 className="hidden md:block text-2xl font-bold text-black">질문 목록</h2>
+                                <select value={selectedPortfolio} onChange={(e) => setSelectedPortfolio(e.target.value)} className="px-4 py-2 md:px-0 md:py-1 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
                                     {allPortfolios?.map((portfolio) => (
                                         <option key={portfolio.id} value={portfolio.id}>
                                             {portfolio.title}
@@ -987,7 +987,7 @@ export default function SuperAdminPage() {
                                 <thead className="bg-gray-100">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">이름</th>
-                                        <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">이메일</th>
+                                        <th className="px-4 md:px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">이메일</th>
                                         <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">역할</th>
                                         <th className="px-6 py-3 text-left text-xs font-bold text-black uppercase tracking-wider">생성일</th>
                                     </tr>
@@ -1936,17 +1936,17 @@ export default function SuperAdminPage() {
                                             <table className="w-full">
                                                 <thead className="bg-gray-100 border-b border-gray-200">
                                                     <tr>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상호명</th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제출일시</th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+                                                        <th className="px-1 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상호명</th>
+                                                        <th className="px-1 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+                                                        <th className="px-1 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">제출일시</th>
+                                                        <th className="px-1 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-200">
                                                     {group.submissions.map((submission: any) => (
                                                         <tr key={submission.id} className="hover:bg-gray-50">
-                                                            <td className="px-6 py-4 text-sm font-semibold text-black">{submission.companyName}</td>
-                                                            <td className="px-6 py-4 text-sm cursor-pointer">
+                                                            <td className="px-1 md:px-6 py-4 text-sm font-semibold text-black">{submission.companyName}</td>
+                                                            <td className="px-1 md:px-6 py-4 text-sm cursor-pointer">
                                                                 {submission.isDraft ? (
                                                                     <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">임시저장</span>
                                                                 ) : (
@@ -1955,9 +1955,9 @@ export default function SuperAdminPage() {
                                                                     </span>
                                                                 )}
                                                             </td>
-                                                            <td className="px-6 py-4 text-sm text-gray-900">{new Date(submission.isDraft ? submission.updatedAt : submission.completedAt).toLocaleString('ko-KR')}</td>
-                                                            <td className="px-6 py-4 text-sm">
-                                                                <div className="flex gap-2">
+                                                            <td className="px-1 md:px-6 py-4 text-sm text-gray-900">{new Date(submission.isDraft ? submission.updatedAt : submission.completedAt).toLocaleString('ko-KR')}</td>
+                                                            <td className="px-1 md:px-6 py-4 text-sm">
+                                                                <div className="flex flex-col md:flex-row gap-2">
                                                                     <button onClick={() => handleDetailSubmission(submission)} className="text-blue-600 hover:text-blue-900 font-semibold">
                                                                         상세보기
                                                                     </button>
@@ -1979,7 +1979,7 @@ export default function SuperAdminPage() {
                                                                         삭제
                                                                     </button>
                                                                     <button onClick={() => downloadExcel(submission)} className="text-green-600 hover:text-green-900 font-semibold">
-                                                                        📊 엑셀 다운로드
+                                                                        엑셀 다운로드
                                                                     </button>
                                                                 </div>
                                                             </td>
@@ -2044,11 +2044,11 @@ export default function SuperAdminPage() {
                                 <table className="w-full">
                                     <thead className="bg-gray-50 border-b-2 border-black">
                                         <tr>
-                                            <th className="px-6 py-4 text-left text-sm font-bold text-black">카테고리명</th>
-                                            <th className="px-6 py-4 text-left text-sm font-bold text-black">슬러그</th>
-                                            <th className="px-6 py-4 text-left text-sm font-bold text-black">순서</th>
-                                            <th className="px-6 py-4 text-left text-sm font-bold text-black">포트폴리오 수</th>
-                                            <th className="px-6 py-4 text-left text-sm font-bold text-black">작업</th>
+                                            <th className="px-1 md:px-6 py-4 text-left text-sm font-bold text-black">카테고리명</th>
+                                            <th className="px-1 md:px-6 py-4 text-left text-sm font-bold text-black">슬러그</th>
+                                            <th className="px-1 md:px-6 py-4 text-left text-sm font-bold text-black">순서</th>
+                                            <th className="px-1 md:px-6 py-4 text-left text-sm font-bold text-black">포트폴리오 수</th>
+                                            <th className="px-1 md:px-6 py-4 text-left text-sm font-bold text-black">작업</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
@@ -2059,7 +2059,7 @@ export default function SuperAdminPage() {
                                                 <td className="px-6 py-4 text-sm text-gray-600">{category.order}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600">{category.count?.portfolios || 0}개</td>
                                                 <td className="px-6 py-4 text-sm">
-                                                    <div className="flex gap-2">
+                                                    <div className="flex flex-col md:flex-row gap-2">
                                                         <button onClick={() => handleEditCategory(category)} className="text-blue-600 font-semibold hover:underline">
                                                             수정
                                                         </button>
