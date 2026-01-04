@@ -1346,6 +1346,7 @@ export default function PortfolioForm() {
                               <label className="block font-semibold mb-1">
                                 스페셜명
                               </label>
+                              <p className="text-xs text-gray-500 mb-1">이 숙소에서 경험할 수 있는 특별한 포인트의 이름을 적어주세요.</p>
                               <input
                                 type="text"
                                 value={sp.name}
@@ -1359,7 +1360,7 @@ export default function PortfolioForm() {
                                   setSpecials(updated);
                                 }}
                                 className="w-full border border-gray-300 rounded-lg p-2"
-                                placeholder="예: 바비큐 세트 / 와인 서비스"
+                                placeholder="예: 오션뷰, 불멍 체험, 노천탕, 별보기, 프라이빗 사우나"
                               />
                             </div>
 
@@ -1367,6 +1368,8 @@ export default function PortfolioForm() {
                               <label className="block font-semibold mb-1">
                                 스페셜 설명
                               </label>
+                              <p className="text-xs text-gray-500 mb-1">이 스페셜이 어떤 경험인지, 왜 특별한지 간단히 설명해주세요.
+                              </p>
                               <textarea
                                 value={sp.desc}
                                 disabled={isDetailMode}
@@ -1380,7 +1383,7 @@ export default function PortfolioForm() {
                                 }}
                                 className="w-full border border-gray-300 rounded-lg p-2"
                                 rows={3}
-                                placeholder="제공 조건, 인원수, 유의사항 등을 적어주세요."
+                                placeholder="예: 객실 앞 바다를 바라보며 해질녘 노을과 함께 불멍을 즐길 수 있습니다."
                               />
                               <p
                                 className={`text-xs mt-1 text-right ${
