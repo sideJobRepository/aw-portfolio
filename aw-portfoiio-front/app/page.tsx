@@ -264,7 +264,7 @@ export default function Home() {
         {/* Category Filter */}
         {categories.length > 0 && (
           <div className="mb-8">
-            <div className="flex justify-start gap-3 flex-wrap">
+            <div className="flex justify-center gap-3 flex-wrap">
               <button
                 onClick={() => setSelectedCategory(null)}
                 className={`px-6 py-1 text-base font-semibold transition-all ${selectedCategory === null ? "bg-black text-white" : "bg-white text-black border-b border-black hover:bg-black hover:text-white"}`}
