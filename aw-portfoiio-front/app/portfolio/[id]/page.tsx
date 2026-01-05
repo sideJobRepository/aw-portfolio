@@ -56,9 +56,15 @@ export default function PortfolioForm() {
   const [showPreview, setShowPreview] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  //임시저장 체크
+  const [isDraft, setIsDraft] = useState(false);
+
   //자동 저장
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [shouldAutoSave, setShouldAutoSave] = useState(false);
+
+  //자동저장 여부
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
   const startAutoSave = () => {
     if (autoSaveTimeoutRef.current) {
       clearTimeout(autoSaveTimeoutRef.current);
@@ -156,6 +162,24 @@ export default function PortfolioForm() {
     });
 
     Object.entries(formData).forEach(([k, v]) => {
+      if (v && typeof v === "object" && v.deleteFileId) {
+        const question = questions.find((q) => String(q.id) === String(k));
+        if (!question) return;
+
+        optionFiles.push({
+          optionsId: question.id,
+          questionStep: question.step,
+          questionOrder: question.order,
+          deleteFileId: v.deleteFileId,
+          files: [],
+        });
+
+        console.log("v.deleteFileId", v.deleteFileId);
+
+        cleanedFormData[k] = null;
+        return;
+      }
+
       if (fileMapRef.current[k]) return;
       cleanedFormData[k] = v;
     });
@@ -206,7 +230,7 @@ export default function PortfolioForm() {
     if (!shouldAutoSave) return;
 
     const save = async () => {
-      await handleSaveDraft();
+      await handleSaveDraft(true);
       setShouldAutoSave(false);
     };
 
@@ -820,9 +844,9 @@ export default function PortfolioForm() {
   };
 
   //임시저장
-  const handleSaveDraft = async () => {
+  const handleSaveDraft = async (autoSave: boolean) => {
     if (!portfolio) return;
-
+    setIsDraft(true);
     setSubmitting(true);
     try {
       const { response, optionFiles } = extractSubmitData();
@@ -839,6 +863,12 @@ export default function PortfolioForm() {
       optionFiles.forEach((opt, idx) => {
         fd.append(`optionFiles[${idx}].optionsId`, opt.optionsId);
         fd.append(`optionFiles[${idx}].questionStep`, String(opt.questionStep));
+        if (opt.deleteFileId !== undefined && opt.deleteFileId !== null) {
+          fd.append(
+            `optionFiles[${idx}].deleteFileId`,
+            String(opt.deleteFileId),
+          );
+        }
         fd.append(
           `optionFiles[${idx}].questionOrder`,
           String(opt.questionOrder),
@@ -851,7 +881,9 @@ export default function PortfolioForm() {
       await request(
         () => SubmissionService.temporaryPost(fd),
         (res) => {
-          alert("임시저장되었습니다.");
+          if (autoSave) {
+            alert("임시저장되었습니다.");
+          }
 
           if (!existingSubmissionId) {
             const newUrl = `/portfolio/${portfolio.id}?submissionId=${res.data.submissionId}`;
@@ -866,6 +898,8 @@ export default function PortfolioForm() {
       console.error("Save draft error:", error);
     } finally {
       setSubmitting(false);
+      setIsAutoSaving(false);
+      setIsDraft(false);
     }
   };
 
@@ -897,6 +931,12 @@ export default function PortfolioForm() {
           `optionFiles[${idx}].questionOrder`,
           String(opt.questionOrder),
         );
+        if (opt.deleteFileId !== undefined && opt.deleteFileId !== null) {
+          fd.append(
+            `optionFiles[${idx}].deleteFileId`,
+            String(opt.deleteFileId),
+          );
+        }
         opt.files.forEach((file: File) => {
           fd.append(`optionFiles[${idx}].files`, file);
         });
@@ -1611,7 +1651,7 @@ export default function PortfolioForm() {
               <div className="flex gap-3">
                 {currentStep !== 0 && (
                   <button
-                    onClick={handleSaveDraft}
+                    onClick={() => handleSaveDraft(false)}
                     disabled={submitting}
                     className="px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:border-black transition-all disabled:opacity-50"
                   >
@@ -1632,7 +1672,7 @@ export default function PortfolioForm() {
                     disabled={submitting}
                     className="px-6 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
-                    {submitting ? "제출 중..." : "제출하기"}
+                    {submitting && !isDraft ? "제출 중..." : "제출하기"}
                   </button>
                 )}
               </div>
