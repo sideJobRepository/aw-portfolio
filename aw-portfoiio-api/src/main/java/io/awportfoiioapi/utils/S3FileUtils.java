@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
+import org.springframework.cache.annotation.Cacheable;
 
 @Component
 @RequiredArgsConstructor
@@ -105,7 +106,7 @@ public class S3FileUtils {
         return originalFilename.substring(pos + 1);
     }
     
-    
+    @Cacheable(cacheNames = "presigned", key = "#key")
     public String createPresignedUrl(String key) {
         
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()

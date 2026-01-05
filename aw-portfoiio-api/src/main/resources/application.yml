@@ -27,6 +27,11 @@ spring:
       s3:
         bucket: ${AWS_BUCKET}
 
+  cache:
+    cache-names: presigned
+    caffeine:
+      spec: expireAfterWrite=60m
+
   jackson:
         time-zone: Asia/Seoul
 
