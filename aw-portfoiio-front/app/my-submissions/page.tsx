@@ -80,17 +80,24 @@ export default function MySubmissionsPage() {
     );
   };
 
+  // 자세히보기
+  const handleDetailSubmission = (submission: Submission) => {
+    router.push(
+      `/portfolio/${submission.portfolioId}?submissionId=${submission.id}&detail=true`,
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b-2 border-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-          <a href="/" className="block">
-                            <h1 className="text-2xl font-bold text-black">
-                                <img src="/logo.png" alt="로고" className="h-8" />
-                            </h1>
-                        </a>
+            <a href="/" className="block">
+              <h1 className="text-2xl font-bold text-black">
+                <img src="/logo.png" alt="로고" className="h-8" />
+              </h1>
+            </a>
             <div className="flex items-center gap-2">
               <Link
                 href="/"
@@ -187,6 +194,12 @@ export default function MySubmissionsPage() {
                           수정 불가
                         </span>
                       )}
+                      <button
+                        className="text-sm text-black border-2 border-black px-3 py-1 rounded hover:bg-black hover:text-white transition-all"
+                        onClick={() => handleDetailSubmission(submission)}
+                      >
+                        작성내역 보기
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -205,13 +218,15 @@ export default function MySubmissionsPage() {
           <h4 className="font-bold mb-2">💡 안내</h4>
           <ul className="text-sm space-y-1">
             <li>
-              • 이전에 작성하신 제출 내역이 있을 경우, 자동으로 목록에 표시됩니다.
+              • 이전에 작성하신 제출 내역이 있을 경우, 자동으로 목록에
+              표시됩니다.
             </li>
-            <li>
-              • 임시 저장된 제출물은 언제든지 이어서 작성할 수 있습니다.
-            </li>
+            <li>• 임시 저장된 제출물은 언제든지 이어서 작성할 수 있습니다.</li>
             <li>• 제출 완료된 내용은 기본적으로 수정이 제한됩니다.</li>
-            <li>• 관리자 검토 과정에서 보완이 필요한 경우 제출이 완료된 내용도 수정이 가능하도록 안내드립니다.</li>
+            <li>
+              • 관리자 검토 과정에서 보완이 필요한 경우 제출이 완료된 내용도
+              수정이 가능하도록 안내드립니다.
+            </li>
           </ul>
         </div>
       </div>
