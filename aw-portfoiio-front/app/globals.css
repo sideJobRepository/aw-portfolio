@@ -124,6 +124,10 @@ input[type='text']:disabled {
     max-width: 90rem;
 }
 
+.max-w-10xl {
+    max-width: 105rem;
+}
+
 .h-35 {
     height: 35rem;
 }

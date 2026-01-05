@@ -344,7 +344,7 @@ export default function Home() {
             {/* 미리보기 팝업 모달 */}
             {showPreview && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowPreview(false)}>
-                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-8xl h-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`${previewTitle} 미리보기`}>
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-10xl h-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={`${previewTitle} 미리보기`}>
                         {/* 상단 바 */}
                         <div className="bg-gray-100 px-4 py-3 rounded-t-lg border-b flex items-center gap-4">
                             {/* 주소창 */}
