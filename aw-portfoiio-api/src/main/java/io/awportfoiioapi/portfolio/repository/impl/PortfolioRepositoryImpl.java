@@ -113,7 +113,7 @@ public class PortfolioRepositoryImpl implements PortfolioQueryRepository {
                 )
                 .from(portfolio)
                 .where(whereIsAction(active), whereCategoryId(categoryId))
-                .orderBy(portfolio.orders.asc())
+                .orderBy(portfolio.category.categoryOrders.asc() ,  portfolio.orders.asc())
                 .fetch();
     }
     
