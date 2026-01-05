@@ -964,6 +964,12 @@ export default function PortfolioForm() {
       return;
     }
 
+    if (value === null) {
+      delete fileMapRef.current[questionId];
+      setFormData((prev) => ({ ...prev, [questionId]: null }));
+      return;
+    }
+
     if (value instanceof FileList) {
       const file = value[0];
       if (file) {

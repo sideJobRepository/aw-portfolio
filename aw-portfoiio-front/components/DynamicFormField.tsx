@@ -402,22 +402,24 @@ export default function DynamicFormField({
             </span>
           )}
         </label>
-        <button
-          type="button"
-          onClick={() => {
-            if (value.fileId) {
-              console.log("value.fileId", value.fileId);
-              // 기존 업로드된 파일 삭제
-              onChange({ deleteFileId: value.fileId });
-            } else {
-              // 새로 업로드한 파일 삭제
-              onChange(null);
-            }
-          }}
-          className="text-red-500 hover:underline"
-        >
-          삭제
-        </button>
+        {!disabled && value && (value.fileId || value instanceof File) && (
+          <button
+            type="button"
+            onClick={() => {
+              if (value.fileId) {
+                console.log("value.fileId", value.fileId);
+                // 기존 업로드된 파일 삭제
+                onChange({ deleteFileId: value.fileId });
+              } else {
+                // 새로 업로드한 파일 삭제
+                onChange(null);
+              }
+            }}
+            className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all"
+          >
+            삭제
+          </button>
+        )}
         <div
           onClick={() => {
             if (!disabled) inputRef.current?.click();
