@@ -203,52 +203,65 @@ public class ExcelServiceImpl implements ExcelService {
                     continue;
                 }
                 
-                // ===================== 체크박스 =====================
-                if ("CHECKBOX".equals(optionsType)) {
+                // ===================== CHECKBOX (모든 변형 포함) =====================
+                if ("CHECKBOX".equals(optionsType) || "CHECKBOX_INPUT".equals(optionsType)) {
                 
-                    Map<String, Object> checkbox =
+                    Map<String, Object> obj =
                             (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
                 
                     headerRow.createCell(colIdx).setCellValue(col.getColumn());
                 
-                    if (checkbox != null) {
+                    String result = "";
                 
-                        Object checkedObj = checkbox.get("checked");
+                    if (obj != null) {
                 
-                        String resultText = "";
+                        // 1) selected + inputs
+                        if (obj.containsKey("selected")) {
                 
-                        // =============================
-                        // case 1. checked = ["문자","문자"]
-                        // =============================
-                        if (checkedObj instanceof List<?> list) {
+                            String selected = String.valueOf(obj.get("selected"));
+                            Map<String, Object> inputs = (Map<String, Object>) obj.get("inputs");
                 
-                            // 문자 directly 넘어오는 경우
-                            if (!list.isEmpty() && list.get(0) instanceof String) {
+                            String extra = "";
+                            if (inputs != null && inputs.containsKey(selected)) {
+                                extra = String.valueOf(inputs.get(selected));
+                            }
                 
-                                resultText = list.stream()
+                            result = selected;
+                            if (!extra.isBlank()) result += " (" + extra + ")";
+                        }
+                
+                        // 2) checked = ["문자","문자"]
+                        else if (obj.containsKey("checked")
+                                && obj.get("checked") instanceof List<?>) {
+                
+                            List<?> checkedList = (List<?>) obj.get("checked");
+                
+                            if (!checkedList.isEmpty() && checkedList.get(0) instanceof String) {
+                
+                                result = checkedList.stream()
                                         .map(String::valueOf)
                                         .collect(Collectors.joining(", "));
                             }
                 
-                            // =============================
-                            // case 2. checked = [0,1,2] (index 기반)
-                            // =============================
-                            else if (!list.isEmpty() && list.get(0) instanceof Integer) {
+                            // 3) checked = [0,1,2] + inputs 배열
+                            else if (!checkedList.isEmpty() && checkedList.get(0) instanceof Number) {
                 
-                                List<Integer> idxList = (List<Integer>) checkedObj;
-                                List<String> inputs = (List<String>) checkbox.get("inputs");
+                                List<Integer> idxList = checkedList.stream()
+                                        .map(o -> ((Number) o).intValue())
+                                        .toList();
                 
-                                resultText = idxList.stream()
-                                        .map(i -> inputs.get(i))
-                                        .collect(Collectors.joining(", "));
+                                List<String> inputs = (List<String>) obj.get("inputs");
+                
+                                if (inputs != null) {
+                                    result = idxList.stream()
+                                            .map(inputs::get)
+                                            .collect(Collectors.joining(", "));
+                                }
                             }
                         }
-                
-                        dataRow.createCell(colIdx).setCellValue(resultText);
-                
-                    } else {
-                        dataRow.createCell(colIdx).setCellValue("");
                     }
+                
+                    dataRow.createCell(colIdx).setCellValue(result);
                 
                     colIdx++;
                     continue;
@@ -256,59 +269,28 @@ public class ExcelServiceImpl implements ExcelService {
                 
                 // ===================== 멀티 텍스트 =====================
                 if ("MULTI_TEXT".equals(optionsType)) {
-                
+                    
                     headerRow.createCell(colIdx).setCellValue(col.getColumn());
-                
+                    
                     Object value = responseMap.get(String.valueOf(col.getOptionsId()));
-                
+                    
                     if (value instanceof List) {
-                
+                        
                         List<Object> list = (List<Object>) value;
-                
+                        
                         String joined = list.stream()
                                 .map(String::valueOf)
                                 .collect(Collectors.joining(", ")); //대괄호 없이 ,로
-                
+                        
                         dataRow.createCell(colIdx).setCellValue(joined);
-                
+                        
                     } else if (value != null) {
                         // 혹시 배열이 아닌 단일 값이 들어온 경우
                         dataRow.createCell(colIdx).setCellValue(value.toString());
                     } else {
                         dataRow.createCell(colIdx).setCellValue("");
                     }
-                
-                    colIdx++;
-                    continue;
-                }
-                
-                // ===================== 체크박스 =====================
-                if ("CHECKBOX_INPUT".equals(optionsType)) {
-                
-                    Map<String, Object> checkbox =
-                            (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
-                
-                    headerRow.createCell(colIdx).setCellValue(col.getColumn());
-                
-                    if (checkbox != null) {
-                
-                        // 선택된 index 목록
-                        List<Integer> checked = (List<Integer>) checkbox.get("checked");
-                
-                        // 전체 입력 문구 리스트
-                        List<String> inputs = (List<String>) checkbox.get("inputs");
-                
-                        // 선택된 index의 문구만 추출
-                        String joined = checked.stream()
-                                .map(idx -> inputs.get(idx))
-                                .collect(Collectors.joining(", "));
-                
-                        dataRow.createCell(colIdx).setCellValue(joined);
-                
-                    } else {
-                        dataRow.createCell(colIdx).setCellValue("");
-                    }
-                
+                    
                     colIdx++;
                     continue;
                 }
