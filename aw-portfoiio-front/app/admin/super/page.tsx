@@ -1299,7 +1299,6 @@ export default function SuperAdminPage() {
                                     <option value="parlor">객실</option>
                                     <option value="special">스페셜</option>
                                     <option value="refund">환불</option>
-                                    <option value="logo">로고</option>
                                 </select>
                             </div>
                             {questionForm.questionType === 'agreement' && (
