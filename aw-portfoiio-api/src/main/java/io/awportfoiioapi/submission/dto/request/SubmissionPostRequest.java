@@ -38,15 +38,9 @@ public class SubmissionPostRequest {
           private Long optionsId;
           private Integer questionStep;
           private Integer questionOrder;
-          private List<Long> deleteFileIds;
+          private Long deleteFileId;
           private List<MultipartFile> files;
           
-          public List<Long> getDeleteFileIds() {
-              if(this.deleteFileIds == null) {
-                  this.deleteFileIds = new ArrayList<>();
-              }
-              return this.deleteFileIds;
-          }
           
           public List<MultipartFile> getFiles() {
               if (this.files == null) {

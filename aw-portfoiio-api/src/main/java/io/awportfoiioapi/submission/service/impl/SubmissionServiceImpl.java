@@ -172,22 +172,24 @@ public class SubmissionServiceImpl implements SubmissionService {
         /**
          * 요청에서 삭제할 파일 id 목록 수집
          */
-        Set<Long> deleteFileIds =
+        Long deleteFileId =
                 request.getOptionFiles().stream()
-                        .filter(of -> of.getDeleteFileIds() != null)
-                        .flatMap(of -> of.getDeleteFileIds().stream())
-                        .collect(Collectors.toSet());
+                        .map(SubmissionPostRequest.OptionFileRequest::getDeleteFileId)
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null);
         
-        /**
-         * deleteFileIds 에 포함된 파일만 삭제
-         */
-        for (CommonFile file : existingFiles) {
-            if (deleteFileIds.contains(file.getId())) {
-                s3FileUtils.deleteFile(file.getFileUrl());
-                commonFileRepository.delete(file);
-            }
+        // 해당 파일삭제
+        if (deleteFileId != null) {
+            existingFiles.stream()
+                    .filter(f -> f.getId().equals(deleteFileId))
+                    .findFirst()
+                    .ifPresent(file -> {
+                        s3FileUtils.deleteFile(file.getFileUrl());
+                        commonFileRepository.delete(file);
+                    });
         }
-     
+        
         /**
          * 신규 업로드 처리 (해당 optionId 내부)
          */
@@ -286,20 +288,22 @@ public class SubmissionServiceImpl implements SubmissionService {
         /**
          * 요청에서 삭제할 파일 id 목록 수집
          */
-        Set<Long> deleteFileIds =
+        Long deleteFileId =
                 request.getOptionFiles().stream()
-                        .filter(of -> of.getDeleteFileIds() != null)
-                        .flatMap(of -> of.getDeleteFileIds().stream())
-                        .collect(Collectors.toSet());
+                        .map(SubmissionPostDraftRequest.OptionFileRequest::getDeleteFileId)
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null);
         
-        /**
-         * deleteFileIds 에 포함된 파일만 삭제
-         */
-        for (CommonFile file : existingFiles) {
-            if (deleteFileIds.contains(file.getId())) {
-                s3FileUtils.deleteFile(file.getFileUrl());
-                commonFileRepository.delete(file);
-            }
+        // 해당 파일삭제
+        if (deleteFileId != null) {
+            existingFiles.stream()
+                    .filter(f -> f.getId().equals(deleteFileId))
+                    .findFirst()
+                    .ifPresent(file -> {
+                        s3FileUtils.deleteFile(file.getFileUrl());
+                        commonFileRepository.delete(file);
+                    });
         }
         /**
          * 9. 신규 업로드 처리

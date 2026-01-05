@@ -40,7 +40,7 @@ public class SubmissionPostDraftRequest {
         private Long optionsId;
         private Integer questionStep;
         private Integer questionOrder;
-        private List<Long> deleteFileIds;
+        private Long deleteFileId;
         private List<MultipartFile> files;
         
         public List<MultipartFile> getFiles() {
@@ -48,13 +48,6 @@ public class SubmissionPostDraftRequest {
                 this.files = new ArrayList<>();
             }
             return this.files;
-        }
-        
-        public List<Long> getDeleteFileIds() {
-            if (this.deleteFileIds == null) {
-                this.deleteFileIds = new ArrayList<>();
-            }
-            return this.deleteFileIds;
         }
     }
 }
