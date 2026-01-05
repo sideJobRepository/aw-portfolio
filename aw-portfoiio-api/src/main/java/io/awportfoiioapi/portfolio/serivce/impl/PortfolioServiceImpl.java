@@ -13,7 +13,6 @@ import io.awportfoiioapi.portfolio.dto.response.*;
 import io.awportfoiioapi.portfolio.entity.Portfolio;
 import io.awportfoiioapi.portfolio.repository.PortfolioRepository;
 import io.awportfoiioapi.portfolio.serivce.PortfolioService;
-import io.awportfoiioapi.submission.repository.SubmissionRepository;
 import io.awportfoiioapi.utils.S3FileUtils;
 import io.awportfoiioapi.utils.UploadResult;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -40,32 +40,49 @@ public class PortfolioServiceImpl implements PortfolioService {
     
     @Override
     public Page<PortfolioResponse> getPortfolioList(Pageable pageable,String name) {
-        Page<PortfolioResponse> portfolioList = portfolioRepository.getPortfolioList(pageable,name);
+        
+        Page<PortfolioResponse> portfolioList = portfolioRepository.getPortfolioList(pageable, name);
+        
         List<PortfolioQuestionCountResponse> byQuestionCount = portfolioRepository.findByQuestionCount();
         List<PortfolioSubmissionCountResponse> bySubmissionCount = portfolioRepository.findBySubmissionCount();
-        // count 결과를 Map으로 변환
-        Map<Long, Long> questionCountMap =
-                byQuestionCount.stream().collect(Collectors.toMap(
-                                PortfolioQuestionCountResponse::getPortfolioId,
-                                PortfolioQuestionCountResponse::getCount));
-        portfolioList.forEach(portfolio -> {
-            Long count = questionCountMap.getOrDefault(
-                    portfolio.getId(),
-                    0L
-            );
-            portfolio.getCount().setQuestions(count);
-        });
-        Map<Long, Long> submissionCountMap =
-                bySubmissionCount.stream().collect(Collectors.toMap(
-                                PortfolioSubmissionCountResponse::getPortfolioId,
-                                PortfolioSubmissionCountResponse::getCount));
-             portfolioList.forEach(portfolio -> {
-                 Long count = submissionCountMap.getOrDefault(
-                         portfolio.getId(),
-                         0L
-                 );
-                 portfolio.getCount().setSubmissions(count);
-             });
+        
+        Map<Long, Long> questionCountMap = byQuestionCount.stream()
+                .collect(Collectors.toMap(
+                        PortfolioQuestionCountResponse::getPortfolioId,
+                        PortfolioQuestionCountResponse::getCount
+                ));
+        
+        Map<Long, Long> submissionCountMap = bySubmissionCount.stream()
+                .collect(Collectors.toMap(
+                        PortfolioSubmissionCountResponse::getPortfolioId,
+                        PortfolioSubmissionCountResponse::getCount
+                ));
+        
+        for (PortfolioResponse portfolio : portfolioList) {
+            
+            // ---------- 1) 썸네일 presigned 변환 ----------
+            String thumbnailUrl = portfolio.getThumbnail();
+            
+            if (thumbnailUrl != null && !thumbnailUrl.isBlank()) {
+                // 기존 URL → key 뽑기
+                String key = s3FileUtils.getFileNameFromUrl(thumbnailUrl);
+                
+                // presigned 생성
+                String presigned = s3FileUtils.createPresignedUrl(key);
+                
+                // DTO에 다시 넣기
+                portfolio.setThumbnail(presigned);
+            }
+            
+            // ---------- 2) 질문 수 ----------
+            Long qCount = questionCountMap.getOrDefault(portfolio.getId(), 0L);
+            portfolio.getCount().setQuestions(qCount);
+            
+            // ---------- 3) 제출 수 ----------
+            Long sCount = submissionCountMap.getOrDefault(portfolio.getId(), 0L);
+            portfolio.getCount().setSubmissions(sCount);
+        }
+        
         return portfolioList;
     }
     
@@ -74,29 +91,44 @@ public class PortfolioServiceImpl implements PortfolioService {
         List<PortfolioResponse> portfolioList = portfolioRepository.getPortfolioList();
         List<PortfolioQuestionCountResponse> byQuestionCount = portfolioRepository.findByQuestionCount();
         List<PortfolioSubmissionCountResponse> bySubmissionCount = portfolioRepository.findBySubmissionCount();
-        // count 결과를 Map으로 변환
-        Map<Long, Long> questionCountMap =
-                byQuestionCount.stream().collect(Collectors.toMap(
+        
+        Map<Long, Long> questionCountMap = byQuestionCount.stream()
+                .collect(Collectors.toMap(
                         PortfolioQuestionCountResponse::getPortfolioId,
-                        PortfolioQuestionCountResponse::getCount));
-        portfolioList.forEach(portfolio -> {
-            Long count = questionCountMap.getOrDefault(
-                    portfolio.getId(),
-                    0L
-            );
-            portfolio.getCount().setQuestions(count);
-        });
-        Map<Long, Long> submissionCountMap =
-                bySubmissionCount.stream().collect(Collectors.toMap(
+                        PortfolioQuestionCountResponse::getCount
+                ));
+        
+        Map<Long, Long> submissionCountMap = bySubmissionCount.stream()
+                .collect(Collectors.toMap(
                         PortfolioSubmissionCountResponse::getPortfolioId,
-                        PortfolioSubmissionCountResponse::getCount));
-        portfolioList.forEach(portfolio -> {
-            Long count = submissionCountMap.getOrDefault(
-                    portfolio.getId(),
-                    0L
-            );
-            portfolio.getCount().setSubmissions(count);
-        });
+                        PortfolioSubmissionCountResponse::getCount
+                ));
+        
+        for (PortfolioResponse portfolio : portfolioList) {
+            
+            // ---------- 1) 썸네일 presigned 변환 ----------
+            String thumbnailUrl = portfolio.getThumbnail();
+            
+            if (thumbnailUrl != null && !thumbnailUrl.isBlank()) {
+                // 기존 URL → key 뽑기
+                String key = s3FileUtils.getFileNameFromUrl(thumbnailUrl);
+                
+                // presigned 생성
+                String presigned = s3FileUtils.createPresignedUrl(key);
+                
+                // DTO에 다시 넣기
+                portfolio.setThumbnail(presigned);
+            }
+            
+            // ---------- 2) 질문 수 ----------
+            Long qCount = questionCountMap.getOrDefault(portfolio.getId(), 0L);
+            portfolio.getCount().setQuestions(qCount);
+            
+            // ---------- 3) 제출 수 ----------
+            Long sCount = submissionCountMap.getOrDefault(portfolio.getId(), 0L);
+            portfolio.getCount().setSubmissions(sCount);
+        }
+        
         return portfolioList;
     }
     
@@ -164,6 +196,12 @@ public class PortfolioServiceImpl implements PortfolioService {
        
     
         // 3. 단일 portfolio에 질문 수 세팅
+        String thumbnail = portfoliosOneGetResponse.getThumbnail();
+        if (StringUtils.hasText(thumbnail)) {
+            String fileNameFromUrl = s3FileUtils.getFileNameFromUrl(thumbnail);
+            String presignedUrl = s3FileUtils.createPresignedUrl(fileNameFromUrl);
+            portfoliosOneGetResponse.setThumbnail(presignedUrl);
+        }
         Long questionCount = questionCountMap.getOrDefault(portfolioId, 0L);
         Long submissionCount = submissionCountMap.getOrDefault(portfolioId, 0L);
     

@@ -38,7 +38,19 @@ public class QuestionServiceImpl implements QuestionService {
     
     @Override
     public List<QuestionGetResponse> getQuestion(Long portfolioId) {
-        return questionRepository.findByQuestions(portfolioId);
+        
+        List<QuestionGetResponse> questions = questionRepository.findByQuestions(portfolioId);
+        
+        for (QuestionGetResponse question : questions) {
+            String thumbnail = question.getThumbnail();
+            // 기존 URL → key 뽑기
+            String key = s3FileUtils.getFileNameFromUrl(thumbnail);
+            
+            // presigned 생성
+            String presigned = s3FileUtils.createPresignedUrl(key);
+            question.setThumbnail(presigned);
+        }
+        return questions;
     }
     
     

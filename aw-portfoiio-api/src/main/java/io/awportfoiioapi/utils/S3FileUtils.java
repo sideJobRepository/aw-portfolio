@@ -7,19 +7,24 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class S3FileUtils {
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
@@ -100,15 +105,21 @@ public class S3FileUtils {
         return originalFilename.substring(pos + 1);
     }
     
-    public String extractUuidFromUrl(String fileUrl) {
-        try {
-            URL url = new URL(fileUrl);
-            String path = url.getPath(); // /e30b8b76-1f1d-4111-9b97-5fe1344cf423.png
-            String fileName = path.startsWith("/") ? path.substring(1) : path;
-            int dotIndex = fileName.lastIndexOf(".");
-            return (dotIndex != -1) ? fileName.substring(0, dotIndex) : fileName;
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid S3 file URL", e);
-        }
+    
+    public String createPresignedUrl(String key) {
+        
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+        
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(60)) // 1시간 만료시간
+                .getObjectRequest(getObjectRequest)
+                .build();
+        
+        return s3Presigner.presignGetObject(presignRequest)
+                .url()
+                .toExternalForm();
     }
 }

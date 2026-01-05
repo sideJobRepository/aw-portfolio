@@ -80,10 +80,20 @@ public class SubmissionServiceImpl implements SubmissionService {
             });
             
             for (CommonFile file : fileList) {
+                
+                // 1) 기존 URL
+                String originalUrl = file.getFileUrl();
+                
+                // 2) key 추출
+                String key = s3FileUtils.getFileNameFromUrl(originalUrl);
+                
+                // 3) presigned URL 생성
+                String presignedUrl = s3FileUtils.createPresignedUrl(key);
+                
                 Map<String, Object> fileNode = new LinkedHashMap<>();
                 fileNode.put("type", "file");
                 fileNode.put("fileId", file.getId());
-                fileNode.put("url", file.getFileUrl());
+                fileNode.put("url", presignedUrl);
                 fileNode.put("name", file.getFileName());
                 fileNode.put("step", file.getQuestionStep());
                 fileNode.put("order", file.getQuestionOrder());
