@@ -162,22 +162,18 @@ public class SubmissionServiceImpl implements SubmissionService {
         /**
          * 요청에서 삭제할 파일 id 목록 수집
          */
-        Long deleteFileId =
+        Set<Long> deleteFileIds =
                 request.getOptionFiles().stream()
                         .map(SubmissionPostRequest.OptionFileRequest::getDeleteFileId)
                         .filter(Objects::nonNull)
-                        .findFirst()
-                        .orElse(null);
+                        .collect(Collectors.toSet());
         
-        // 해당 파일삭제
-        if (deleteFileId != null) {
-            existingFiles.stream()
-                    .filter(f -> f.getId().equals(deleteFileId))
-                    .findFirst()
-                    .ifPresent(file -> {
-                        s3FileUtils.deleteFile(file.getFileUrl());
-                        commonFileRepository.delete(file);
-                    });
+        // 매칭되는 파일 전체 삭제
+        for (CommonFile file : existingFiles) {
+            if (deleteFileIds.contains(file.getId())) {
+                s3FileUtils.deleteFile(file.getFileUrl());
+                commonFileRepository.delete(file);
+            }
         }
         
         /**
@@ -268,22 +264,18 @@ public class SubmissionServiceImpl implements SubmissionService {
         /**
          * 요청에서 삭제할 파일 id 목록 수집
          */
-        Long deleteFileId =
+        Set<Long> deleteFileIds =
                 request.getOptionFiles().stream()
                         .map(SubmissionPostDraftRequest.OptionFileRequest::getDeleteFileId)
                         .filter(Objects::nonNull)
-                        .findFirst()
-                        .orElse(null);
+                        .collect(Collectors.toSet());
         
-        // 해당 파일삭제
-        if (deleteFileId != null) {
-            existingFiles.stream()
-                    .filter(f -> f.getId().equals(deleteFileId))
-                    .findFirst()
-                    .ifPresent(file -> {
-                        s3FileUtils.deleteFile(file.getFileUrl());
-                        commonFileRepository.delete(file);
-                    });
+        // 매칭되는 파일 전체 삭제
+        for (CommonFile file : existingFiles) {
+            if (deleteFileIds.contains(file.getId())) {
+                s3FileUtils.deleteFile(file.getFileUrl());
+                commonFileRepository.delete(file);
+            }
         }
         /**
          * 9. 신규 업로드 처리
