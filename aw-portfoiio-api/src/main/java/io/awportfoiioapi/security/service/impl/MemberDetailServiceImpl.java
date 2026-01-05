@@ -62,37 +62,20 @@ public class MemberDetailServiceImpl implements UserDetailsService {
          
          Member member = memberRepository
                  .findByPortfolioMemberId(loginId)
-                 .orElseGet(() -> {
-                     isNewMember.set(true);
-     
-                     Member newMember = Member.builder()
-                             .loginId(loginId)
-                             .password(passwordEncoder.encode(password))
-                             .name(loginId)
-                             .ip(ip)
-                             .build();
-     
-                     Member savedMember = memberRepository.save(newMember);
-                     
-                     Role userRole = memberDetailRepository.findByRoleName("USER");
-     
-                     MemberRole memberRole = MemberRole.builder()
-                             .member(savedMember)
-                             .role(userRole)
-                             .build();
-     
-                     memberRoleRepository.save(memberRole);
-     
-                     return savedMember;
-                 });
+                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 아이디이거나 비밀번호가 맞지 않습니다."));
          
          if (!passwordEncoder.matches(password, member.getPassword())) {
              throw new BadCredentialsException(
                      "존재하지 않는 아이디이거나 비밀번호가 맞지 않습니다."
              );
          }
-         
-         member.modifyIp(ip);
+        
+        Boolean newIs = member.getNewIs();
+        if (!newIs) {
+            member.modifyNewIs();
+            isNewMember.set(true);
+        }
+        member.modifyIp(ip);
          Long memberId = member.getId();
          List<String> roleNames = memberDetailRepository.getRoleName(memberId);
      

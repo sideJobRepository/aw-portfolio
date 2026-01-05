@@ -1,7 +1,6 @@
 package io.awportfoiioapi.userlist.service.impl;
 
-import io.awportfoiioapi.advice.exception.ValidationException;
-import io.awportfoiioapi.advice.response.ErrorMessageResponse;
+import io.awportfoiioapi.advice.exception.CategoryAndPortfolioException;
 import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.member.entrity.Member;
 import io.awportfoiioapi.member.repository.MemberRepository;
@@ -15,13 +14,9 @@ import io.awportfoiioapi.userlist.service.UserListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.util.Optional;
 
 
 @Service
@@ -48,11 +43,17 @@ public class UserListServiceImpl implements UserListService {
         
         String role = request.getRole();
         
+        boolean byUsername = memberRepository.findByUsername(request.getName());
+        if(byUsername) {
+            throw new CategoryAndPortfolioException("이미 존재하는 회원 이름입니다.",null);
+        }
+        
         Member newMember = Member
                 .builder()
                 .loginId(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
+                .newIs(false)
                 .build();
         Member saveMember = memberRepository.save(newMember);
         

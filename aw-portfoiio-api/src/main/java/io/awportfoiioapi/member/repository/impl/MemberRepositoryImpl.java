@@ -107,4 +107,12 @@ public class MemberRepositoryImpl implements MemberQueryRepository {
                 .where(member.registDate.goe(startOfToday))
                 .fetchOne();
     }
+    
+    @Override
+    public boolean findByUsername(String name) {
+        return queryFactory
+                .selectFrom(member)
+                .where(member.loginId.eq(name))
+                .fetchFirst() != null;
+    }
 }

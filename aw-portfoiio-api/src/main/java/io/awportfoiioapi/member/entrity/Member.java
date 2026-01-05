@@ -31,11 +31,18 @@ public class Member extends DateSuperClass {
     @Column(name = "MEMBER_NAME")
     private String name;
     
+    @Column(name = "MEMBER_NEW_IS")
+    private Boolean newIs;
+    
     public void modifyIp(String ip) {
         this.ip = ip;
     }
     
     public void modifyPassword(String encode) {
         this.password = encode;
+    }
+    
+    public void modifyNewIs() {
+        this.newIs = true;
     }
 }
