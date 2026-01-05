@@ -854,7 +854,9 @@ export default function PortfolioForm() {
           alert("임시저장되었습니다.");
 
           if (!existingSubmissionId) {
-            window.location.href = `/portfolio/${portfolio.id}?submissionId=${res.data.submissionId}`;
+            const newUrl = `/portfolio/${portfolio.id}?submissionId=${res.data.submissionId}`;
+            window.history.pushState({}, "", newUrl); // URL 변경
+            setExistingSubmissionId(res.data.submissionId); // 아이디 값 반영
           }
           startAutoSave();
         },
