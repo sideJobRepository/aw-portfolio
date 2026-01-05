@@ -26,7 +26,10 @@ spring:
         static: ${AWS_REGION}
       s3:
         bucket: ${AWS_BUCKET}
-
+  cache:
+    cache-names: presigned
+    caffeine:
+      spec: expireAfterWrite=60m
 
 logging:
   file:
