@@ -151,19 +151,14 @@ public class SubmissionServiceImpl implements SubmissionService {
         }
         
         /**
-         * 5️DB에 저장된 기존 파일 전체 조회
+         * DB에 저장된 기존 파일 전체 조회
          */
-        List<CommonFile> existingFiles =
-                commonFileRepository.findByFileTargetIdAndFileTypeList(
-                        submission.getId(),
-                        CommonFileType.SUBMISSION_OPTION
-                );
+        List<CommonFile> existingFiles = commonFileRepository.findByFileTargetIdAndFileTypeList(submission.getId(), CommonFileType.SUBMISSION_OPTION);
         
         /**
          * 요청에서 삭제할 파일 id 목록 수집
          */
-        Set<Long> deleteFileIds =
-                request.getOptionFiles().stream()
+        Set<Long> deleteFileIds = request.getOptionFiles().stream()
                         .map(SubmissionPostRequest.OptionFileRequest::getDeleteFileId)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
@@ -250,6 +245,21 @@ public class SubmissionServiceImpl implements SubmissionService {
         if (request.getOptionFiles() == null || request.getOptionFiles().isEmpty()) {
             return new ApiResponse(200, true, "임시저장 되었습니다.", submission.getId());
         }
+        
+        request.getOptionFiles()
+               .stream().filter(item -> item.getDeleteFileId() == null)
+                .forEach(item -> {
+                    Long optionsId = item.getOptionsId();
+                    Integer questionStep = item.getQuestionStep();
+                    Integer questionOrder = item.getQuestionOrder();
+                    CommonFile byDeleteFile = commonFileRepository.findByDeleteFile(optionsId, questionStep, questionOrder);
+                    if (byDeleteFile == null) {
+                        return;
+                    }
+                    s3FileUtils.deleteFile(byDeleteFile.getFileUrl());
+                    commonFileRepository.delete(byDeleteFile);
+                });
+        
         
         /**
          * 5. DB에 있는 모든 파일 조회 (SUBMISSION_OPTION 전체)

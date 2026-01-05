@@ -90,4 +90,12 @@ public class CommonFileRepositoryImpl implements CommonFileQueryRepository {
                 .where(commonFile.fileTargetId.in(ids))
                 .execute();
     }
+    
+    @Override
+    public CommonFile findByDeleteFile(Long optionsId, Integer questionStep, Integer questionOrder) {
+        return queryFactory
+                .selectFrom(commonFile)
+                .where(commonFile.optionsId.eq(optionsId) , commonFile.questionStep.eq(questionStep) , commonFile.questionOrder.eq(questionOrder))
+                .fetchFirst();
+    }
 }

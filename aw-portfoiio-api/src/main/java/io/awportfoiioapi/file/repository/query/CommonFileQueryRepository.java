@@ -21,4 +21,6 @@ public interface CommonFileQueryRepository {
     List<CommonFile> findBySubmissions(List<Long> ids);
     
     void deleteBySubmissionsFile(List<Long> ids);
+    
+    CommonFile findByDeleteFile(Long optionsId, Integer questionStep, Integer questionOrder);
 }
