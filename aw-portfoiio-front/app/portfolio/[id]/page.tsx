@@ -881,7 +881,7 @@ export default function PortfolioForm() {
       await request(
         () => SubmissionService.temporaryPost(fd),
         (res) => {
-          if (autoSave) {
+          if (!autoSave) {
             alert("임시저장되었습니다.");
           }
 
