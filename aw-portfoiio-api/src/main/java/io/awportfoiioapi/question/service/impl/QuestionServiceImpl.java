@@ -44,6 +44,9 @@ public class QuestionServiceImpl implements QuestionService {
         for (QuestionGetResponse question : questions) {
             String thumbnail = question.getThumbnail();
             // 기존 URL → key 뽑기
+            if (thumbnail == null) {
+                continue;
+            }
             String key = s3FileUtils.getFileNameFromUrl(thumbnail);
             
             // presigned 생성
