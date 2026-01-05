@@ -29,7 +29,7 @@ spring:
   cache:
     cache-names: presigned
     caffeine:
-      spec: expireAfterWrite=60m
+      spec: expireAfterWrite=50m
 
 logging:
   file:

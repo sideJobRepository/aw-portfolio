@@ -30,7 +30,7 @@ spring:
   cache:
     cache-names: presigned
     caffeine:
-      spec: expireAfterWrite=60m
+      spec: expireAfterWrite=50m
 
   jackson:
         time-zone: Asia/Seoul
