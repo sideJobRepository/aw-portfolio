@@ -1293,7 +1293,8 @@ export default function SuperAdminPage() {
                                     <option value="text">단답형 (텍스트)</option>
                                     <option value="textarea">장문형 (여러 줄)</option>
                                     <option value="multi_text">멀티 텍스트</option>
-                                    <option value="file">파일 업로드</option>
+                                    <option value="file">파일 업로드 (단일)</option>
+                                    <option value="files">파일 업로드 (다중)</option>
                                     <option value="checkbox">체크박스 (조건부 입력)</option>
                                     <option value="checkbox_input">이용안내</option>
                                     <option value="parlor">객실</option>

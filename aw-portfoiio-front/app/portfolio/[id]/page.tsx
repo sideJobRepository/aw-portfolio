@@ -132,22 +132,25 @@ export default function PortfolioForm() {
     const maxStep = questions.length > 0 ? Math.max(...questions.map((q) => q.step)) : 1;
     const minStep = questions.length > 0 ? Math.min(...questions.map((q) => q.step)) : 0;
 
-    const fileMapRef = useRef<Record<string, File>>({});
+    const fileMapRef = useRef<Record<string, File | File[]>>({});
 
     //파일 전송시 수정
     const extractSubmitData = () => {
         const optionFiles: any[] = [];
         const cleanedFormData: any = {};
 
-        Object.entries(fileMapRef.current).forEach(([questionId, file]) => {
+        Object.entries(fileMapRef.current).forEach(([questionId, fileOrFiles]) => {
             const question = questions.find((q) => String(q.id) === String(questionId));
             if (!question) return;
+
+            // 배열이면 그대로, 단일 파일이면 배열로 감싸기
+            const filesArray = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
             optionFiles.push({
                 optionsId: question.id,
                 questionStep: question.step,
                 questionOrder: question.order,
-                files: [file],
+                files: filesArray,
             });
 
             cleanedFormData[questionId] = null;
@@ -477,6 +480,19 @@ export default function PortfolioForm() {
                     return;
                 }
 
+                if (question.questionType === 'files') {
+                    const newFiles = fileMapRef.current[question.id];
+                    const filesArray = Array.isArray(newFiles) ? newFiles : [];
+                    const savedFiles = Array.isArray(value) ? value.filter((v) => v && v.url) : [];
+                    const totalFiles = filesArray.length + savedFiles.length;
+
+                    if (totalFiles === 0) {
+                        newErrors[question.id] = '파일을 업로드해주세요.';
+                        isValid = false;
+                    }
+                    return;
+                }
+
                 if (question.questionType === 'checkbox') {
                     if (!value || typeof value !== 'object') {
                         newErrors[question.id] = '최소 하나 이상 선택해주세요.';
@@ -700,12 +716,25 @@ export default function PortfolioForm() {
                 return;
             }
 
-            //파일
+            //파일 (단일)
             if (question.questionType === 'file') {
                 const hasNewFile = !!fileMapRef.current[question.id];
                 const hasSavedFile = !!value;
 
                 if (!hasNewFile && !hasSavedFile) {
+                    fail('파일을 업로드해주세요.');
+                }
+                return;
+            }
+
+            //파일 (다중)
+            if (question.questionType === 'files') {
+                const newFiles = fileMapRef.current[question.id];
+                const filesArray = Array.isArray(newFiles) ? newFiles : [];
+                const savedFiles = Array.isArray(value) ? value.filter((v) => v && v.url) : [];
+                const totalFiles = filesArray.length + savedFiles.length;
+
+                if (totalFiles === 0) {
                     fail('파일을 업로드해주세요.');
                 }
                 return;
@@ -1023,8 +1052,17 @@ export default function PortfolioForm() {
     };
 
     const handleChange = (questionId: string, value: any) => {
+        // File[] 배열 처리 (다중 파일)
+        if (Array.isArray(value) && value.some((v) => v instanceof File)) {
+            const files = value.filter((v) => v instanceof File);
+            fileMapRef.current[questionId] = files;
+            setFormData((prev) => ({ ...prev, [questionId]: value }));
+            return;
+        }
+
+        // 단일 File 처리
         if (value instanceof File) {
-            fileMapRef.current[questionId] = value; // 즉시 저장
+            fileMapRef.current[questionId] = value;
             setFormData((prev) => ({ ...prev, [questionId]: value }));
             return;
         }
