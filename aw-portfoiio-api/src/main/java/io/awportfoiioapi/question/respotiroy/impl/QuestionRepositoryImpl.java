@@ -92,7 +92,7 @@ public class QuestionRepositoryImpl implements QuestionQueryRepository {
                 .from(options)
                 .join(options.question, question)
                 .where(question.portfolio.id.eq(portfolioId) , options.type.ne(OptionsType.FILE))
-                .orderBy(question.id.asc(),options.id.asc(), options.orders.asc())
+                .orderBy(question.step.asc(),options.orders.asc())
                 .fetch();
 
     }
