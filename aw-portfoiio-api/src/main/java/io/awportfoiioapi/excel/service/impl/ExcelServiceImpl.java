@@ -288,6 +288,31 @@ public class ExcelServiceImpl implements ExcelService {
                     continue;
                 }
                 
+                // ===================== 주소 =====================
+                if ("ADDR".equals(optionsType)) {
+                
+                    headerRow.createCell(colIdx + 0).setCellValue("주소");
+                    headerRow.createCell(colIdx + 1).setCellValue("상세주소");
+                    headerRow.createCell(colIdx + 2).setCellValue("우편번호");
+                
+                    Map<String, Object> addr =
+                            (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
+                
+                    if (addr != null) {
+                
+                        String address = String.valueOf(addr.getOrDefault("address", ""));
+                        String detail = String.valueOf(addr.getOrDefault("detail", ""));
+                        String zonecode = String.valueOf(addr.getOrDefault("zonecode", ""));
+                
+                        dataRow.createCell(colIdx + 0).setCellValue(address);
+                        dataRow.createCell(colIdx + 1).setCellValue(detail);
+                        dataRow.createCell(colIdx + 2).setCellValue(zonecode);
+                    }
+                
+                    colIdx++;
+                    continue;
+                }
+                
                 // ===================== 멀티 텍스트 =====================
                 if ("MULTI_TEXT".equals(optionsType)) {
                     
@@ -329,6 +354,8 @@ public class ExcelServiceImpl implements ExcelService {
                     dataRow.createCell(colIdx++).setCellValue(value.toString());
                 }
             }
+            
+            
             
             
             for (int i = 0; i < colIdx; i++) {
