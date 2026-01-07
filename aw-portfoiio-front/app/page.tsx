@@ -244,14 +244,38 @@ export default function Home() {
                 {/* Swiper Slide */}
                 <div className="mb-10 md:mb-18">
                     <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full rounded-md h-[200px] md:h-[400px] lg:h-[500px]">
-                        <SwiperSlide>
+                        <SwiperSlide className="relative">
                             <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
+                                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
+                                    복잡한 제작은 덜고
+                                    <br />
+                                    타입으로 쉽게 시작해 보세요
+                                </h3>
+                                <p className="text-white text-sm md:text-lg lg:text-xl">전문 지식 없이도 선택만으로 홈페이지 제작이 가능합니다.</p>
+                            </div>
                         </SwiperSlide>
-                        <SwiperSlide>
+                        <SwiperSlide className="relative">
                             <img src="/slide2.jpg" alt="슬라이드 2" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
+                                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
+                                    숙소에 맞게 미리 준비된
+                                    <br />
+                                    타입으로 만들어 보세요
+                                </h3>
+                                <p className="text-white text-sm md:text-lg lg:text-xl">숙박업에 최적화된 구조로 누구나 쉽게 시작할 수 있습니다.</p>
+                            </div>
                         </SwiperSlide>
-                        <SwiperSlide>
+                        <SwiperSlide className="relative">
                             <img src="/slide3.jpg" alt="슬라이드 3" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
+                                <h3 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">
+                                    브랜드를 담기 쉬운 방법
+                                    <br />
+                                    타입 기반 홈페이지 제작
+                                </h3>
+                                <p className="text-white text-sm md:text-lg lg:text-xl">선택부터 완성까지, 부담 없이 진행하세요.</p>
+                            </div>
                         </SwiperSlide>
                     </Swiper>
                 </div>
