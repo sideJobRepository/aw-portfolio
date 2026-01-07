@@ -135,15 +135,15 @@ public class ExcelServiceImpl implements ExcelService {
                 
                         String low = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceLow")))
-                                .collect(Collectors.joining(" | "));
+                                .collect(Collectors.joining(" , "));
                 
                         String mid = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceMid")))
-                                .collect(Collectors.joining(" | "));
+                                .collect(Collectors.joining(" , "));
                 
                         String high = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceHigh")))
-                                .collect(Collectors.joining(" | "));
+                                .collect(Collectors.joining(" , "));
                 
                         dataRow.createCell(colIdx + 0).setCellValue(names);
                         dataRow.createCell(colIdx + 1).setCellValue(descs);
