@@ -185,7 +185,16 @@ public class PortfolioServiceImpl implements PortfolioService {
     
     @Override
     public List<PortfoliosGetDetailResponse> getPortfolioDetailOptions(Long id) {
-        return portfolioRepository.getPortfolioDetailOptions(id);
+        List<PortfoliosGetDetailResponse> portfolioDetailOptions = portfolioRepository.getPortfolioDetailOptions(id);
+        portfolioDetailOptions
+                .stream()
+                .filter(item -> item.getThumbnail() != null && StringUtils.hasText(item.getThumbnail()))
+                .forEach(item -> {
+                    String key = s3FileUtils.getFileNameFromUrl(item.getThumbnail());
+                    String presigned = s3FileUtils.createPresignedUrl(key);
+                    item.setThumbnail(presigned);
+                });
+        return portfolioDetailOptions;
     }
     
     @Override
