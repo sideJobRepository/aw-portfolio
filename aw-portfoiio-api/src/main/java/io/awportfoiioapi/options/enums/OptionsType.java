@@ -17,15 +17,8 @@ public enum OptionsType {
     SPECIAL("스페셜"),
     REFUND("환불"),
     MULTI_TEXT("멀티 텍스트"),
-    CHECKBOX_INPUT("체크박스 인풋");
+    CHECKBOX_INPUT("체크박스 인풋"),
+    ADDR("주소");
     
     private final String value;
-    public static OptionsType fromValue(String value) {
-        return Arrays.stream(values())
-                .filter(type -> type.value.equals(value))
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException("잘못된 옵션 타입입니다: " + value)
-                );
-    }
 }
