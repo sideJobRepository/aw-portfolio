@@ -290,7 +290,7 @@ export default function Home() {
 
                             {/* 고급형 카테고리 */}
                             {categories
-                                .filter((category) => category.name === '고급형1')
+                                .filter((category) => category.name === '고급형')
                                 .map((category) => (
                                     <button
                                         key={category.id}
@@ -306,7 +306,7 @@ export default function Home() {
                                 ))}
 
                             {/* 구분선 - 고급형 카테고리가 있을 때만 표시 */}
-                            {categories.some((cat) => cat.name === '고급형') && categories.some((cat) => cat.name !== '고급형') && <div className="h-8 w-[2px] bg-black/20 mx-2 md:mx-4"></div>}
+                            {categories.some((cat) => cat.name === '고급형') && categories.some((cat) => cat.name !== '고급형') && <div className="h-5 w-[1px] bg-black mx-2 md:mx-4"></div>}
 
                             {/* 일반 카테고리 */}
                             {categories
