@@ -1591,11 +1591,6 @@ export default function PortfolioForm() {
                                                             </div>
                                                         )}
                                                     </h3>
-                                                    {!isDetailMode && (
-                                                        <button type="button" onClick={handleAddRefund} className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all">
-                                                            + 추가
-                                                        </button>
-                                                    )}
                                                 </div>
 
                                                 <div className="p-4 border rounded-lg bg-gray-50 space-y-3">
@@ -1678,6 +1673,11 @@ export default function PortfolioForm() {
                                                         </div>
                                                     ))}
                                                 </div>
+                                                {!isDetailMode && (
+                                                    <button type="button" onClick={handleAddRefund} className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all">
+                                                        + 추가
+                                                    </button>
+                                                )}
                                                 {errors[question.id] && <p className="text-sm text-red-500 mt-2">{errors[question.id]}</p>}
                                             </div>
                                         );
