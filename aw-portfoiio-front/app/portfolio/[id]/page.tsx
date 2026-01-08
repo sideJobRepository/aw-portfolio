@@ -1095,6 +1095,14 @@ export default function PortfolioForm() {
             setExistingSubmissionId(res.data.submissionId); // 아이디 값 반영
           }
           startAutoSave();
+
+          //신규파일 비우기
+          Object.keys(fileMapRef.current).forEach((qid) => {
+            fileMapRef.current[qid].newFiles = [];
+            fileMapRef.current[qid].deleteFileIds = [];
+          });
+
+          checkExistingSubmission();
         },
         { ignoreErrorRedirect: true },
       );
@@ -1199,19 +1207,23 @@ export default function PortfolioForm() {
         const prevValue = prev[questionId];
         if (!Array.isArray(prevValue)) return prev;
 
+        const removed = prevValue[value.removeTempFileIndex];
+
+        const nextValue = prevValue.filter(
+          (_: any, idx: number) => idx !== value.removeTempFileIndex,
+        );
+
+        if (removed?.file) {
+          fileMapRef.current[questionId].newFiles = fileMapRef.current[
+            questionId
+          ].newFiles.filter((f) => f !== removed.file);
+        }
+
         return {
           ...prev,
-          [questionId]: prevValue.filter(
-            (_: any, idx: number) => idx !== value.removeTempFileIndex,
-          ),
+          [questionId]: nextValue,
         };
       });
-
-      // 서버 전송용에서도 제거
-      fileMapRef.current[questionId].newFiles.splice(
-        value.removeTempFileIndex,
-        1,
-      );
 
       return;
     }
