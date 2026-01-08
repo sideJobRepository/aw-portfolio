@@ -888,21 +888,8 @@ export default function PortfolioForm() {
             // 마지막 객실의 데이터를 가져옴
             const lastRoom = prev[prev.length - 1];
 
-            // 마지막 객실이 모두 입력되었는지 확인
-            const isLastRoomComplete =
-                lastRoom &&
-                lastRoom.name?.trim() &&
-                lastRoom.desc?.trim() &&
-                lastRoom.capacity?.standard?.trim() &&
-                lastRoom.capacity?.max?.trim() &&
-                lastRoom.type?.trim() &&
-                // 요금 정보 확인 (비수기, 준성수기, 성수기 모두)
-                Object.values(lastRoom.priceLow).every((v) => v?.trim()) &&
-                Object.values(lastRoom.priceMid).every((v) => v?.trim()) &&
-                Object.values(lastRoom.priceHigh).every((v) => v?.trim());
-
-            if (isLastRoomComplete) {
-                // 마지막 객실의 모든 정보 복사 (객실명 포함, ID만 새로 생성)
+            if (lastRoom) {
+                // 마지막 객실의 모든 정보 복사 (일부만 입력되어 있어도 복사)
                 return [
                     ...prev,
                     {
@@ -911,7 +898,7 @@ export default function PortfolioForm() {
                     },
                 ];
             } else {
-                // 마지막 객실이 완성되지 않았으면 빈 객실 추가
+                // 첫 객실인 경우 빈 객실 추가
                 return [
                     ...prev,
                     {
