@@ -502,13 +502,21 @@ export default function PortfolioForm() {
         }
 
         if (question.questionType === "file") {
-          const hasNewFile = !!fileMapRef.current[question.id];
-          const hasSavedFile = !!value; // 기존 임시저장 값
+          const fileState = fileMapRef.current[question.id];
 
-          if (!hasNewFile && !hasSavedFile) {
+          const hasNewFile =
+            fileState && Array.isArray(fileState.newFiles)
+              ? fileState.newFiles.length > 0
+              : false;
+
+          const hasExistingFile =
+            Array.isArray(value) && value.some((f: any) => f.fileId);
+
+          if (!hasNewFile && !hasExistingFile) {
             newErrors[question.id] = "파일을 업로드해주세요.";
             isValid = false;
           }
+
           return;
         }
 
@@ -792,12 +800,20 @@ export default function PortfolioForm() {
 
       //파일
       if (question.questionType === "file") {
-        const hasNewFile = !!fileMapRef.current[question.id];
-        const hasSavedFile = !!value;
+        const fileState = fileMapRef.current[question.id];
 
-        if (!hasNewFile && !hasSavedFile) {
+        const hasNewFile =
+          fileState && Array.isArray(fileState.newFiles)
+            ? fileState.newFiles.length > 0
+            : false;
+
+        const hasExistingFile =
+          Array.isArray(value) && value.some((f: any) => f.fileId);
+
+        if (!hasNewFile && !hasExistingFile) {
           fail("파일을 업로드해주세요.");
         }
+
         return;
       }
 
@@ -1173,6 +1189,29 @@ export default function PortfolioForm() {
           ],
         };
       });
+
+      return;
+    }
+
+    //새로첨부된 파일 삭제
+    if (value?.removeTempFileIndex !== undefined) {
+      setFormData((prev) => {
+        const prevValue = prev[questionId];
+        if (!Array.isArray(prevValue)) return prev;
+
+        return {
+          ...prev,
+          [questionId]: prevValue.filter(
+            (_: any, idx: number) => idx !== value.removeTempFileIndex,
+          ),
+        };
+      });
+
+      // 서버 전송용에서도 제거
+      fileMapRef.current[questionId].newFiles.splice(
+        value.removeTempFileIndex,
+        1,
+      );
 
       return;
     }
