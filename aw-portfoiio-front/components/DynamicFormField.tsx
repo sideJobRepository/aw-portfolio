@@ -447,8 +447,8 @@ export default function DynamicFormField({
           }}
           onDrop={(e) => {
             e.preventDefault();
-            const file = e.dataTransfer.files?.[0];
-            if (file) onChange(file);
+            const files = Array.from(e.dataTransfer.files || []);
+            files.forEach((file) => onChange(file));
           }}
           className={`w-full px-4 py-8 border-2 rounded-lg text-center transition-all 
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer border-gray-300 hover:border-black"}`}
@@ -461,6 +461,7 @@ export default function DynamicFormField({
           <input
             ref={inputRef}
             type="file"
+            multiple
             accept="image/*,.pdf,.ai"
             disabled={disabled}
             onChange={(e) => {
