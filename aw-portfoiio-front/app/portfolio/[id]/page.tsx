@@ -1170,15 +1170,15 @@ export default function PortfolioForm() {
   };
 
   const handleChange = (questionId: string, value: any) => {
-    if (!fileMapRef.current[questionId]) {
-      fileMapRef.current[questionId] = {
-        newFiles: [],
-        deleteFileIds: [],
-      };
-    }
-
     // 새 파일 추가
     if (value instanceof File) {
+      if (!fileMapRef.current[questionId]) {
+        fileMapRef.current[questionId] = {
+          newFiles: [],
+          deleteFileIds: [],
+        };
+      }
+
       fileMapRef.current[questionId].newFiles.push(value);
 
       setFormData((prev) => {
@@ -1203,6 +1203,9 @@ export default function PortfolioForm() {
 
     //새로첨부된 파일 삭제
     if (value?.removeTempFileIndex !== undefined) {
+      const fileState = fileMapRef.current[questionId];
+      if (!fileState) return;
+
       setFormData((prev) => {
         const prevValue = prev[questionId];
         if (!Array.isArray(prevValue)) return prev;
@@ -1230,6 +1233,13 @@ export default function PortfolioForm() {
 
     // 기존 파일 삭제
     if (value?.deleteFileId) {
+      if (!fileMapRef.current[questionId]) {
+        fileMapRef.current[questionId] = {
+          newFiles: [],
+          deleteFileIds: [],
+        };
+      }
+
       fileMapRef.current[questionId].deleteFileIds.push(value.deleteFileId);
 
       setFormData((prev) => {
