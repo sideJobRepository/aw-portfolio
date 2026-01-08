@@ -288,15 +288,37 @@ export default function Home() {
                                 전체
                             </button>
 
-                            {categories.map((category) => (
-                                <button
-                                    key={category.id}
-                                    onClick={() => setSelectedCategory(category.id)}
-                                    className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
-                                >
-                                    {category.name}
-                                </button>
-                            ))}
+                            {categories.map((category) => {
+                                // "고급형" 카테고리 특별 스타일 적용
+                                const isPremium = category.name === '고급형';
+
+                                if (isPremium) {
+                                    return (
+                                        <button
+                                            key={category.id}
+                                            onClick={() => setSelectedCategory(category.id)}
+                                            className={`rounded-lg px-3 md:px-6 py-1 text-base font-bold transition-all ${
+                                                selectedCategory === category.id
+                                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg border-2 border-amber-400'
+                                                    : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-900 border-2 border-amber-300 hover:from-amber-500 hover:to-yellow-600 hover:text-white hover:border-amber-400 hover:shadow-lg'
+                                            }`}
+                                        >
+                                            ⭐ {category.name}
+                                        </button>
+                                    );
+                                }
+
+                                // 일반 카테고리 스타일
+                                return (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => setSelectedCategory(category.id)}
+                                        className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                    >
+                                        {category.name}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
