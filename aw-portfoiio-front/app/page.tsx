@@ -295,11 +295,7 @@ export default function Home() {
                                     <button
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
-                                        className={`rounded-lg px-3 md:px-6 py-1 text-base font-bold transition-all ${
-                                            selectedCategory === category.id
-                                                ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg border-2 border-amber-400'
-                                                : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-900 border-2 border-amber-300 hover:from-amber-500 hover:to-yellow-600 hover:text-white hover:border-amber-400 hover:shadow-lg'
-                                        }`}
+                                        className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                                     >
                                         {category.name}
                                     </button>
