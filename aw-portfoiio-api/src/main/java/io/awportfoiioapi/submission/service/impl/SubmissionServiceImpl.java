@@ -70,26 +70,30 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public SubmissionGetRequest getSubmissions(Long submissionId) {
         
-        SubmissionGetRequest submission = submissionRepository.getSubmission(submissionId);
-        
+       
+        SubmissionGetRequest submission =
+                submissionRepository.getSubmission(submissionId);
+    
+        // 파일 목록 조회 (옵션 파일만)
         List<CommonFile> fileList = commonFileRepository.findByFileTargetIdAndFileTypeList(submission.getSubmissionId(), CommonFileType.SUBMISSION_OPTION);
-        
-        
+    
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(submission.getSubmissionJson(), new TypeReference<>() {
-            });
-            
+            // 기존 JSON → Map 변환
+            Map<String, Object> responseMap = objectMapper.readValue(submission.getSubmissionJson(), new TypeReference<>() {});
+    
+            // 파일 병합
             for (CommonFile file : fileList) {
-                
-                // 1) 기존 URL
+    
+                // 원본 S3 URL
                 String originalUrl = file.getFileUrl();
-                
-                // 2) key 추출
+    
+                // key 추출
                 String key = s3FileUtils.getFileNameFromUrl(originalUrl);
-                
-                // 3) presigned URL 생성
+    
+                // presigned URL 생성
                 String presignedUrl = s3FileUtils.createPresignedUrl(key);
                 
+                //  파일 JSON 노드 생성
                 Map<String, Object> fileNode = new LinkedHashMap<>();
                 fileNode.put("type", "file");
                 fileNode.put("fileId", file.getId());
@@ -97,21 +101,45 @@ public class SubmissionServiceImpl implements SubmissionService {
                 fileNode.put("name", file.getFileName());
                 fileNode.put("step", file.getQuestionStep());
                 fileNode.put("order", file.getQuestionOrder());
-                
-                responseMap.put(
-                        String.valueOf(file.getOptionsId()),
-                        fileNode
-                );
+    
+                // optionsId 기준으로 묶음
+                String optionKey = String.valueOf(file.getOptionsId());
+    
+                // 항상 리스트로 저장
+                List<Object> fileNodes;
+    
+                Object exist = responseMap.get(optionKey);
+    
+                // 기존 값이 없으면 새 리스트
+                if (exist == null) {
+                    fileNodes = new ArrayList<>();
+                }
+                // 이미 리스트면 그대로 사용
+                else if (exist instanceof List<?>) {
+                    fileNodes = (List<Object>) exist;
+                }
+                // 객체 1개만 있었던 경우 → 리스트로 승격
+                else {
+                    fileNodes = new ArrayList<>();
+                    fileNodes.add(exist);
+                }
+    
+                // 현재 파일 추가
+                fileNodes.add(fileNode);
+    
+                // Map 에 다시 저장
+                responseMap.put(optionKey, fileNodes);
             }
-            
+    
+            // 다시 JSON String으로 저장
             submission.setSubmissionJson(
                     objectMapper.writeValueAsString(responseMap)
             );
-            
+    
         } catch (Exception e) {
             throw new RuntimeException("submission json merge error", e);
         }
-        
+    
         return submission;
     }
     
