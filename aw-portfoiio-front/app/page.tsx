@@ -283,33 +283,15 @@ export default function Home() {
                 {/* Category Filter */}
                 {categories.length > 0 && (
                     <div className="mb-8 mt-12">
-                        <div className="flex justify-center gap-1 md:gap-3 flex-wrap">
+                        <div className="flex justify-center gap-1 md:gap-3 flex-wrap items-center">
                             <button onClick={() => setSelectedCategory(null)} className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}>
                                 전체
                             </button>
 
-                            {categories.map((category) => {
-                                // "고급형" 카테고리 특별 스타일 적용
-                                const isPremium = category.name === '고급형';
-
-                                if (isPremium) {
-                                    return (
-                                        <button
-                                            key={category.id}
-                                            onClick={() => setSelectedCategory(category.id)}
-                                            className={`rounded-lg px-3 md:px-6 py-1 text-base font-bold transition-all ${
-                                                selectedCategory === category.id
-                                                    ? 'bg-gradient-to-r from-amber-500 to-yellow-600 text-white shadow-lg border-2 border-amber-400'
-                                                    : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-900 border-2 border-amber-300 hover:from-amber-500 hover:to-yellow-600 hover:text-white hover:border-amber-400 hover:shadow-lg'
-                                            }`}
-                                        >
-                                            {category.name}
-                                        </button>
-                                    );
-                                }
-
-                                // 일반 카테고리 스타일
-                                return (
+                            {/* 고급형 카테고리 */}
+                            {categories
+                                .filter((category) => category.name === '고급형')
+                                .map((category) => (
                                     <button
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
@@ -317,23 +299,37 @@ export default function Home() {
                                     >
                                         {category.name}
                                     </button>
-                                );
-                            })}
+                                ))}
+
+                            {/* 구분선 - 고급형 카테고리가 있을 때만 표시 */}
+                            {categories.some((cat) => cat.name === '고급형') && categories.some((cat) => cat.name !== '고급형') && <div className="h-5 w-[1px] bg-black mx-2 md:mx-4"></div>}
+
+                            {/* 일반 카테고리 */}
+                            {categories
+                                .filter((category) => category.name !== '고급형')
+                                .map((category) => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => setSelectedCategory(category.id)}
+                                        className={`rounded-md px-3 md:px-6 py-1 text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                    >
+                                        {category.name}
+                                    </button>
+                                ))}
                         </div>
                     </div>
                 )}
 
                 {/* 고급형 카테고리 선택 시 콜아웃 */}
                 {selectedCategory && categories.find((cat) => cat.id === selectedCategory && cat.name === '고급형') && (
-                    <div className="mb-8 p-6 md:p-8 border border-amber-300 rounded-xl shadow-lg">
-                        <div className="flex items-start gap-4">
+                    <div className="mb-8 p-6 md:p-8 borderrounded-xl shadow-lg">
+                        <div className="">
                             <div className="text-center">
-                                <h3 className="text-xl md:text-2xl font-bold text-amber-900 mb-2 flex items-center gap-2">
-                                    <span className="bg-clip-text text-transparent">프리미엄 고급형 타입</span>
+                                <h3 className="text-xl md:text-2xl font-bold mb-2">
+                                    <span className="bg-clip-text">프리미엄 고급형 타입</span>
                                 </h3>
-                                <p className="text-gray-700 text-sm md:text-base leading-relaxed mb-3">
-                                    본 포트폴리오는 고급형(주문형) 제작 사례입니다. <br /> 고객의 니즈와 숙소 특성에 맞춰 <br />
-                                    디자인 및 개발이 진행된 커스텀 프로젝트입니다.
+                                <p className="text-gray-700 text-base leading-relaxed mb-3">
+                                    본 포트폴리오는 고급형(주문형) 제작 사례입니다. <br /> 고객의 니즈와 숙소 특성에 맞춰 디자인 및 개발이 진행된 커스텀 프로젝트입니다.
                                 </p>
                             </div>
                         </div>
@@ -438,7 +434,7 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setPreviewMode('mobile')}
-                                        className={`px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                                        className={`hidden md:block px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
                                         title="모바일 미리보기(500px)"
                                     >
                                         모바일
