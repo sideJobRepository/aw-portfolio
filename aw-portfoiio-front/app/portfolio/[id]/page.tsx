@@ -621,20 +621,6 @@ export default function PortfolioForm() {
                         isValid = false;
                         return;
                     }
-                } else if (question.questionType === 'id_password') {
-                    // 아이디/비밀번호 검증: 두 입력값 모두 필수
-                    if (!Array.isArray(value) || value.length !== 2) {
-                        newErrors[question.id] = '아이디와 비밀번호를 모두 입력해주세요.';
-                        isValid = false;
-                        return;
-                    }
-
-                    const [id, password] = value;
-                    if (!id || !id.trim() || !password || !password.trim()) {
-                        newErrors[question.id] = '아이디와 비밀번호를 모두 입력해주세요.';
-                        isValid = false;
-                        return;
-                    }
                 } else {
                     if (!value || (typeof value === 'string' && value.trim().length === 0)) {
                         newErrors[question.id] = '이 항목은 필수입니다.';
@@ -649,8 +635,8 @@ export default function PortfolioForm() {
                 isValid = false;
             }
 
-            // multi_text와 id_password의 최소 글자 수 검증
-            if (question.requireMinLength && (question.questionType === 'multi_text' || question.questionType === 'id_password') && Array.isArray(value) && value.length === 2) {
+            // multi_text의 최소 글자 수 검증
+            if (question.requireMinLength && question.questionType === 'multi_text' && Array.isArray(value) && value.length === 2) {
                 const [first, second] = value;
                 if ((first && first.trim().length > 0 && first.trim().length < question.minLength) || (second && second.trim().length > 0 && second.trim().length < question.minLength)) {
                     newErrors[question.id] = `각 항목은 최소 ${question.minLength}자 이상 입력해주세요.`;
