@@ -174,7 +174,15 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                 <input
                     type="text"
                     value={value ?? ''}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => {
+                        const filtered = e.target.value.replace(/-/g, '');
+                        onChange(filtered);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === '-' || e.key === 'Subtract') {
+                            e.preventDefault();
+                        }
+                    }}
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                     placeholder={(parsedOptions as any)?.placeholder || `${question.title}을(를) 입력하세요`}
                     maxLength={question.maxLength}
@@ -214,7 +222,15 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                 </label>
                 <textarea
                     value={value ?? ''}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={(e) => {
+                        const filtered = e.target.value.replace(/-/g, '');
+                        onChange(filtered);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === '-' || e.key === 'Subtract') {
+                            e.preventDefault();
+                        }
+                    }}
                     rows={6}
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                     placeholder={(parsedOptions as any)?.placeholder || `${question.title}을(를) 입력하세요`}
@@ -336,7 +352,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                     className={`w-full px-4 py-8 border-2 rounded-lg text-center transition-all 
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer border-gray-300 hover:border-black'}`}
                 >
-                    <p className="text-sm text-gray-700 font-medium">{existingFiles.length + (value?.newFiles?.length || 0) > 0 ? '파일을 추가할 수 있습니다.' : '클릭하거나 파일을 드래그하세요.'}</p>
+                    <p className="text-sm text-gray-700 font-medium">{existingFiles.length + (value?.newFiles?.length || 0) > 0 ? '파일을 추가할 수 있습니다.' : '클릭하거나 파일을 드래그하여 업로드할 수 있습니다.'}</p>
                     <input
                         ref={inputRef}
                         type="file"
