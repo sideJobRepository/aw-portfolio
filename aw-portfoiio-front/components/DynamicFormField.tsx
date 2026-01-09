@@ -293,6 +293,73 @@ export default function DynamicFormField({ question, value, onChange, error, dis
         );
     }
 
+    // 아이디/비밀번호
+    if (questionType === 'id_password') {
+        const placeholders = {
+            placeholder1: (parsedOptions as any)?.placeholder1 || '아이디를 입력하세요',
+            placeholder2: (parsedOptions as any)?.placeholder2 || '비밀번호를 입력하세요',
+        };
+
+        const values: [string, string] = Array.isArray(value) && value.length === 2 ? [value[0] ?? '', value[1] ?? ''] : ['', ''];
+
+        return (
+            <div className="space-y-3">
+                <label className="block">
+                    <div className="flex items-center gap-1 text-lg font-semibold text-black">
+                        <span>{question.title}</span>
+                        {question.isRequired && <span className="text-red-500">*</span>}
+                        {question.thumbnail && (
+                            <div className="relative inline-flex items-center gap-1">
+                                <span className="text-xs text-gray-400 hover:text-black cursor-pointer" onClick={() => setShowPreview((prev) => !prev)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30" height="30" viewBox="0 0 50 50">
+                                        <path d="M25,2C12.318,2,2,12.318,2,25s10.318,23,23,23s23-10.318,23-23S37.682,2,25,2z M26.797,36.935 c0,0.216-0.144,0.358-0.358,0.358h-2.726c-0.217,0-0.359-0.143-0.359-0.358v-3.084c0-0.215,0.143-0.358,0.359-0.358h2.726 c0.215,0,0.358,0.144,0.358,0.358V36.935z M29.952,23.268l-2.403,3.3c-0.717,0.968-0.933,1.47-0.933,2.689v1.147 c0,0.215-0.143,0.358-0.358,0.358h-2.367c-0.215,0.004-0.358-0.14-0.358-0.355v-1.47c0-1.436,0.322-2.188,1.075-3.229l2.404-3.3 c1.254-1.721,1.684-2.546,1.684-3.766c0-2.044-1.434-3.335-3.479-3.335c-2.008,0-3.299,1.219-3.729,3.407 c-0.036,0.215-0.179,0.323-0.395,0.287l-2.259-0.395c-0.216-0.036-0.323-0.179-0.288-0.395c0.539-3.443,3.014-5.703,6.744-5.703 c3.872,0,6.49,2.546,6.49,6.097C31.78,20.327,31.172,21.582,29.952,23.268z"></path>
+                                    </svg>
+                                </span>
+
+                                {showPreview && (
+                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                        <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    {question.description && <span className="block text-sm text-gray-600 mt-1">{question.description}</span>}
+                </label>
+
+                {/* 첫 번째 입력 - 아이디 */}
+                <input
+                    type="text"
+                    value={values[0]}
+                    onChange={(e) => {
+                        const newValue: [string, string] = [e.target.value, values[1]];
+                        onChange(newValue);
+                    }}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                    placeholder={placeholders.placeholder1}
+                    maxLength={question.maxLength}
+                    disabled={disabled}
+                />
+
+                {/* 두 번째 입력 - 비밀번호 */}
+                <input
+                    type="password"
+                    value={values[1]}
+                    onChange={(e) => {
+                        const newValue: [string, string] = [values[0], e.target.value];
+                        onChange(newValue);
+                    }}
+                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                    placeholder={placeholders.placeholder2}
+                    maxLength={question.maxLength}
+                    disabled={disabled}
+                />
+
+                {error && <p className="text-sm text-red-500">{error}</p>}
+            </div>
+        );
+    }
+
     // 파일 업로드
     if (questionType === 'file') {
         const existingFiles = Array.isArray(value) ? value : [];

@@ -116,6 +116,10 @@ input[type='text']:disabled {
     margin-bottom: 8rem;
 }
 
+.mt-0 {
+    margin-top: 0 !important;
+}
+
 .border-bottom {
     border-bottom-width: 1px;
 }
