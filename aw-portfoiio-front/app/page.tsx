@@ -384,7 +384,7 @@ export default function Home() {
 
                                 <div className="p-2 pt-6">
                                     <h3 className="text-2xl font-bold mb-3 group-hover:text-gray-700">{portfolio.title}</h3>
-                                    {portfolio.description && <p className="text-gray-600 mb-2">{portfolio.description}</p>}
+                                    {portfolio.description && <p className="text-gray-600 mb-2 whitespace-pre-line">{portfolio.description}</p>}
                                     {portfolio.mood && <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">#{portfolio.mood}</span>}
                                 </div>
 

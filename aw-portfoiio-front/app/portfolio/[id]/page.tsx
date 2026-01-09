@@ -40,13 +40,7 @@ interface FormData {
 const stepMessages: Record<number, { title: string; description: JSX.Element }> = {
     0: {
         title: '안내사항',
-        description: (
-            <>
-                다음 단계로 진행하기 전에
-                <br />
-                안내사항을 확인해주세요.
-            </>
-        ),
+        description: <>다음 단계로 진행하기 전에 안내사항을 확인해주세요.</>,
     },
     1: {
         title: '단계 1 - 필수 정보 입력',
