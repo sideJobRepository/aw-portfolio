@@ -256,7 +256,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
                 {/* Swiper Slide */}
                 <div className="mb-10 md:mb-18">
-                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 3000, disableOnInteraction: false }} loop={true} className="w-full rounded-md h-[200px] md:h-[400px] lg:h-[500px]">
+                    <Swiper modules={[Navigation, Pagination, Autoplay]} navigation pagination={{ clickable: true }} autoplay={{ delay: 5000, disableOnInteraction: false }} loop={true} className="w-full rounded-md h-[200px] md:h-[400px] lg:h-[500px]">
                         <SwiperSlide className="relative">
                             <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">

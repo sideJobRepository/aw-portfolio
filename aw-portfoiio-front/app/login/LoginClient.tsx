@@ -104,7 +104,7 @@ export default function LoginPage() {
                                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all"
                                 required
                             />
-                            <p className="text-sm text-gray-500 mt-1">정보가 일치하지 않을 시, 담당자께 문의부탁드립니다.</p>
+                            <p className="text-sm text-gray-500 mt-1">처음 방문하셨거나 로그인에 어려움이 있으신 경우, 내부 담당자에게 문의해 주세요.</p>
                             <p className="text-sm text-gray-500 mt-1">대표전화 : 1522-5453</p>
                         </div>
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import DynamicFormField from './DynamicFormField';
 
 interface Question {
-     id: string;
+    id: string;
     step: number;
     title: string;
     description?: string;

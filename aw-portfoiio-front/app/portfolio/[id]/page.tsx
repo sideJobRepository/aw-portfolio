@@ -1269,7 +1269,7 @@ export default function PortfolioForm() {
                     <div>
                         <div className="mb-6">
                             <h2 className="text-2xl font-bold text-black mb-2">{currentStep === 0 ? '안내사항' : `단계 ${currentStep}`}</h2>
-                            <p className="text-gray-600">{currentStep === 0 ? '다음 단계로 진행하기 전에 안내사항을 확인해주세요.' : '모든 필수 항목을 작성해주세요.'}</p>
+                            <p className="text-gray-600">{currentStep === 0 ? '다음 단계로 진행하기 전에 안내사항을 확인해주세요.' : '홈페이지 제작을 위해 필요한 기본 정보를 입력해 주세요.'}</p>
                         </div>
 
                         <div className="pr-2 space-y-8">
@@ -1300,6 +1300,11 @@ export default function PortfolioForm() {
                                                             </div>
                                                         )}
                                                     </h3>
+                                                    <p className="text-gray-500 text-sm">
+                                                        홈페이지에 노출될 객실 정보를 입력해 주세요.
+                                                        <br />
+                                                        입력하신 내용은 객실 상세 페이지 구성과 예약 정보에 직접 반영됩니다.
+                                                    </p>
                                                 </div>
 
                                                 {rooms.length === 0 && <p className="text-gray-500 text-sm">아직 등록된 객실이 없습니다. “객실 추가”를 눌러주세요.</p>}
@@ -1319,7 +1324,7 @@ export default function PortfolioForm() {
 
                                                         <div>
                                                             <label className="block font-semibold mb-1">객실명</label>
-                                                            <p className="text-xs text-gray-500 mb-1">고객에게 노출될 객실 이름을 입력해주세요.</p>
+                                                            <p className="text-xs text-gray-500 mb-1">홈페이지 및 예약 페이지에 노출될 객실 이름을 입력해 주세요.</p>
                                                             <input
                                                                 type="text"
                                                                 value={room.name}
@@ -1335,7 +1340,7 @@ export default function PortfolioForm() {
 
                                                         <div>
                                                             <label className="block font-semibold mb-1">객실 설명</label>
-                                                            <p className="text-xs text-gray-500 mb-1">객실의 분위기와 특징, 보이는 풍경, 제공되는 서비스를 자유롭게 작성해주세요.</p>
+                                                            <p className="text-xs text-gray-500 mb-1">객실의 분위기, 주요 특징, 보이는 풍경, 제공되는 서비스 등을 자유롭게 작성해 주세요.</p>
                                                             <textarea
                                                                 value={room.desc}
                                                                 disabled={isDetailMode}
@@ -1351,7 +1356,7 @@ export default function PortfolioForm() {
 
                                                         <div>
                                                             <label className="block font-semibold mb-1">객실 인원</label>
-                                                            <p className="text-xs text-gray-500 mb-1">객실 수용 인원을 작성해주세요.</p>
+                                                            <p className="text-xs text-gray-500 mb-1">해당 객실의 수용 인원을 입력해 주세요.</p>
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <input
                                                                     type="number"
@@ -1474,6 +1479,7 @@ export default function PortfolioForm() {
                                                         </div>
                                                     </div>
                                                 ))}
+                                                <p className="text-gray-500 text-sm">여러 객실이 있는 경우, [+객실 추가] 버튼을 눌러 동일한 방식으로 입력해 주세요.</p>
                                                 {!isDetailMode && (
                                                     <button type="button" onClick={handleAddRoom} className="px-4 py-2 bg-gray-100 border-2 border-black rounded-lg text-sm font-semibold hover:bg-black hover:text-white transition-all">
                                                         + 객실 추가
@@ -1508,7 +1514,11 @@ export default function PortfolioForm() {
                                                         )}
                                                     </h3>
                                                 </div>
-                                                <p className="text-gray-500 text-sm">스페셜이란? 숙소만의 차별화된 서비스나 매력을 강조하는 공간입니다.</p>
+                                                <p className="text-gray-500 text-sm">
+                                                    스페셜이란? <br />
+                                                    숙소에서만 경험할 수 있는 차별화된 서비스·공간·체험 요소를 소개하는 영역입니다. <br />
+                                                    입력하신 내용은 홈페이지에서 숙소의 매력을 강조하는 콘텐츠로 활용됩니다.
+                                                </p>
                                                 {specials.length === 0 && <p className="text-gray-500 text-sm">아직 등록된 스페셜이 없습니다. “스페셜 추가”를 눌러주세요.</p>}
 
                                                 {specials.map((sp, index) => (
@@ -1542,7 +1552,7 @@ export default function PortfolioForm() {
 
                                                         <div>
                                                             <label className="block font-semibold mb-1">스페셜 설명</label>
-                                                            <p className="text-xs text-gray-500 mb-1">이 스페셜이 어떤 경험인지, 왜 특별한지 간단히 설명해주세요.</p>
+                                                            <p className="text-xs text-gray-500 mb-1">해당 스페셜에 대한 간단한 설명해 작성해 주세요.</p>
                                                             <textarea
                                                                 value={sp.desc}
                                                                 disabled={isDetailMode}
@@ -1591,6 +1601,10 @@ export default function PortfolioForm() {
                                                             </div>
                                                         )}
                                                     </h3>
+                                                    <p className="text-gray-500 text-sm">
+                                                        예약 취소 시 적용될 환불 기준을 설정해 주세요. <br />
+                                                        입력하신 내용은 예약 및 이용안내와 함께 홈페이지에 그대로 안내됩니다.
+                                                    </p>
                                                 </div>
 
                                                 <div className="p-4 border rounded-lg bg-gray-50 space-y-3">
@@ -1600,7 +1614,7 @@ export default function PortfolioForm() {
                                                         <div key={refund.id} className="flex flex-wrap items-center gap-2 bg-white p-3 rounded border border-gray-200">
                                                             {index === 0 ? (
                                                                 <>
-                                                                    <span>기본취소수수료</span>
+                                                                    <span>기본 취소 수수료</span>
                                                                     <span className="text-xs text-gray-500">(선택사항)</span>
                                                                     <input
                                                                         type="number"
@@ -1639,7 +1653,7 @@ export default function PortfolioForm() {
                                                                     <span>방문</span>
                                                                     <input
                                                                         type="number"
-                                                                        min={0}
+                                                                        min={1}
                                                                         value={refund.day}
                                                                         disabled={isDetailMode}
                                                                         onChange={(e) => {
