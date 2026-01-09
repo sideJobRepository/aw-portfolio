@@ -25,4 +25,5 @@ public class PortfolioPostRequest {
     private MultipartFile thumbnail;
     @NotNull(message = "포트폴리오 활성여부는 필수입력 입니다.")
     private Boolean isActive;
+    private String mood;
 }

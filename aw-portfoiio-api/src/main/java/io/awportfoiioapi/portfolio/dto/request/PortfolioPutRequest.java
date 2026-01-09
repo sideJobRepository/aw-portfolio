@@ -26,6 +26,7 @@ public class PortfolioPutRequest {
     private ThumbnailRequest thumbnail;
     @NotNull(message = "포트폴리오 활성여부는 필수입니다.")
     private Boolean isActive;
+    private String mood;
     
     @Data
     public static class ThumbnailRequest{

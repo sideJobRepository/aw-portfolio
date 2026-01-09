@@ -111,6 +111,7 @@ export default function SuperAdminPage() {
     isActive: true,
     order: 0,
     categoryId: "",
+    mood: "",
     domain: "",
     thumbnailFile: null,
   });
@@ -364,6 +365,9 @@ export default function SuperAdminPage() {
       if (portfolioForm.categoryId) {
         formData.append("categoryId", portfolioForm.categoryId);
       }
+      if (portfolioForm.mood) {
+        formData.append("mood", portfolioForm.mood);
+      }
       if (editingPortfolio) {
         formData.append("id", editingPortfolio.id);
 
@@ -404,6 +408,7 @@ export default function SuperAdminPage() {
             isActive: true,
             order: 0,
             categoryId: "",
+            mood: "",
             domain: "",
             thumbnailFile: null,
           });
@@ -470,6 +475,7 @@ export default function SuperAdminPage() {
       isActive: portfolio.isActive,
       order: portfolio.order,
       categoryId: portfolio.categoryId || "",
+      mood: portfolio.mood || "",
       domain: portfolio.domain || "",
       thumbnailFile: null,
     });
@@ -860,6 +866,7 @@ export default function SuperAdminPage() {
                       ? portfolios?.content?.length + 1
                       : 0,
                     categoryId: "",
+                    mood: "",
                     domain: "",
                     thumbnailFile: null,
                   });
@@ -1253,6 +1260,31 @@ export default function SuperAdminPage() {
                       {category.name}
                     </option>
                   ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">
+                  분위기
+                </label>
+                <select
+                  value={portfolioForm.mood}
+                  onChange={(e) =>
+                    setPortfolioForm({
+                      ...portfolioForm,
+                      mood: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                >
+                  <option value="">분위기 선택 (선택사항)</option>
+                  <option value="모던">모던</option>
+                  <option value="클래식">클래식</option>
+                  <option value="미니멀">미니멀</option>
+                  <option value="럭셔리">럭셔리</option>
+                  <option value="자연친화">자연친화</option>
+                  <option value="아늑한">아늑한</option>
+                  <option value="세련된">세련된</option>
+                  <option value="편안한">편안한</option>
                 </select>
               </div>
               <div>

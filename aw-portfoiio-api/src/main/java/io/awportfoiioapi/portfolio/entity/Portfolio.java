@@ -55,6 +55,10 @@ public class Portfolio extends DateSuperClass {
     @Column(name = "PORTFOLIO_IS_ACTIVE")
     private Boolean isActive;
     
+    // 포트폴리오 분위기
+    @Column(name = "PORTFOLIO_MOOD")
+    private String mood;
+    
     public void update(PortfolioPutRequest request) {
         this.title = request.getTitle();
         this.description = request.getDescription();
@@ -62,6 +66,7 @@ public class Portfolio extends DateSuperClass {
         this.domain = request.getDomain();
         this.orders = request.getOrder();
         this.isActive = request.getIsActive();
+        this.mood = request.getMood();
     }
     
     public void updateCategory(Category category) {

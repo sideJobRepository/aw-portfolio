@@ -9,6 +9,7 @@ export interface PortfolioContent {
   isActive: boolean;
   order: number;
   categoryId?: string;
+  mood?: string; // 분위기
   category?: {
     id: string;
     name: string;
@@ -41,6 +42,7 @@ export interface PortfolioForm {
   isActive: boolean;
   order: number;
   categoryId: string;
+  mood: string; // 분위기
   domain: string;
   thumbnailFile: File | null;
 }

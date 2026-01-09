@@ -592,10 +592,10 @@ export default function PortfolioForm() {
                     }
                 }
 
-                //주소 검증
+                //주소 검증 (상세주소는 선택사항)
                 if (question.questionType === 'addr') {
-                    if (!value || !value.address?.trim() || !value.detail?.trim() || !value.zonecode?.trim()) {
-                        newErrors[question.id] = '주소를 모두 입력해주세요.';
+                    if (!value || !value.address?.trim() || !value.zonecode?.trim()) {
+                        newErrors[question.id] = '우편번호와 주소를 입력해주세요.';
                         isValid = false;
                         return;
                     }
