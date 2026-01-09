@@ -1514,7 +1514,7 @@ export default function PortfolioForm() {
                                                         )}
                                                     </h3>
                                                 </div>
-                                                <p className="text-gray-500 text-sm">
+                                                <p className="text-gray-500 text-sm mt-0">
                                                     스페셜이란? <br />
                                                     숙소에서만 경험할 수 있는 차별화된 서비스·공간·체험 요소를 소개하는 영역입니다. <br />
                                                     입력하신 내용은 홈페이지에서 숙소의 매력을 강조하는 콘텐츠로 활용됩니다.
