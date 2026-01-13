@@ -6,7 +6,7 @@ export default function ThankYouPage() {
             <div className="max-w-2xl mx-auto px-4 py-12 text-center">
                 <div className="mb-8">
                     <div className="text-6xl mb-6">
-                        <img src="/logo.png" alt="check" className="w-full h-full" />
+                        <img src="/logo.png" alt="check" className="w-300px h-full mb-6 mx-auto" />
                     </div>
                     <h1 className="text-4xl font-bold text-black mb-4">제출이 완료되었습니다</h1>
                     <p className="text-xl text-gray-600 mb-8">

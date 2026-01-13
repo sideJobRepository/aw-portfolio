@@ -1825,7 +1825,7 @@ export default function PortfolioForm() {
 
                             {/* 에러 메시지 표시 */}
                             {!isDetailMode && Object.keys(errors).length > 0 && (
-                                <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-1 max-w-[300px]">
                                     {currentQuestions
                                         .filter((q) => errors[q.id])
                                         .map((q) => (
