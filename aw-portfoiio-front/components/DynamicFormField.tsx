@@ -162,7 +162,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -211,7 +211,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -266,7 +266,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -328,7 +328,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -408,7 +408,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                     </span>
 
                                     {showPreview && (
-                                        <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                        <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                             <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                         </div>
                                     )}
@@ -449,7 +449,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -548,7 +548,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -660,7 +660,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 </span>
 
                                 {showPreview && (
-                                    <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                    <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                         <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                     </div>
                                 )}
@@ -768,7 +768,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                             </span>
 
                             {showPreview && (
-                                <div ref={previewRef} className="absolute top-6 left-[-7rem] z-50 w-72 border border-gray-300 shadow-lg bg-white rounded-lg p-2">
+                                <div ref={previewRef} className="absolute top-[-10.5rem] left-[4rem] z-50 w-[22rem] border border-gray-300 shadow-lg bg-white rounded-lg p-2">
                                     <img src={question.thumbnail} alt={question.title} className="w-full h-auto object-cover rounded" />
                                 </div>
                             )}
