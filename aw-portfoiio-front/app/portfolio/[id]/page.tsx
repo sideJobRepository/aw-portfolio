@@ -904,10 +904,10 @@ export default function PortfolioForm() {
                 return;
             }
 
-            //addr
+            //addr (상세주소는 선택사항)
             if (question.questionType === 'addr') {
-                if (!value || !value.address?.trim() || !value.detail?.trim() || !value.zonecode?.trim()) {
-                    fail('주소를 모두 입력해주세요.');
+                if (!value || !value.address?.trim() || !value.zonecode?.trim()) {
+                    fail('우편번호와 주소를 입력해주세요.');
                 }
                 return;
             }
