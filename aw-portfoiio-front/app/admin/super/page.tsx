@@ -1871,6 +1871,10 @@ export default function SuperAdminPage() {
                                             } catch {}
 
                                             parsed.isNumber = e.target.checked;
+                                            // 아이디/비밀번호와 숫자만 허용은 동시에 사용 불가
+                                            if (e.target.checked) {
+                                                parsed.isIdPassword = false;
+                                            }
 
                                             setQuestionForm({
                                                 ...questionForm,
@@ -1881,6 +1885,43 @@ export default function SuperAdminPage() {
                                     />
                                     <label htmlFor="isNumber" className="ml-2 text-sm font-semibold text-black">
                                         숫자만 허용
+                                    </label>
+                                </div>
+                            )}
+                            {questionForm.questionType === 'multi_text' && (
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="isIdPassword"
+                                        checked={(() => {
+                                            try {
+                                                const parsed = JSON.parse(questionForm.options || '{}');
+                                                return parsed.isIdPassword || false;
+                                            } catch {
+                                                return false;
+                                            }
+                                        })()}
+                                        onChange={(e) => {
+                                            let parsed: any = {};
+                                            try {
+                                                parsed = JSON.parse(questionForm.options || '{}');
+                                            } catch {}
+
+                                            parsed.isIdPassword = e.target.checked;
+                                            // 아이디/비밀번호와 숫자만 허용은 동시에 사용 불가
+                                            if (e.target.checked) {
+                                                parsed.isNumber = false;
+                                            }
+
+                                            setQuestionForm({
+                                                ...questionForm,
+                                                options: JSON.stringify(parsed),
+                                            });
+                                        }}
+                                        className="w-4 h-4 border-2 border-gray-300 rounded"
+                                    />
+                                    <label htmlFor="isIdPassword" className="ml-2 text-sm font-semibold text-black">
+                                        아이디/비밀번호 입력
                                     </label>
                                 </div>
                             )}
