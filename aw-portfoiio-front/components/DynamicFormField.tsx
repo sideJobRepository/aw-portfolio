@@ -244,6 +244,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
 
     // 멀티텍스트
     if (questionType === 'multi_text') {
+        const isNumber = (parsedOptions as any)?.isNumber === true;
         const placeholders = {
             placeholder1: (parsedOptions as any)?.placeholder1 || `${question.title} 을(를) 입력하세요`,
             placeholder2: (parsedOptions as any)?.placeholder2 || `${question.title} 을(를) 입력하세요`,
@@ -278,12 +279,22 @@ export default function DynamicFormField({ question, value, onChange, error, dis
 
                 {/* 첫 번째 입력 */}
                 <input
-                    type="text"
+                    type={isNumber ? 'number' : 'text'}
                     value={values[0]}
                     onChange={(e) => {
-                        const newValue: [string, string] = [e.target.value, values[1]];
+                        const filtered = isNumber ? e.target.value.replace(/-/g, '') : e.target.value;
+                        const newValue: [string, string] = [filtered, values[1]];
                         onChange(newValue);
                     }}
+                    onKeyDown={
+                        isNumber
+                            ? (e) => {
+                                  if (e.key === '-' || e.key === 'Subtract') {
+                                      e.preventDefault();
+                                  }
+                              }
+                            : undefined
+                    }
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                     placeholder={placeholders.placeholder1}
                     maxLength={question.maxLength}
@@ -292,12 +303,22 @@ export default function DynamicFormField({ question, value, onChange, error, dis
 
                 {/* 두 번째 입력 */}
                 <input
-                    type="text"
+                    type={isNumber ? 'number' : 'text'}
                     value={values[1]}
                     onChange={(e) => {
-                        const newValue: [string, string] = [values[0], e.target.value];
+                        const filtered = isNumber ? e.target.value.replace(/-/g, '') : e.target.value;
+                        const newValue: [string, string] = [values[0], filtered];
                         onChange(newValue);
                     }}
+                    onKeyDown={
+                        isNumber
+                            ? (e) => {
+                                  if (e.key === '-' || e.key === 'Subtract') {
+                                      e.preventDefault();
+                                  }
+                              }
+                            : undefined
+                    }
                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-black transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                     placeholder={placeholders.placeholder2}
                     maxLength={question.maxLength}
