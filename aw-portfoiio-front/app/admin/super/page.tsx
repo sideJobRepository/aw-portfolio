@@ -2175,6 +2175,42 @@ export default function SuperAdminPage() {
                   필수 항목
                 </label>
               </div>
+              {questionForm.questionType === "text" && (
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isNumber"
+                    checked={(() => {
+                      try {
+                        const parsed = JSON.parse(questionForm.options || "{}");
+                        return parsed.isNumber || false;
+                      } catch {
+                        return false;
+                      }
+                    })()}
+                    onChange={(e) => {
+                      let parsed: any = {};
+                      try {
+                        parsed = JSON.parse(questionForm.options || "{}");
+                      } catch {}
+
+                      parsed.isNumber = e.target.checked;
+
+                      setQuestionForm({
+                        ...questionForm,
+                        options: JSON.stringify(parsed),
+                      });
+                    }}
+                    className="w-4 h-4 border-2 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="isNumber"
+                    className="ml-2 text-sm font-semibold text-black"
+                  >
+                    숫자만 허용
+                  </label>
+                </div>
+              )}
               <div className="flex gap-2 pt-4">
                 <button
                   type="button"
