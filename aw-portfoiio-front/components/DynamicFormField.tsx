@@ -570,17 +570,48 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 {option.hasInput && isChecked && (
                                     <input
                                         type="text"
-                                        value={currentValue.inputs?.[option.label] || ''}
+                                        inputMode={(option as any).isPrice ? 'numeric' : 'text'}
+                                        value={(() => {
+                                            const rawValue = currentValue.inputs?.[option.label] || '';
+                                            // 요금 입력일 때 천 단위 콤마 포맷팅
+                                            if ((option as any).isPrice && rawValue) {
+                                                const numStr = rawValue.replace(/,/g, '');
+                                                if (numStr && !isNaN(Number(numStr))) {
+                                                    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                                                }
+                                            }
+                                            return rawValue;
+                                        })()}
                                         disabled={disabled}
                                         onChange={(e) => {
+                                            let inputValue = e.target.value;
+
+                                            // 요금 입력일 때 숫자만 허용
+                                            if ((option as any).isPrice) {
+                                                // 콤마 제거하고 숫자만 추출
+                                                inputValue = inputValue.replace(/,/g, '');
+                                                // 숫자가 아닌 문자 제거
+                                                inputValue = inputValue.replace(/[^0-9]/g, '');
+                                            }
+
                                             onChange({
                                                 ...currentValue,
                                                 inputs: {
                                                     ...currentValue.inputs,
-                                                    [option.label]: e.target.value,
+                                                    [option.label]: inputValue,
                                                 },
                                             });
                                         }}
+                                        onKeyDown={
+                                            (option as any).isPrice
+                                                ? (e) => {
+                                                      // 숫자가 아닌 키 차단
+                                                      if (!/^[0-9]$/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                                                          e.preventDefault();
+                                                      }
+                                                  }
+                                                : undefined
+                                        }
                                         placeholder={(option as any)?.placeholder || `${option.label} 주소나 계정을 입력하세요`}
                                         className="mt-3 w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
                                     />

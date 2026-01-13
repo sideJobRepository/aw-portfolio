@@ -1561,9 +1561,9 @@ export default function SuperAdminPage() {
                                                             </label>
                                                         </div>
 
-                                                        {/* 플레이스홀더 영역 */}
+                                                        {/* 플레이스홀더 및 요금 입력 영역 */}
                                                         {checkbox.hasInput && (
-                                                            <div className="px-2 pb-3">
+                                                            <div className="px-2 pb-3 space-y-3">
                                                                 <input
                                                                     type="text"
                                                                     value={checkbox.placeholder || ''}
@@ -1576,9 +1576,24 @@ export default function SuperAdminPage() {
                                                                         });
                                                                     }}
                                                                     placeholder="원하는 플레이스홀더를 입력해주세요."
-                                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md
-                     focus:outline-none focus:ring-2 focus:ring-black"
+                                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
                                                                 />
+                                                                <label className="flex items-center gap-2 text-sm">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={checkbox.isPrice || false}
+                                                                        onChange={(e) => {
+                                                                            const parsed = JSON.parse(questionForm.options || '{}');
+                                                                            parsed.checkboxes[index].isPrice = e.target.checked;
+                                                                            setQuestionForm({
+                                                                                ...questionForm,
+                                                                                options: JSON.stringify(parsed),
+                                                                            });
+                                                                        }}
+                                                                        className="w-4 h-4"
+                                                                    />
+                                                                    요금 입력 (숫자만, 천 단위 콤마)
+                                                                </label>
                                                             </div>
                                                         )}
                                                     </div>
