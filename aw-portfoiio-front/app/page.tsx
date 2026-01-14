@@ -360,7 +360,7 @@ export default function Home() {
                                     <span className="bg-clip-text">프리미엄 고급형 타입</span>
                                 </h3>
                                 <p className="text-gray-700 text-base leading-relaxed mb-3">
-                                    본 포트폴리오는 고급형(주문형) 제작 사례입니다. <br /> 고객의 니즈와 숙소 특성에 맞춰 디자인 및 개발이 진행된 커스텀 프로젝트입니다.
+                                    본 타입은 고급형(주문형) 제작 타입으로, <br /> 각 숙소의 브랜드 방향에 맞춰 화면 구성과 기능을 맞춤 설계한 커스텀 프로젝트입니다.
                                 </p>
                             </div>
                         </div>
