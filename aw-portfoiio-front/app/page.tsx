@@ -280,33 +280,33 @@ export default function Home() {
                             <img src="/slide1.jpg" alt="슬라이드 1" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
                                 <h3 className="text-white text-2xl md:text-4xl lg:text-4xl line-height-1.5 font-bold mb-3 md:mb-4">
-                                    복잡한 제작은 덜고
+                                    숙소에 가장 어울리는 타입을
                                     <br />
-                                    타입으로 쉽게 시작해 보세요
+                                    선택해보세요
                                 </h3>
-                                <p className="text-white text-sm md:text-lg">전문 지식 없이도 선택만으로 홈페이지 제작이 가능합니다.</p>
+                                <p className="text-white text-sm md:text-lg">시간과 장소에 구애받지 않고 제작을 시작할 수 있습니다.</p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide className="relative">
                             <img src="/slide2.jpg" alt="슬라이드 2" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
                                 <h3 className="text-white text-2xl md:text-4xl lg:text-4xl line-height-1.5 font-bold mb-3 md:mb-4">
-                                    숙소에 맞게 미리 준비된
+                                    다양한 형식의
                                     <br />
-                                    타입으로 만들어 보세요
+                                    콘텐츠 제작이 가능합니다.
                                 </h3>
-                                <p className="text-white text-sm md:text-lg">전문 지식 없이도 선택만으로 홈페이지 제작이 가능합니다.</p>
+                                <p className="text-white text-sm md:text-lg">기획부터 제작까지, AI를 활용한 다양한 콘텐츠를 제작해 보세요.</p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide className="relative">
                             <img src="/slide3.jpg" alt="슬라이드 3" className="w-full h-full object-cover" />
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/30">
                                 <h3 className="text-white text-2xl md:text-4xl lg:text-4xl line-height-1.5 font-bold mb-3 md:mb-4">
-                                    브랜드를 담기 쉬운 방법
+                                    숙소 운영에 필요한
                                     <br />
-                                    타입 기반 홈페이지 제작
+                                    예약 시스템을 확인해 보세요
                                 </h3>
-                                <p className="text-white text-sm md:text-lg">전문 지식 없이도 선택만으로 홈페이지 제작이 가능합니다.</p>
+                                <p className="text-white text-sm md:text-lg">예약 관리부터 운영까지, 하나의 시스템으로 관리할 수 있습니다.</p>
                             </div>
                         </SwiperSlide>
                     </Swiper>
