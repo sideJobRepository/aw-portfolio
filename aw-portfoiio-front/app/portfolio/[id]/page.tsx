@@ -136,7 +136,7 @@ export default function PortfolioForm() {
         autoSaveTimeoutRef.current = setTimeout(() => {
             setShouldAutoSave(true); // 트리거
             startAutoSave(); // 다음 타이머 예약
-        }, 180000);
+        }, 60000);
     };
 
     const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
@@ -487,7 +487,7 @@ export default function PortfolioForm() {
                     const hasInvalidSpecial = specials.some((sp) => {
                         if (!sp.name?.trim()) return true;
                         if (!sp.desc?.trim()) return true;
-                        if (sp.desc.trim().length < 20) return true;
+                        if (sp.desc.trim().length < 0) return true;
                         return false;
                     });
 
@@ -753,7 +753,7 @@ export default function PortfolioForm() {
 
             //스페셜
             if (question.questionType === 'special') {
-                const hasInvalidSpecial = specials.some((sp) => !sp.name?.trim() || !sp.desc?.trim() || sp.desc.trim().length < 20);
+                const hasInvalidSpecial = specials.some((sp) => !sp.name?.trim() || !sp.desc?.trim() || sp.desc.trim().length < 0);
 
                 if (hasInvalidSpecial) {
                     fail('스페셜명과 스페셜 설명을 입력하고, 설명은 최소 20자 이상이어야 합니다.');
