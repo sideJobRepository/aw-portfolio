@@ -1663,7 +1663,7 @@ export default function PortfolioForm() {
                                                                 rows={3}
                                                                 placeholder="예: 객실 앞 바다를 바라보며 해질녘 노을과 함께 불멍을 즐길 수 있습니다."
                                                             />
-                                                            <p className={`text-xs mt-1 text-right ${sp.desc.length < 20 ? 'text-red-500' : 'text-gray-500'}`}>{sp.desc.length} / 최소 20자</p>
+                                                            {/* <p className={`text-xs mt-1 text-right ${sp.desc.length < 0 ? 'text-red-500' : 'text-gray-500'}`}>{sp.desc.length} / 최소 20자</p> */}
                                                         </div>
                                                     </div>
                                                 ))}
