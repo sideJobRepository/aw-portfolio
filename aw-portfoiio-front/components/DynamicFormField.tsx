@@ -687,8 +687,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                 className="w-5 h-5"
                             />
 
-                            <input
-                                type="text"
+                            <textarea
                                 value={currentValue.inputs[idx] ?? defaultValue}
                                 disabled={disabled || !checked}
                                 onChange={(e) => {
@@ -700,8 +699,9 @@ export default function DynamicFormField({ question, value, onChange, error, dis
                                         inputs: newInputs,
                                     });
                                 }}
-                                className={`flex-1 px-4 py-2 border-2 rounded-lg ${checked ? 'border-gray-300 focus:ring-2 focus:ring-black' : 'border-gray-200 bg-gray-100'}`}
+                                className={`flex-1 px-4 py-2 border-2 rounded-lg resize-none ${checked ? 'border-gray-300 focus:ring-2 focus:ring-black' : 'border-gray-200 bg-gray-100'}`}
                                 placeholder={`항목 ${idx + 1}을 입력해주세요.`}
+                                rows={2}
                             />
                         </div>
                     );
