@@ -1723,10 +1723,11 @@ export default function PortfolioForm() {
                                                                         step={10}
                                                                         disabled={isDetailMode}
                                                                         onKeyDown={(e) => {
-                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === 'Process' || /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(e.key)) {
                                                                                 e.preventDefault();
                                                                             }
                                                                         }}
+                                                                        onCompositionStart={(e) => e.preventDefault()}
                                                                         onChange={(e) => {
                                                                             let value = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
                                                                             if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 100 && !isNaN(parseInt(value)))) {
@@ -1750,10 +1751,11 @@ export default function PortfolioForm() {
                                                                         step={10}
                                                                         disabled={isDetailMode}
                                                                         onKeyDown={(e) => {
-                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === 'Process' || /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(e.key)) {
                                                                                 e.preventDefault();
                                                                             }
                                                                         }}
+                                                                        onCompositionStart={(e) => e.preventDefault()}
                                                                         onChange={(e) => {
                                                                             let value = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
                                                                             if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 100 && !isNaN(parseInt(value)))) {
@@ -1774,10 +1776,11 @@ export default function PortfolioForm() {
                                                                         value={refund.day}
                                                                         disabled={isDetailMode}
                                                                         onKeyDown={(e) => {
-                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '.') {
+                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '.' || e.key === 'Process' || /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(e.key)) {
                                                                                 e.preventDefault();
                                                                             }
                                                                         }}
+                                                                        onCompositionStart={(e) => e.preventDefault()}
                                                                         onChange={(e) => {
                                                                             let value = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
                                                                             if (value === '' || (parseInt(value) > 0 && !isNaN(parseInt(value)))) {
@@ -1796,10 +1799,11 @@ export default function PortfolioForm() {
                                                                         step={10}
                                                                         disabled={isDetailMode}
                                                                         onKeyDown={(e) => {
-                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+') {
+                                                                            if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === 'Process' || /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(e.key)) {
                                                                                 e.preventDefault();
                                                                             }
                                                                         }}
+                                                                        onCompositionStart={(e) => e.preventDefault()}
                                                                         onChange={(e) => {
                                                                             let value = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
                                                                             if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 100 && !isNaN(parseInt(value)))) {
