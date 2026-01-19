@@ -60,7 +60,7 @@ export default function Home() {
             '#모던': 'bg-green-700 text-white',
             '#풀빌라': 'bg-blue-700 text-white',
             '#호텔': 'bg-black text-white',
-            '#한옥': 'bg-brown-700 text-white',
+            '#한옥': 'bg-neutral-700 text-white',
         };
 
         return parts.map((part, index) => {
