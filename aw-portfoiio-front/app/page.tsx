@@ -57,7 +57,7 @@ export default function Home() {
         const tagClassMap: Record<string, string> = {
             '#독채': 'bg-[#3F3A36] text-white',
             '#오션뷰': 'bg-[#1F4E79] text-white',
-            '#감성': 'bg-orange-700 text-white',
+            '#료칸': 'bg-orange-700 text-white',
             '#모던': 'bg-[#8A8F98] text-white',
             '#풀빌라': 'bg-[#2F6F73] text-white',
             '#호텔': 'bg-[#5F5F5F] text-white',
@@ -406,7 +406,7 @@ export default function Home() {
                                         type="button"
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
-                                        className={`rounded-md px-3 md:px-6 py-1 text-sm md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                        className={`rounded-md px-3 md:px-6 py-1 text-[0.6rem] md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                                     >
                                         {category.name}
                                     </button>
@@ -520,7 +520,7 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setPreviewMode('desktop')}
-                                        className={`px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'desktop' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                                        className={`hidden md:block px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'desktop' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
                                         title="데스크톱 미리보기"
                                     >
                                         PC
@@ -528,7 +528,7 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setPreviewMode('mobile')}
-                                        className={`px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                                        className={`hidden md:block px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
                                         title="모바일 미리보기(500px)"
                                     >
                                         모바일
