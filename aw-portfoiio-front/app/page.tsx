@@ -234,7 +234,8 @@ export default function Home() {
             title: '표준형 타입',
             description: (
                 <>
-                    깔끔하고 정돈된 디자인으로 컨셉과 규모에 구애받지 않고
+                    깔끔하고 정돈된 디자인으로 <br className="md:hidden" />
+                    컨셉과 규모에 구애받지 않고
                     <br />
                     범용적으로 활용 가능한 타입입니다.
                 </>
@@ -246,13 +247,19 @@ export default function Home() {
         },
         테마형: {
             title: '테마형 타입',
-            description: <>차별화된 구조와 디자인 요소로 컨셉이 명확한 숙소에게 적합한 타입입니다.</>,
+            description: (
+                <>
+                    차별화된 구조와 디자인 요소로 <br className="md:hidden" />
+                    컨셉이 명확한 숙소에게 적합한 타입입니다.
+                </>
+            ),
         },
         컨셉형: {
             title: '컨셉형 타입',
             description: (
                 <>
-                    독창적인 구조와 특이한 효과로 강렬한 인상을 남기고자 하는
+                    독창적인 구조와 특이한 효과로 <br className="md:hidden" />
+                    강렬한 인상을 남기고자 하는
                     <br />
                     숙소에게 적합한 타입입니다.
                 </>
@@ -560,7 +567,7 @@ export default function Home() {
                                         // 로그인 상태면 바로 이동
                                         router.push(targetPath);
                                     }}
-                                    className="px-4 py-2 width-[100px] bg-black text-white rounded-md hover:bg-gray-800 transition-all"
+                                    className="px-4 py-2 w-[100px] bg-black text-white rounded-md hover:bg-gray-800 transition-all"
                                 >
                                     정보입력
                                 </button>
