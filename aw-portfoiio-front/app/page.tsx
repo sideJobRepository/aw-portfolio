@@ -49,10 +49,15 @@ export default function Home() {
     //hooks
     const { request } = useRequest();
 
-    // 설명 텍스트 포맷팅 (bold 처리)
+    // 설명 텍스트 포맷팅 (bold, #태그 처리)
     const renderDescriptionWithBold = (text: string) => {
-        // **텍스트** 형태를 찾아서 bold로 변환
-        const parts = text.split(/(\*\*.*?\*\*)/g);
+        // **텍스트** 형태와 #태그를 찾아서 변환
+        const parts = text.split(/(\*\*.*?\*\*|#[^\s#]+)/g);
+
+        const tagClassMap: Record<string, string> = {
+            '#오션뷰': 'bg-blue-900 text-white',
+            '#감성': 'bg-orange-700 text-white',
+        };
 
         return parts.map((part, index) => {
             if (part.startsWith('**') && part.endsWith('**')) {
@@ -61,6 +66,14 @@ export default function Home() {
                     <strong key={index} className="font-bold text-gray-900">
                         {boldText}
                     </strong>
+                );
+            }
+            if (part.startsWith('#') && part.length > 1) {
+                const colorClass = tagClassMap[part] ?? 'bg-gray-100 text-gray-700';
+                return (
+                    <span key={index} className={`inline-flex items-center px-2 py-0.5 mr-1 text-xs rounded-full ${colorClass}`}>
+                        {part}
+                    </span>
                 );
             }
             return <span key={index}>{part}</span>;
@@ -361,7 +374,7 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory(null)}
-                                className={`rounded-md px-3 md:px-6 py-1 text-sm md:text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                className={`rounded-md px-2 md:px-6 py-1 text-[0.6rem] md:text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                             >
                                 전체
                             </button>
@@ -373,7 +386,7 @@ export default function Home() {
                                         type="button"
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
-                                        className={`rounded-md px-3 md:px-6 py-1 text-sm md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                        className={`rounded-md px-2 md:px-6 py-1 text-[0.6rem] md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                                     >
                                         {category.name}
                                     </button>
