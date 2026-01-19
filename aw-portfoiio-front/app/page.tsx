@@ -55,12 +55,13 @@ export default function Home() {
         const parts = text.split(/(\*\*.*?\*\*|#[^\s#.,!?;:)\]}]+)/g);
 
         const tagClassMap: Record<string, string> = {
-            '#오션뷰': 'bg-blue-900 text-white',
+            '#독채': 'bg-[#3F3A36] text-white',
+            '#오션뷰': 'bg-[#1F4E79] text-white',
             '#감성': 'bg-orange-700 text-white',
-            '#모던': 'bg-green-700 text-white',
-            '#풀빌라': 'bg-blue-700 text-white',
-            '#호텔': 'bg-black text-white',
-            '#한옥': 'bg-neutral-700 text-white',
+            '#모던': 'bg-[#8A8F98] text-white',
+            '#풀빌라': 'bg-[#2F6F73] text-white',
+            '#호텔': 'bg-[#5F5F5F] text-white',
+            '#한옥': 'bg-[#C6B39E] text-white',
         };
 
         return parts.map((part, index) => {
