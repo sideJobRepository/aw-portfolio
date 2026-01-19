@@ -247,8 +247,8 @@ export default function Home() {
             title: '테마형 타입',
             description: <>차별화된 구조와 디자인 요소로 컨셉이 명확한 숙소에게 적합한 타입입니다.</>,
         },
-        유니크: {
-            title: '유니크 타입',
+        컨셉형: {
+            title: '컨셉형 타입',
             description: (
                 <>
                     독창적인 구조와 특이한 효과로 강렬한 인상을 남기고자 하는
