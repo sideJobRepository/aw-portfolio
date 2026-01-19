@@ -502,7 +502,7 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setPreviewMode('desktop')}
-                                        className={`hidden md:block px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'desktop' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                                        className={`px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'desktop' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
                                         title="데스크톱 미리보기"
                                     >
                                         PC
@@ -510,7 +510,7 @@ export default function Home() {
                                     <button
                                         type="button"
                                         onClick={() => setPreviewMode('mobile')}
-                                        className={`hidden md:block px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                                        className={`px-3 py-2 rounded-md border text-sm transition-all ${previewMode === 'mobile' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
                                         title="모바일 미리보기(500px)"
                                     >
                                         모바일
