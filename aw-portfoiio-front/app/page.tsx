@@ -395,7 +395,7 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory(null)}
-                                className={`rounded-md px-2 md:px-6 py-1 text-[0.6rem] md:text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                className={`rounded-md px-2 md:px-6 py-1 text-[0.75rem] md:text-base font-semibold transition-all ${selectedCategory === null ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                             >
                                 전체
                             </button>
@@ -407,7 +407,7 @@ export default function Home() {
                                         type="button"
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
-                                        className={`rounded-md px-2 md:px-6 py-1 text-[0.6rem] md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
+                                        className={`rounded-md px-2 md:px-6 py-1 text-[0.75rem] md:text-base font-semibold transition-all ${selectedCategory === category.id ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black border-black hover:bg-black hover:text-white'}`}
                                     >
                                         {category.name}
                                     </button>
