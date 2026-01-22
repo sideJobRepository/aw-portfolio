@@ -103,15 +103,15 @@ public class ExcelServiceImpl implements ExcelService {
                 
                         String names = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("name", "")))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining(" / "));
                 
                         String descs = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("desc", "")))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining(" / "));
                 
                         String types = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("type", "")))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining(" / "));
                         
                         Function<Object, String> priceFormatter = priceObj -> {
                 
@@ -170,11 +170,11 @@ public class ExcelServiceImpl implements ExcelService {
                         
                         String names = specials.stream()
                                 .map(s -> String.valueOf(s.getOrDefault("name", "")))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining(" / "));
                         
                         String descs = specials.stream()
                                 .map(s -> String.valueOf(s.getOrDefault("desc", "")))
-                                .collect(Collectors.joining(", "));
+                                .collect(Collectors.joining(" / "));
                         
                         dataRow.createCell(colIdx + 0).setCellValue(names);
                         dataRow.createCell(colIdx + 1).setCellValue(descs);
