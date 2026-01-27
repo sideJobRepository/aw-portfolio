@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({
   children,
 }: {
@@ -27,7 +28,8 @@ export default function RootLayout({
       ></meta>
       <body>
         <Script
-          src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+          src="https://t1.daumcdn.net/mapjsapi/
+          bundle/postcode/prod/postcode.v2.js"
           strategy="beforeInteractive"
         />
         <RecoilProvider>
