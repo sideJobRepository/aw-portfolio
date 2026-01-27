@@ -47,104 +47,108 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public byte[] createSubmissionExcel(ExcelRequest request) {
         
+        
         Long portfolioId = request.getPortfolioId();
         Long submissionId = request.getSubmissionId();
-        
+    
+        // 0. 포트폴리오 조회 (제목용)
+        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow(() -> new RuntimeException("존재하지 않는 포트폴리오입니다."));
+    
         // 1. 컬럼 메타 조회
-        List<ExcelColumnResponse> columns =
-                questionRepository.findByColumn(portfolioId);
-        
+        List<ExcelColumnResponse> columns = questionRepository.findByColumn(portfolioId);
+    
         // 2. 제출 데이터 조회
-        Submission submission =
-                submissionRepository.findById(submissionId)
-                        .orElseThrow(() -> new RuntimeException("존재하지 않는 제출내역입니다."));
-        
+        Submission submission = submissionRepository.findById(submissionId).orElseThrow(() -> new RuntimeException("존재하지 않는 제출내역입니다."));
+    
         try (Workbook workbook = new XSSFWorkbook()) {
-            
+    
             // JSON -> Map
-            Map<String, Object> responseMap =
-                    mapper.readValue(
-                            submission.getSubmissionJson(),
-                            new TypeReference<>() {
-                            }
-                    );
-            
+            Map<String, Object> responseMap = mapper.readValue(submission.getSubmissionJson(), new TypeReference<>() {});
+    
             Sheet sheet = workbook.createSheet("제출 데이터");
-            
+    
             int rowIdx = 0;
-            
-            // 헤더/데이터 한 줄씩
+    
+            // 헤더 / 데이터 행
             Row headerRow = sheet.createRow(rowIdx++);
             Row dataRow = sheet.createRow(rowIdx++);
-            
-            int colIdx = 0;
-            
+    
+            // =====================================================
+            // A열 : 포트폴리오 제목 고정
+            // =====================================================
+            headerRow.createCell(0).setCellValue("포트폴리오 제목");
+            dataRow.createCell(0).setCellValue(portfolio.getTitle());
+    
+            // 나머지 컬럼은 B열부터
+            int colIdx = 1;
+    
             for (ExcelColumnResponse col : columns) {
-                
+    
                 String optionsType = col.getOptionsType();
+    
                 if ("AGREEMENT".equals(optionsType)) {
                     continue;
                 }
+    
                 // ===================== 객실 =====================
                 if ("PARLOR".equals(optionsType)) {
-                
+    
                     List<Map<String, Object>> rooms =
                             (List<Map<String, Object>>) responseMap.get("rooms");
-                
-                    // 헤더
+    
                     headerRow.createCell(colIdx + 0).setCellValue("객실명");
                     headerRow.createCell(colIdx + 1).setCellValue("객실설명");
                     headerRow.createCell(colIdx + 2).setCellValue("형태");
                     headerRow.createCell(colIdx + 3).setCellValue("비수기");
                     headerRow.createCell(colIdx + 4).setCellValue("준성수기");
                     headerRow.createCell(colIdx + 5).setCellValue("성수기");
-                
+    
                     if (rooms != null) {
-                
+    
                         String names = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("name", "")))
-                                .collect(Collectors.joining(", "));
-                
+                                .collect(Collectors.joining(" / "));
+    
                         String descs = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("desc", "")))
-                                .collect(Collectors.joining(", "));
-                
+                                .collect(Collectors.joining(" / "));
+    
                         String types = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("type", "")))
-                                .collect(Collectors.joining(", "));
-                        
+                                .collect(Collectors.joining(" / "));
+    
                         Function<Object, String> priceFormatter = priceObj -> {
-                
+    
                             if (!(priceObj instanceof Map<?, ?> raw)) {
                                 return "";
                             }
-                
+    
                             @SuppressWarnings("unchecked")
                             Map<String, Object> map = (Map<String, Object>) raw;
-                
+    
                             String weekday = String.valueOf(map.getOrDefault("weekday", ""));
                             String fri = String.valueOf(map.getOrDefault("fri", ""));
                             String sat = String.valueOf(map.getOrDefault("sat", ""));
                             String sun = String.valueOf(map.getOrDefault("sun", ""));
-                
+    
                             return String.format(
                                     "평일:%s 금:%s 토:%s 일:%s",
                                     weekday, fri, sat, sun
                             );
                         };
-                
+    
                         String low = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceLow")))
                                 .collect(Collectors.joining(" , "));
-                
+    
                         String mid = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceMid")))
                                 .collect(Collectors.joining(" , "));
-                
+    
                         String high = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceHigh")))
                                 .collect(Collectors.joining(" , "));
-                
+    
                         dataRow.createCell(colIdx + 0).setCellValue(names);
                         dataRow.createCell(colIdx + 1).setCellValue(descs);
                         dataRow.createCell(colIdx + 2).setCellValue(types);
@@ -152,157 +156,139 @@ public class ExcelServiceImpl implements ExcelService {
                         dataRow.createCell(colIdx + 4).setCellValue(mid);
                         dataRow.createCell(colIdx + 5).setCellValue(high);
                     }
-                
+    
                     colIdx += 6;
                     continue;
                 }
-                
+    
                 // ===================== 스페셜 =====================
                 if ("SPECIAL".equals(optionsType)) {
-                    
+    
                     List<Map<String, Object>> specials =
                             (List<Map<String, Object>>) responseMap.get("specials");
-                    
+    
                     headerRow.createCell(colIdx + 0).setCellValue("스페셜명");
                     headerRow.createCell(colIdx + 1).setCellValue("스페셜설명");
-                    
+    
                     if (specials != null) {
-                        
+    
                         String names = specials.stream()
                                 .map(s -> String.valueOf(s.getOrDefault("name", "")))
-                                .collect(Collectors.joining(", "));
-                        
+                                .collect(Collectors.joining(" / "));
+    
                         String descs = specials.stream()
                                 .map(s -> String.valueOf(s.getOrDefault("desc", "")))
-                                .collect(Collectors.joining(", "));
-                        
+                                .collect(Collectors.joining(" / "));
+    
                         dataRow.createCell(colIdx + 0).setCellValue(names);
                         dataRow.createCell(colIdx + 1).setCellValue(descs);
                     }
-                    
+    
                     colIdx += 2;
                     continue;
                 }
-                
+    
                 // ===================== 환불 =====================
                 if ("REFUND".equals(optionsType)) {
-                    
+    
                     List<Map<String, Object>> refunds =
                             (List<Map<String, Object>>) responseMap.get("refunds");
-                    
-                    // 컬럼 1개만 사용
+    
                     headerRow.createCell(colIdx).setCellValue("환불기준 및 퍼센트");
-                    
+    
                     if (refunds != null) {
-                        
+    
                         String refundTexts = refunds.stream()
                                 .map(r -> {
-                                    
+    
                                     String id = String.valueOf(r.getOrDefault("id", ""));
                                     String day = String.valueOf(r.getOrDefault("day", ""));
                                     String percent = String.valueOf(r.getOrDefault("percent", ""));
-                                    
+    
                                     String base;
-                                    
+    
                                     if ("refund-1".equals(id)) {
-                                        // 방문 당일
                                         base = "방문당일 총 금액의";
                                     } else {
-                                        // n일 전
                                         base = "방문 " + day + "일 전 총 금액의";
                                     }
-                                    
-                                    // => 방문당일 총 금액의 20% 환불
-                                    // => 방문 1일 전 총 금액의 30% 환불
+    
                                     return base + " " + percent + "% 환불";
                                 })
-                                .collect(Collectors.joining(", ")); // , 로 연결
-                        
+                                .collect(Collectors.joining(", "));
+    
                         dataRow.createCell(colIdx).setCellValue(refundTexts);
                     }
-                    colIdx += 1;
+    
+                    colIdx++;
                     continue;
                 }
-                
-                // ===================== CHECKBOX (모든 변형 포함) =====================
+    
+                // ===================== CHECKBOX =====================
                 if ("CHECKBOX".equals(optionsType) || "CHECKBOX_INPUT".equals(optionsType)) {
-                
+    
                     Map<String, Object> obj =
                             (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
-                
+    
                     headerRow.createCell(colIdx).setCellValue(col.getColumn());
-                
+    
                     String result = "";
-                
+    
                     if (obj != null) {
-                
-                        // =========================================================
-                        // 1) selected + inputs (라디오 + 기타입력)
-                        // =========================================================
+    
                         if (obj.containsKey("selected")) {
-                
+    
                             String selected = String.valueOf(obj.get("selected"));
                             Map<String, Object> inputs =
                                     (Map<String, Object>) obj.get("inputs");
-                
+    
                             String extra = "";
                             if (inputs != null && inputs.containsKey(selected)) {
                                 extra = String.valueOf(inputs.get(selected));
                             }
-                
+    
                             result = selected;
                             if (!extra.isBlank()) {
                                 result += " (" + extra + ")";
                             }
                         }
-                
-                        // =========================================================
-                        // 2) checked = ["문자열"] + inputs(Map)
-                        //    예: 유아/아동(10000), 성인(20003)
-                        // =========================================================
+    
                         else if (obj.containsKey("checked")
                                 && obj.get("checked") instanceof List<?>) {
-                
+    
                             List<?> checkedList = (List<?>) obj.get("checked");
-                
-                            // -----------------------------------------------------
-                            // ★ ADDED: 문자열 체크박스 + inputs(Map) 처리
-                            // -----------------------------------------------------
+    
                             if (!checkedList.isEmpty()
                                     && checkedList.get(0) instanceof String) {
-                
-                                Map<String, Object> inputs =
-                                        (Map<String, Object>) obj.get("inputs");
-                
+    
+                                Map<String, Object> inputs = (Map<String, Object>) obj.get("inputs");
+    
                                 result = checkedList.stream()
                                         .map(s -> {
                                             String key = String.valueOf(s);
                                             String extra = "";
-                
+    
                                             if (inputs != null && inputs.containsKey(key)) {
                                                 extra = String.valueOf(inputs.get(key));
                                             }
-                
+    
                                             return extra.isBlank()
                                                     ? key
                                                     : key + "(" + extra + ")";
                                         })
                                         .collect(Collectors.joining(", "));
                             }
-                
-                            // -----------------------------------------------------
-                            // 3) checked = [0,1,2] + inputs(List)
-                            // -----------------------------------------------------
+    
                             else if (!checkedList.isEmpty()
                                     && checkedList.get(0) instanceof Number) {
-                
+    
                                 List<Integer> idxList = checkedList.stream()
                                         .map(o -> ((Number) o).intValue())
                                         .toList();
-                
+    
                                 List<String> inputs =
                                         (List<String>) obj.get("inputs");
-                
+    
                                 if (inputs != null) {
                                     result = idxList.stream()
                                             .map(inputs::get)
@@ -311,122 +297,96 @@ public class ExcelServiceImpl implements ExcelService {
                             }
                         }
                     }
-                
+    
                     dataRow.createCell(colIdx).setCellValue(result);
                     colIdx++;
                     continue;
                 }
-                
+    
                 // ===================== 주소 =====================
                 if ("ADDR".equals(optionsType)) {
-                
+    
                     headerRow.createCell(colIdx + 0).setCellValue("주소");
                     headerRow.createCell(colIdx + 1).setCellValue("상세주소");
                     headerRow.createCell(colIdx + 2).setCellValue("우편번호");
-                
-                    Map<String, Object> addr =
-                            (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
-                
+    
+                    Map<String, Object> addr = (Map<String, Object>) responseMap.get(String.valueOf(col.getOptionsId()));
+    
                     if (addr != null) {
-                
-                        String address = String.valueOf(addr.getOrDefault("address", ""));
-                        String detail = String.valueOf(addr.getOrDefault("detail", ""));
-                        String zonecode = String.valueOf(addr.getOrDefault("zonecode", ""));
-                
-                        dataRow.createCell(colIdx + 0).setCellValue(address);
-                        dataRow.createCell(colIdx + 1).setCellValue(detail);
-                        dataRow.createCell(colIdx + 2).setCellValue(zonecode);
+    
+                        dataRow.createCell(colIdx + 0)
+                                .setCellValue(String.valueOf(addr.getOrDefault("address", "")));
+                        dataRow.createCell(colIdx + 1)
+                                .setCellValue(String.valueOf(addr.getOrDefault("detail", "")));
+                        dataRow.createCell(colIdx + 2)
+                                .setCellValue(String.valueOf(addr.getOrDefault("zonecode", "")));
                     }
-                
-                    colIdx++;
+    
+                    colIdx += 3;
                     continue;
                 }
-                
+    
                 // ===================== 멀티 텍스트 =====================
                 if ("MULTI_TEXT".equals(optionsType)) {
-                    
+    
                     headerRow.createCell(colIdx).setCellValue(col.getColumn());
-                    
+    
                     Object value = responseMap.get(String.valueOf(col.getOptionsId()));
-                    
-                    if (value instanceof List) {
-                        
-                        List<Object> list = (List<Object>) value;
-                        
-                        String joined = list.stream()
+    
+                    if (value instanceof List<?>) {
+                        String joined = ((List<?>) value).stream()
                                 .map(String::valueOf)
-                                .collect(Collectors.joining(", ")); //대괄호 없이 ,로
-                        
+                                .collect(Collectors.joining(", "));
                         dataRow.createCell(colIdx).setCellValue(joined);
-                        
                     } else if (value != null) {
-                        // 혹시 배열이 아닌 단일 값이 들어온 경우
                         dataRow.createCell(colIdx).setCellValue(value.toString());
                     } else {
                         dataRow.createCell(colIdx).setCellValue("");
                     }
-                    
+    
                     colIdx++;
                     continue;
                 }
-                
-                
+    
                 // ===================== 일반 단답형 =====================
-                
                 headerRow.createCell(colIdx).setCellValue(col.getColumn());
-                
+    
                 Object value = responseMap.get(String.valueOf(col.getOptionsId()));
-                
-                if (value == null) {
-                    dataRow.createCell(colIdx++).setCellValue("");
-                } else {
-                    dataRow.createCell(colIdx++).setCellValue(value.toString());
-                }
+                dataRow.createCell(colIdx).setCellValue(value == null ? "" : value.toString());
+                colIdx++;
             }
-            
-            
-            
-            
+    
+            // ===================== 컬럼 너비 자동 =====================
             for (int i = 0; i < colIdx; i++) {
-                
+    
                 int maxWidth = 0;
-                
-                int lastRowNum = sheet.getLastRowNum();
-                
-                for (int r = 0; r <= lastRowNum; r++) {
-                    
+    
+                for (int r = 0; r <= sheet.getLastRowNum(); r++) {
+    
                     Row row = sheet.getRow(r);
                     if (row == null) continue;
-                    
+    
                     Cell cell = row.getCell(i);
                     if (cell == null) continue;
-                    
+    
                     String text = cell.toString();
                     if (text == null) continue;
-                    
+    
                     int visual = 0;
-                    
                     for (char ch : text.toCharArray()) {
-                        // 한글·문자 → 2폭
-                        if (ch > 0x007F) {
-                            visual += 2;
-                        } else {
-                            visual += 1;
-                        }
+                        visual += (ch > 0x007F) ? 2 : 1;
                     }
-                    
+    
                     maxWidth = Math.max(maxWidth, visual);
                 }
-                
-                int width = Math.min(255 * 256, (maxWidth + 2) * 256);
-                
-                sheet.setColumnWidth(i, width);
+    
+                sheet.setColumnWidth(i, Math.min(255 * 256, (maxWidth + 2) * 256));
             }
+    
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
-            
             return out.toByteArray();
-            
+    
         } catch (Exception e) {
             throw new RuntimeException("엑셀 생성 실패", e);
         }
