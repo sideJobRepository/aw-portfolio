@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "언제나 디자인 기초자료 사이트",
   openGraph: {
     title: "언제나 디자인",
-    description: "언제나 디자인  기초자료 사이트",
+    description: "언제나 디자인 기초자료 사이트",
     url: "https://www.alwaysdesign.co.kr",
   },
 };
