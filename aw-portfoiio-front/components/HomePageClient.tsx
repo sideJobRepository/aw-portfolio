@@ -160,15 +160,17 @@ export default function HomePageClient({ slides, preset }: { slides: HomeSlide[]
 
                 // lockedCategory가 있으면 해당 카테고리만 노출 + 강제 선택
                 if (preset?.lockedCategorySlug != null || preset?.lockedCategoryName) {
-                    const locked = allCategories.find((cat) => {
-                        if (preset.lockedCategorySlug != null) {
-                            return Number(cat.slug) === preset.lockedCategorySlug;
-                        }
-                        if (preset.lockedCategoryName) {
-                            return cat.name === preset.lockedCategoryName;
-                        }
-                        return false;
-                    });
+                    let locked: Category | undefined;
+
+                    // 1) slug로 먼저 찾기
+                    if (preset.lockedCategorySlug != null) {
+                        locked = allCategories.find((cat) => Number(cat.slug) === preset.lockedCategorySlug);
+                    }
+
+                    // 2) slug로 못 찾았으면 name으로 fallback
+                    if (!locked && preset.lockedCategoryName) {
+                        locked = allCategories.find((cat) => cat.name === preset.lockedCategoryName);
+                    }
 
                     if (locked) {
                         setCategories(preset?.hideOtherCategories ? [locked] : allCategories);

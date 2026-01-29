@@ -65,6 +65,7 @@ export default function CollectionPage() {
             slides={slides}
             preset={{
                 lockedCategorySlug: 6,
+                lockedCategoryName: '컬렉션',
                 hideAllButton: true,
                 hideOtherCategories: true,
                 requireSelectedCategory: true,
