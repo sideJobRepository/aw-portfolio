@@ -712,7 +712,7 @@ export default function DynamicFormField({ question, value, onChange, error, dis
         );
     }
 
-    // 주소 검색
+    // 주소 검색 
     if (questionType === 'addr') {
         const [fullAddress, setFullAddress] = useState(value?.address || '');
         const [detailAddress, setDetailAddress] = useState(value?.detail || '');

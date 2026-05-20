@@ -68,9 +68,23 @@ export type HomePagePreset = {
 
     /** selectedCategory가 정해지기 전엔 포트폴리오를 호출하지 않음(locked 페이지는 true 권장) */
     requireSelectedCategory?: boolean;
+
+    /** 메인 등에서 숨길 카테고리명 목록 */
+    hiddenCategoryNames?: string[];
+
+    /** 포트폴리오 목록에서 제외할 카테고리명 목록 */
+    excludePortfolioCategoryNames?: string[];
 };
 
-export default function HomePageClient({ slides, preset }: { slides: HomeSlide[]; preset?: HomePagePreset }) {
+export default function HomePageClient({
+    slides,
+    preset,
+    className,
+}: {
+    slides: HomeSlide[];
+    preset?: HomePagePreset;
+    className?: string;
+}) {
     const router = useRouter();
 
     //hooks
@@ -184,11 +198,16 @@ export default function HomePageClient({ slides, preset }: { slides: HomeSlide[]
                     return;
                 }
 
-                setCategories(allCategories);
+                const visibleCategories =
+                    preset?.hiddenCategoryNames && preset.hiddenCategoryNames.length > 0
+                        ? allCategories.filter((cat) => !preset.hiddenCategoryNames!.includes(cat.name))
+                        : allCategories;
+
+                setCategories(visibleCategories);
 
                 // 초기 로드 시 특정 카테고리를 자동으로 선택 (기존 메인: 독채형)
                 if (preset?.autoSelectCategoryName) {
-                    const target = allCategories.find((cat) => cat.name === preset.autoSelectCategoryName);
+                    const target = visibleCategories.find((cat) => cat.name === preset.autoSelectCategoryName);
                     if (target) {
                         setSelectedCategory(target.id);
                     }
@@ -226,7 +245,21 @@ export default function HomePageClient({ slides, preset }: { slides: HomeSlide[]
             await request(
                 () => PortfolioService.getUser(true, selectedCategory ?? null),
                 (res) => {
-                    setPortfolios(res.data);
+                    const rawPortfolios: Portfolio[] = res.data;
+                    const excludeNames = preset?.excludePortfolioCategoryNames ?? [];
+
+                    if (excludeNames.length === 0) {
+                        setPortfolios(rawPortfolios);
+                        return;
+                    }
+
+                    const filtered = rawPortfolios.filter((portfolio) => {
+                        const categoryName = portfolio.category?.name;
+                        if (!categoryName) return true;
+                        return !excludeNames.includes(categoryName);
+                    });
+
+                    setPortfolios(filtered);
                 },
                 { ignoreErrorRedirect: true }
             );
@@ -340,7 +373,7 @@ export default function HomePageClient({ slides, preset }: { slides: HomeSlide[]
     const selectedCategoryCallout = selectedCategoryName ? categoryCallouts[selectedCategoryName] : null;
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className={`min-h-screen bg-white ${className ?? ''}`.trim()}>
             {/* Header */}
             <header className="bg-white border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

@@ -143,7 +143,7 @@ export default function SuperAdminPage() {
             (res) => {
                 setUsers(res.data);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -159,10 +159,10 @@ export default function SuperAdminPage() {
                     (res) => {
                         setSelectCategory(res.data);
                     },
-                    { ignoreErrorRedirect: true }
+                    { ignoreErrorRedirect: true },
                 );
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -173,7 +173,7 @@ export default function SuperAdminPage() {
             (res) => {
                 setAllPortfolios(res.data);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -183,7 +183,7 @@ export default function SuperAdminPage() {
             (res) => {
                 setQuestions(res.data);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -194,7 +194,7 @@ export default function SuperAdminPage() {
                 (res) => {
                     setSubmissions(res.data || []);
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Failed to fetch submissions:', error);
@@ -218,7 +218,7 @@ export default function SuperAdminPage() {
                 alert('임시저장으로 변경하였습니다.');
                 fetchSubmissions();
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -245,7 +245,7 @@ export default function SuperAdminPage() {
                 a.remove();
                 window.URL.revokeObjectURL(url);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -256,7 +256,7 @@ export default function SuperAdminPage() {
             (res) => {
                 setCategories(res.data);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
     //카테고리 저장 or 수정
@@ -280,7 +280,7 @@ export default function SuperAdminPage() {
                     });
                     fetchCategories();
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Save category error:', error);
@@ -298,7 +298,7 @@ export default function SuperAdminPage() {
                     alert('카테고리가 삭제되었습니다.');
                     fetchCategories();
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Delete category error:', error);
@@ -326,7 +326,7 @@ export default function SuperAdminPage() {
                 setNewUser({ email: '', password: '', name: '', role: 'ADMIN' });
                 fetchUsers();
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -393,7 +393,7 @@ export default function SuperAdminPage() {
                     fetchPortfolios();
                     fetchAllPortfolios();
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Save portfolio error:', error);
@@ -412,7 +412,7 @@ export default function SuperAdminPage() {
                     fetchPortfolios();
                     fetchAllPortfolios();
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('copy portfolio error:', error);
@@ -431,7 +431,7 @@ export default function SuperAdminPage() {
                     fetchPortfolios();
                     fetchAllPortfolios();
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Delete portfolio error:', error);
@@ -521,7 +521,7 @@ export default function SuperAdminPage() {
                     });
                     fetchQuestionsByPortfolio(selectedPortfolio);
                 },
-                { ignoreErrorRedirect: true }
+                { ignoreErrorRedirect: true },
             );
         } catch (error) {
             console.error('Save question error:', error);
@@ -538,7 +538,7 @@ export default function SuperAdminPage() {
                 alert('질문이 삭제되었습니다.');
                 fetchQuestionsByPortfolio(selectedPortfolio);
             },
-            { ignoreErrorRedirect: true }
+            { ignoreErrorRedirect: true },
         );
     };
 
@@ -1486,7 +1486,7 @@ export default function SuperAdminPage() {
                                                                 currentBoxes[i] || {
                                                                     label: `선택지 ${i + 1}`,
                                                                     hasInput: false,
-                                                                }
+                                                                },
                                                             );
                                                         }
 
@@ -2002,11 +2002,26 @@ export default function SuperAdminPage() {
             {/* Submissions Tab */}
             {activeTab === 'submissions' && (
                 <div className="max-w-7xl mx-auto">
+                    {/* 전체 요약 */}
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+                        <h3 className="text-lg font-bold text-black mb-3">전체 요약</h3>
+                        <div className="flex gap-6 text-sm text-gray-600">
+                            <span>
+                                전체: <strong className="text-black">{submissions?.length}</strong>건
+                            </span>
+                            <span>
+                                제출완료: <strong className="text-green-600">{submissions?.filter((s) => !s.isDraft).length}</strong>건
+                            </span>
+                            <span>
+                                임시저장: <strong className="text-yellow-600">{submissions?.filter((s) => s.isDraft).length}</strong>건
+                            </span>
+                        </div>
+                    </div>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-bold">제출 목록</h2>
                         <div className="flex gap-3">
                             <button onClick={fetchSubmissions} className="px-4 py-2 border-2 border-black rounded-lg font-semibold hover:bg-black hover:text-white transition-all">
-                                🔄 새로고침
+                                새로고침
                             </button>
                         </div>
                     </div>
@@ -2018,7 +2033,7 @@ export default function SuperAdminPage() {
                             <p className="text-gray-600">사용자가 포트폴리오를 제출하면 여기에 표시됩니다</p>
                         </div>
                     ) : (
-                        <div className="space-y-6">
+                        <div className="space-y-6 pb-10">
                             {/* 포트폴리오별로 그룹화 */}
                             {submissions &&
                                 submissions.length > 0 &&
@@ -2037,7 +2052,7 @@ export default function SuperAdminPage() {
                                         }
                                         groups[key].submissions.push(submission);
                                         return groups;
-                                    }, {})
+                                    }, {}),
                                 ).map(([key, group]: [string, any]) => (
                                     <div key={key} className="bg-white border-2 border-black rounded-lg overflow-hidden">
                                         {/* 포트폴리오 헤더 */}
@@ -2091,7 +2106,7 @@ export default function SuperAdminPage() {
                                                                                         alert('삭제되었습니다.');
                                                                                         fetchSubmissions();
                                                                                     },
-                                                                                    { ignoreErrorRedirect: true }
+                                                                                    { ignoreErrorRedirect: true },
                                                                                 );
                                                                             }
                                                                         }}
@@ -2111,22 +2126,6 @@ export default function SuperAdminPage() {
                                         </div>
                                     </div>
                                 ))}
-
-                            {/* 전체 요약 */}
-                            <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
-                                <h3 className="text-lg font-bold text-black mb-3">전체 요약</h3>
-                                <div className="flex gap-6 text-sm text-gray-600">
-                                    <span>
-                                        전체: <strong className="text-black">{submissions?.length}</strong>건
-                                    </span>
-                                    <span>
-                                        제출완료: <strong className="text-green-600">{submissions?.filter((s) => !s.isDraft).length}</strong>건
-                                    </span>
-                                    <span>
-                                        임시저장: <strong className="text-yellow-600">{submissions?.filter((s) => s.isDraft).length}</strong>건
-                                    </span>
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>

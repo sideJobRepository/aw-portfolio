@@ -63,6 +63,7 @@ export default function CollectionPage() {
     return (
         <HomePageClient
             slides={slides}
+            className="collection-page"
             preset={{
                 lockedCategorySlug: 6,
                 lockedCategoryName: '컬렉션',

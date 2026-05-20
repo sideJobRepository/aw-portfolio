@@ -107,6 +107,7 @@ input[type='text']:disabled {
     cursor: not-allowed !important;
 }
 
+
 /* Portfolio List Styles */
 .portfolio-list {
     border-radius: 1rem;

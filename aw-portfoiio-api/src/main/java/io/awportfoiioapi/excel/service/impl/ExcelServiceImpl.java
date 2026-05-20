@@ -95,16 +95,33 @@ public class ExcelServiceImpl implements ExcelService {
     
                     List<Map<String, Object>> rooms =
                             (List<Map<String, Object>>) responseMap.get("rooms");
-    
+                    
                     headerRow.createCell(colIdx + 0).setCellValue("객실명");
                     headerRow.createCell(colIdx + 1).setCellValue("객실설명");
-                    headerRow.createCell(colIdx + 2).setCellValue("형태");
-                    headerRow.createCell(colIdx + 3).setCellValue("비수기");
-                    headerRow.createCell(colIdx + 4).setCellValue("준성수기");
-                    headerRow.createCell(colIdx + 5).setCellValue("성수기");
+                    headerRow.createCell(colIdx + 2).setCellValue("객실인원");
+                    headerRow.createCell(colIdx + 3).setCellValue("객실형태");
+                    headerRow.createCell(colIdx + 4).setCellValue("객실비품");
+                    headerRow.createCell(colIdx + 5).setCellValue("비수기");
+                    headerRow.createCell(colIdx + 6).setCellValue("준성수기");
+                    headerRow.createCell(colIdx + 7).setCellValue("성수기");
     
                     if (rooms != null) {
-    
+                        
+                        String amenities = rooms.stream()
+                                .map(r -> String.valueOf(r.getOrDefault("amenities", "")))
+                                .collect(Collectors.joining(" / "));
+                        
+                        String capacity = rooms.stream()
+                                .map(r -> {
+                                    Map<String, Object> cap = (Map<String, Object>) r.get("capacity");
+                                    if (cap == null) return "";
+                        
+                                    String standard = String.valueOf(cap.getOrDefault("standard", ""));
+                                    String max = String.valueOf(cap.getOrDefault("max", ""));
+                                    return standard + "명/" + max + "명";
+                                })
+                                .collect(Collectors.joining(", "));
+                        
                         String names = rooms.stream()
                                 .map(r -> String.valueOf(r.getOrDefault("name", "")))
                                 .collect(Collectors.joining(" / "));
@@ -148,16 +165,18 @@ public class ExcelServiceImpl implements ExcelService {
                         String high = rooms.stream()
                                 .map(r -> priceFormatter.apply(r.get("priceHigh")))
                                 .collect(Collectors.joining(" , "));
-    
+                        
                         dataRow.createCell(colIdx + 0).setCellValue(names);
                         dataRow.createCell(colIdx + 1).setCellValue(descs);
-                        dataRow.createCell(colIdx + 2).setCellValue(types);
-                        dataRow.createCell(colIdx + 3).setCellValue(low);
-                        dataRow.createCell(colIdx + 4).setCellValue(mid);
-                        dataRow.createCell(colIdx + 5).setCellValue(high);
+                        dataRow.createCell(colIdx + 2).setCellValue(capacity);
+                        dataRow.createCell(colIdx + 3).setCellValue(types);
+                        dataRow.createCell(colIdx + 4).setCellValue(amenities);
+                        dataRow.createCell(colIdx + 5).setCellValue(low);
+                        dataRow.createCell(colIdx + 6).setCellValue(mid);
+                        dataRow.createCell(colIdx + 7).setCellValue(high);
                     }
     
-                    colIdx += 6;
+                    colIdx += 8;
                     continue;
                 }
     

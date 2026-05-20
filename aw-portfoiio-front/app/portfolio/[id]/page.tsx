@@ -1537,7 +1537,7 @@ export default function PortfolioForm() {
                                                                 }}
                                                                 className="w-full border border-gray-300 rounded-lg p-2"
                                                                 rows={3}
-                                                                placeholder="예: TV, 에어컨, 냉장고, 전기포트, 헤어드라이어 등"
+                                                                placeholder="예: TV, 에어컨, 냉장고, 전기포트, 헤어드라이어 등 "
                                                             />
                                                         </div>
 
