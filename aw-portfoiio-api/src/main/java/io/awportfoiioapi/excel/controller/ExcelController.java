@@ -4,22 +4,20 @@ import io.awportfoiioapi.apiresponse.ApiResponse;
 import io.awportfoiioapi.excel.dto.request.ExcelRequest;
 import io.awportfoiioapi.excel.service.ExcelService;
 import io.awportfoiioapi.utils.S3FileUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,25 +25,20 @@ import java.nio.charset.StandardCharsets;
 public class ExcelController {
 
     private final ExcelService excelService;
-
-    private final S3Client s3Client;
-
-     @Value("${spring.cloud.aws.s3.bucket}")
-     private String bucketName;
+    private final S3FileUtils s3FileUtils;
 
 
     @PostMapping("/excel")
     public ResponseEntity<byte[]> getExcel(@RequestBody ExcelRequest request) {
 
-    byte[] excelFile = excelService.createSubmissionExcel(request);
+        byte[] excelFile = excelService.createSubmissionExcel(request);
 
-    //파일명 (원하면 동적으로 생성해도 됨)
-    String fileName = "submission.xlsx";
+        String fileName = "submission.xlsx";
 
-    return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-            .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-            .body(excelFile);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(excelFile);
     }
 
     @PostMapping("/submitOff")
@@ -58,35 +51,42 @@ public class ExcelController {
         return excelService.copyPortfolio(portfolioId);
     }
 
-    @GetMapping("/download/{folder}/{fileName}")
-             public ResponseEntity<Resource> download(
-                     @PathVariable String fileName,
-                     @PathVariable String folder
-             ) {
-                 String key = folder + "/" + fileName;
-                 ResponseInputStream<GetObjectResponse> object = s3Client.getObject(
-                         GetObjectRequest.builder()
-                                 .bucket(bucketName)
-                                 .key(key)
-                                 .build()
-                 );
+    /**
+     * 로컬 디스크에 저장된 파일을 다운로드한다.
+     *
+     * Wildcard 매핑으로 다음 두 패턴을 모두 받는다.
+     *   GET /api/download/<folder>/<fileName>            (예: submission/uuid.jpg)
+     *   GET /api/download/files/<folder>/<fileName>      (DB URL 의 pathname 그대로)
+     *
+     * "files/" prefix 는 S3FileUtils.resolveLocalPath(relative) 에서 자동 strip 한다.
+     */
+    @GetMapping("/download/**")
+    public ResponseEntity<Resource> download(HttpServletRequest request) {
+        String requestUri = request.getRequestURI();
+        // "/api/download/" 뒤 부분을 모두 추출 (slash 포함)
+        String marker = "/api/download/";
+        int idx = requestUri.indexOf(marker);
+        if (idx < 0) {
+            return ResponseEntity.notFound().build();
+        }
+        String raw = requestUri.substring(idx + marker.length());
 
-                 // 메타데이터에서 원본 파일명 가져오기
-                 String encodedFilenameInMetadata = object.response().metadata().get("original-filename");
+        // URL 디코딩 (한글 파일명 대응)
+        String decoded = URLDecoder.decode(raw, StandardCharsets.UTF_8);
 
-                 // 원래 이름 복원 (디코딩)
-                 String decodedFilename = encodedFilenameInMetadata != null
-                         ? URLDecoder.decode(encodedFilenameInMetadata, StandardCharsets.UTF_8)
-                         : fileName;
+        Path filePath = s3FileUtils.resolveLocalPath(decoded);
+        if (filePath == null || !Files.exists(filePath)) {
+            return ResponseEntity.notFound().build();
+        }
 
-                 // 다시 Content-Disposition용으로 인코딩 (한 번만)
-                 String encodedFilename = UriUtils.encode(decodedFilename, StandardCharsets.UTF_8);
-                 String contentDisposition = "attachment; filename*=UTF-8''" + encodedFilename;
+        Resource resource = new FileSystemResource(filePath);
+        String fileName = filePath.getFileName().toString();
+        String encodedFilename = UriUtils.encode(fileName, StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename*=UTF-8''" + encodedFilename;
 
-                 InputStreamResource resource = new InputStreamResource(object);
-                 return ResponseEntity.ok()
-                         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                         .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                         .body(resource);
-             }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
 }
